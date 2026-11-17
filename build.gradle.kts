@@ -75,7 +75,6 @@ tasks.register("localQuality") {
     dependsOn("check", "spotlessCheck", publicationAudit)
 }
 
-val releaseApproval = providers.gradleProperty("releaseApproval").map { file(it).absolutePath }
 val publicationRepository = layout.buildDirectory.dir("maven-repository").get().asFile.absolutePath
 val publicationVersion = project.version.toString()
 
@@ -118,7 +117,6 @@ listOf("releaseCheck" to "release", "stageRelease" to "stage").forEach { (taskNa
                     "--version",
                     publicationVersion,
                 )
-            releaseApproval.orNull?.let { arguments.addAll(listOf("--approval", it)) }
             if (mode == "stage") {
                 arguments.addAll(listOf("--output", layout.buildDirectory.file("simt-ui-$publicationVersion-unsigned.zip").get().asFile.absolutePath))
             }

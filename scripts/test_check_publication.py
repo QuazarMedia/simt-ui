@@ -714,39 +714,13 @@ class ReleaseTests(unittest.TestCase):
                    'sha256': digest(b'Approved specification')}]}
         self.fixture.put('app-ui/source-provenance.json', encoded(source))
         self.fixture.put('cosmos-spec/provenance.json', encoded(cosmos))
-        self.review = {'schemaVersion': 1, 'head': HEAD, 'version': '1.2.3',
-                       'ownerReview': {'approved': True, 'reviewer': 'Release owner', 'sourceCodeRights': True,
-                                       'specCodeRights': True, 'specDocumentRights': True, 'unsignedLocalStage': True,
-                                       'signingSeparateOwnerRequirement': True},
-                       'provenance': {'sourceSha256': digest(encoded(source)), 'cosmosSha256': digest(encoded(cosmos))},
-                       'evidence': {}, 'artifacts': []}
-        for kind, checks in audit.EVIDENCE_CHECKS.items():
-            data = {'head': HEAD, 'result': 'passed', 'checks': {key: True for key in checks}}
-            if kind == 'iosRuntime':
-                data.update(platform='ios', runtime='Synthetic approved runtime')
-            elif kind == 'androidFloorHaptics':
-                data.update(platform='android', physicalDevice=True, apiLevel=28)
-            elif kind == 'consumerIntegration':
-                data['consumers'] = {key: True for key in ('simt-app', 'simt-echo-android', 'simt-echo-ios')}
-            relative = 'evidence/' + kind + '.json'
-            self.fixture.put(relative, encoded(data))
-            self.review['evidence'][kind] = {'path': relative, 'sha256': digest(encoded(data))}
-        self.approval = self.root / 'owner-approval.json'
         self.tracked = list(audit.RELEASE_DOCS) + ['app-ui/api/app-ui.api', 'app-ui/source-provenance.json',
                         'cosmos-spec/provenance.json', 'cosmos-spec/snapshots/specification.md',
-                        'cosmos-spec/scripts/check.js'] + [r['path'] for r in self.review['evidence'].values()]
+                        'cosmos-spec/scripts/check.js']
         self.command_calls = []
         self.commands = patch.object(audit, 'run_command', side_effect=self.command)
         self.commands.start()
         self.addCleanup(self.commands.stop)
-        selected = self.fixture.check()
-        self.assertTrue(selected.ok, selected.payload())
-        inventory = audit.Audit('release')
-        inventory.inventory = {'maven/' + p: value for p, value in selected.inventory.items()}
-        audit.release_documents(self.root, inventory)
-        self.assertTrue(inventory.ok, inventory.payload())
-        self.review['artifacts'] = [{'path': p, **inventory.inventory[p]} for p in sorted(inventory.inventory)]
-        self.save()
 
     def command(self, root, args, **kwargs):
         self.command_calls.append(list(args))
@@ -774,11 +748,8 @@ class ReleaseTests(unittest.TestCase):
             return objects[rest[2]][1]
         self.fail('Unexpected fixed command')
 
-    def save(self):
-        self.approval.write_bytes(encoded(self.review))
-
-    def gates(self, approval=True, version='1.2.3'):
-        return audit.check_release_gates(self.root, version, self.approval if approval else None)
+    def gates(self, version='1.2.3'):
+        return audit.check_release_gates(self.root, version)
 
     def assertGate(self, category, **kwargs):
         result = self.gates(**kwargs)
@@ -786,28 +757,10 @@ class ReleaseTests(unittest.TestCase):
         self.assertIn(category, {c for _, c in result.findings}, result.payload())
         return result
 
-    def evidence_change(self, kind, update):
-        reference = self.review['evidence'][kind]
-        path = self.root / reference['path']
-        data = json.loads(path.read_bytes())
-        update(data)
-        path.write_bytes(encoded(data))
-        reference['sha256'] = digest(encoded(data))
-        self.save()
-
-    def test_positive_explicit_owner_approved_release_with_fixed_mock_commands(self):
-        result = audit.check_release(self.root, self.fixture.repo, '1.2.3', self.approval)
+    def test_positive_release_with_fixed_mock_commands(self):
+        result = audit.check_release(self.root, self.fixture.repo, '1.2.3')
         self.assertTrue(result.ok, result.payload())
         self.assertTrue(any(args[0] == 'node' for args in self.command_calls))
-
-    def test_absent_approval_never_success(self):
-        self.assertGate('missing-owner-approval', approval=False)
-
-    def test_unconfirmed_owner_review_and_no_environment_bypass(self):
-        self.review['ownerReview']['approved'] = False
-        self.save()
-        with patch.dict(os.environ, {'FORCE': '1', 'SIMT_RELEASE_APPROVED': '1'}):
-            self.assertGate('owner-approval-unconfirmed-or-stale')
 
     def test_snapshot_and_prerelease_not_stable(self):
         for version in ('1.2.3-SNAPSHOT', '1.2.3-rc.1', '01.2.3', 'v1.2.3'):
@@ -837,7 +790,7 @@ class ReleaseTests(unittest.TestCase):
         self.fixture.put('app-ui/source-provenance.json', encoded({'licenseStatus': 'Unconfirmed; owner review required'}))
         self.assertGate('redistribution-rights-unconfirmed')
 
-    def test_false_ui_rights_cannot_be_overruled_by_final_owner_approval(self):
+    def test_false_ui_rights_block_release(self):
         original = json.loads((self.root / 'app-ui/source-provenance.json').read_bytes())
         for change in (lambda p: p.update(license='CC-BY-4.0'),
                        lambda p: p['ownerReview'].update(rightsConfirmed=False),
@@ -846,8 +799,6 @@ class ReleaseTests(unittest.TestCase):
             source = copy.deepcopy(original)
             change(source)
             self.fixture.put('app-ui/source-provenance.json', encoded(source))
-            self.review['provenance']['sourceSha256'] = digest(encoded(source))
-            self.save()
             self.assertGate('redistribution-rights-unconfirmed')
 
     def test_release_documents_require_full_license_bytes_and_owner_notice(self):
@@ -856,14 +807,14 @@ class ReleaseTests(unittest.TestCase):
                                             ('NOTICE', b'Copyright Said Elimam', 'owner-notice-invalid')):
             with self.subTest(relative=relative):
                 self.fixture.put(relative, content)
-                result = audit.check_release(self.root, self.fixture.repo, '1.2.3', self.approval)
+                result = audit.check_release(self.root, self.fixture.repo, '1.2.3')
                 self.assertFalse(result.ok, result.payload())
                 self.assertIn((relative, category), result.findings)
                 self.fixture.put(relative, LEGAL_DOCUMENTS[relative])
 
     def test_missing_document_license_blocks_release(self):
         (self.root / 'LICENSE-DOCS').unlink()
-        result = audit.check_release(self.root, self.fixture.repo, '1.2.3', self.approval)
+        result = audit.check_release(self.root, self.fixture.repo, '1.2.3')
         self.assertFalse(result.ok)
         self.assertIn(('LICENSE-DOCS', 'missing-or-unreadable'), result.findings)
 
@@ -874,40 +825,12 @@ class ReleaseTests(unittest.TestCase):
         path.write_bytes(encoded(data))
         self.assertGate('redistribution-rights-unconfirmed')
 
-    def test_approval_cannot_overrule_private_only_provenance(self):
+    def test_private_only_provenance_blocks_release(self):
         path = self.root / 'cosmos-spec/provenance.json'
         data = json.loads(path.read_bytes())
         data['distribution']['scope'] = 'private-development-only'
         path.write_bytes(encoded(data))
         self.assertGate('redistribution-rights-unconfirmed')
-
-    def test_missing_ios_runtime_evidence(self):
-        del self.review['evidence']['iosRuntime']
-        self.save()
-        self.assertGate('missing-head-tied-evidence')
-
-    def test_ios_evidence_needs_actual_runtime_identity(self):
-        self.evidence_change('iosRuntime', lambda data: data.pop('runtime'))
-        self.assertGate('ios-runtime-required')
-
-    def test_evidence_must_match_actual_head(self):
-        self.evidence_change('iosRuntime', lambda data: data.update(head='b' * 40))
-        self.assertGate('failed-or-stale-evidence')
-
-    def test_android_physical_floor_and_haptics_required(self):
-        self.evidence_change('androidFloorHaptics', lambda data: data.update(physicalDevice=False, apiLevel=29))
-        self.assertGate('physical-android-floor-haptics-required')
-
-    def test_security_review_and_consumers_required(self):
-        self.evidence_change('securityReview', lambda data: data['checks'].update(privacy=False))
-        self.assertGate('failed-or-stale-evidence')
-        self.evidence_change('consumerIntegration', lambda data: data['consumers'].update({'simt-echo-ios': False}))
-        self.assertGate('consumer-integration-required')
-
-    def test_tampered_evidence_checksum(self):
-        path = self.root / self.review['evidence']['iosRuntime']['path']
-        path.write_bytes(path.read_bytes() + b' ')
-        self.assertGate('failed-or-stale-evidence')
 
     def test_known_canonical_schema_defects_block(self):
         path = self.root / 'cosmos-spec/provenance.json'
@@ -925,36 +848,20 @@ class ReleaseTests(unittest.TestCase):
         with patch.object(audit, 'run_command', side_effect=strict):
             self.assertGate('canonical-schema-check-failed')
 
-    def test_no_shell_snippets_from_approval_executed(self):
-        self.review['command'] = 'do-not-execute-shell'
-        self.review['evidence']['iosRuntime']['command'] = 'do-not-execute-shell'
-        self.save()
-        self.assertTrue(self.gates().ok)
-        self.assertFalse(any('do-not-execute-shell' in args for args in self.command_calls))
-
-    def test_exact_artifact_owner_review_required(self):
-        self.review['artifacts'].pop()
-        self.save()
-        result = audit.check_release(self.root, self.fixture.repo, '1.2.3', self.approval)
-        self.assertIn(('approval', 'exact-audited-artifact-review-required'), result.findings)
-
     def test_missing_release_document_and_abi_block(self):
         (self.root / 'NOTICE').unlink()
         self.tracked.remove('app-ui/api/app-ui.api')
-        result = audit.check_release(self.root, self.fixture.repo, '1.2.3', self.approval)
+        result = audit.check_release(self.root, self.fixture.repo, '1.2.3')
         self.assertFalse(result.ok)
         self.assertIn('missing-abi-baseline', {c for _, c in result.findings})
 
-    def test_missing_approval_stage_refuses_without_creating_zip(self):
-        output = self.root / 'candidate.zip'
-        result = audit.stage_release(self.root, self.fixture.repo, '1.2.3', None, output)
-        self.assertFalse(result.ok)
-        self.assertFalse(output.exists())
-
     def test_deterministic_sorted_fixed_time_unsigned_local_stage(self):
+        expected = audit.check_release(self.root, self.fixture.repo, '1.2.3')
+        self.assertTrue(expected.ok, expected.payload())
+        artifacts = [{'path': p, **expected.inventory[p]} for p in sorted(expected.inventory)]
         first, second = self.root / 'build/first.zip', self.root / 'build/second.zip'
         for path in (first, second):
-            result = audit.stage_release(self.root, self.fixture.repo, '1.2.3', self.approval, path)
+            result = audit.stage_release(self.root, self.fixture.repo, '1.2.3', path)
             self.assertTrue(result.ok, result.payload())
         self.assertEqual(first.read_bytes(), second.read_bytes())
         with zipfile.ZipFile(first) as stream:
@@ -962,7 +869,7 @@ class ReleaseTests(unittest.TestCase):
             self.assertTrue(all(i.date_time == (1980, 1, 1, 0, 0, 0) for i in stream.infolist()))
             manifest = json.loads(stream.read('artifact-checksums.json'))
             self.assertTrue(manifest['unsigned'])
-            self.assertEqual(manifest['artifacts'], self.review['artifacts'])
+            self.assertEqual(manifest['artifacts'], artifacts)
             for relative in ('LICENSE', 'LICENSE-DOCS', 'NOTICE'):
                 self.assertEqual(stream.read('source/' + relative), LEGAL_DOCUMENTS[relative])
             for target in audit.TARGETS:
@@ -971,7 +878,7 @@ class ReleaseTests(unittest.TestCase):
 
     def test_stage_does_not_replace_existing_output(self):
         output = self.fixture.put('existing.zip', 'existing user data')
-        result = audit.stage_release(self.root, self.fixture.repo, '1.2.3', self.approval, output)
+        result = audit.stage_release(self.root, self.fixture.repo, '1.2.3', output)
         self.assertFalse(result.ok)
         self.assertEqual(output.read_text(), 'existing user data')
 
@@ -980,7 +887,7 @@ class ReleaseTests(unittest.TestCase):
         link.symlink_to('outside.zip')
         for output in (link, self.root.parent / 'outside.zip'):
             with self.subTest(output=output.name):
-                self.assertFalse(audit.stage_release(self.root, self.fixture.repo, '1.2.3', self.approval, output).ok)
+                self.assertFalse(audit.stage_release(self.root, self.fixture.repo, '1.2.3', output).ok)
 
 
 class IntegrationStageTests(unittest.TestCase):

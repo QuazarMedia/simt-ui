@@ -38,13 +38,7 @@ jobs:
             echo "::error::Tag $TAG does not match VERSION_NAME=$declared"
             exit 1
           fi
-          approval="release/approvals/$version.json"
-          if [ ! -f "$approval" ]; then
-            echo "::error::Missing committed owner approval: $approval"
-            exit 1
-          fi
           echo "value=$version" >> "$GITHUB_OUTPUT"
-          echo "approval=$approval" >> "$GITHUB_OUTPUT"
 
       - name: Check release secrets
         env:
@@ -91,7 +85,6 @@ jobs:
         run: >-
           ./gradlew --no-daemon --max-workers=2 releaseCheck
           -PVERSION_NAME="${{ steps.version.outputs.value }}"
-          -PreleaseApproval="${{ steps.version.outputs.approval }}"
 
       - name: Publish to Maven Central
         env:

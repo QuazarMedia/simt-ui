@@ -479,6 +479,13 @@ The following records the checkpoint at `194dfe3`; later dated sections supersed
 - No iOS simulator runtime is installed, and no physical Android API 28 device is attached. iOS runtime/resources/insets/accessibility/haptics, Android floor rendering/resources/haptics and Android Studio Preview-panel evidence remain external. A requested full cloud security scan was explicitly declined at its upload confirmation, so no code was uploaded and no final cloud security evidence is claimed.
 - The candidate remains deliberately untagged and unapproved for release. Final owner review must bind the exact final HEAD, provenance digests, artifact inventory and genuine evidence. Signing, upload, remote pushes and public release remain separate explicit actions.
 
+### First-release automation and policy decision (2026-11-18)
+
+- The owner explicitly requested `v0.1.0`, Maven Central publication, and a GitHub Release on tag push, then selected a relaxed first-release gate rather than deferring the tag for unavailable runtime/security evidence. This decision supersedes the earlier final-evidence requirement for version `0.1.0`; it does not claim those checks occurred.
+- Tag publication remains fail-closed on stable matching SemVer at clean HEAD, confirmed UI/Cosmos public-redistribution rights, strict canonical Cosmos validation, complete release documents and ABI baselines, bounded source/history review, exact fresh Maven publication validation, PGP signing, Central credentials, and approval of the protected GitHub `release` environment.
+- The unavailable iOS runtime, physical Android API 28, Android Studio Preview-panel, and cloud security checks remain explicit validation limits. The release workflow must not describe them as passed.
+- Maven Central upload uses the same `com.gradleup.nmcp.settings` aggregation model as simt-gnss. GitHub Release creation occurs only after Central accepts the signed deployment.
+
 ## 10. External guidance consulted
 
 Official documentation was consulted on 2026-11-17. Re-check it when implementing because supported toolchains and Android-KMP APIs change.

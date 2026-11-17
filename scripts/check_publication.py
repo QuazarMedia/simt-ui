@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Bounded offline audits and owner-gated unsigned local staging; no signing/upload."""
+"""Bounded offline audits and tag-gated unsigned local staging; no signing/upload."""
 
 import argparse
 from collections import Counter
@@ -48,13 +48,6 @@ FORBIDDEN_NAMES = {
     'firebase.json', '.firebaserc', 'wrangler.toml', 'wrangler.json', 'wrangler.jsonc',
 }
 ARCHIVE_EXT = ('.jar', '.aar', '.klib', '.zip')
-EVIDENCE_CHECKS = {
-    'iosRuntime': ('rendering', 'insets', 'haptics', 'resources'),
-    'androidFloorHaptics': ('floor', 'haptics', 'rendering', 'resources'),
-    'consumerIntegration': ('integration',),
-    'securityReview': ('security', 'privacy', 'accessibility'),
-    'producerQuality': ('producer', 'abi', 'docs'),
-}
 LICENSE_SHA256 = {
     'LICENSE': 'c71d239df91726fc519c6eb72d318ec65820627232b2f796219e87dcf35d0ab4',
     'LICENSE-DOCS': '9ba9550ad48438d0836ddab3da480b3b69ffa0aac7b7878b5a0039e7ab429411',
@@ -689,18 +682,10 @@ def check_publication(repo, version):
     return audit
 
 
-def load_approval(approval):
-    if approval is None:
-        raise ValidationError('approval', 'missing-owner-approval')
-    path = Path(os.path.abspath(approval))
-    return json_data(read_file(path.parent, path.name, MAX_TEXT), 'approval')
-
-
-def check_release_gates(root, version, approval):
-    """Early authorization blockers; not a substitute for check_release/stage."""
-    audit = Audit('release-owner-gates')
+def check_release_gates(root, version):
+    """Early release blockers; not a substitute for check_release/stage."""
+    audit = Audit('release-gates')
     head = None
-    review = None
     if not isinstance(version, str) or not STABLE.fullmatch(version):
         audit.add('version', 'stable-semver-required')
     try:
@@ -721,69 +706,25 @@ def check_release_gates(root, version, approval):
             audit.catch(error)
         else:
             audit.add('HEAD', 'invalid-head')
-    try:
-        review = load_approval(approval)
-        owner = review.get('ownerReview', {}) if isinstance(review, dict) else {}
-        keys = ('approved', 'sourceCodeRights', 'specCodeRights', 'specDocumentRights',
-                'unsignedLocalStage', 'signingSeparateOwnerRequirement')
-        if (not isinstance(review, dict) or review.get('schemaVersion') != 1 or not head or
-                review.get('head') != head or review.get('version') != version or not isinstance(owner, dict) or
-                not all(owner.get(k) is True for k in keys) or not isinstance(owner.get('reviewer'), str) or
-                not owner['reviewer'].strip()):
-            audit.add('approval', 'owner-approval-unconfirmed-or-stale')
-    except ValidationError as error:
-        audit.catch(error)
-    except (AttributeError, TypeError):
-        audit.add('approval', 'malformed-owner-approval')
     for relative, kind in (('app-ui/source-provenance.json', 'source'), ('cosmos-spec/provenance.json', 'cosmos')):
         try:
-            data = read_file(root, relative, MAX_TEXT)
-            provenance = json_data(data, relative)
+            provenance = json_data(read_file(root, relative, MAX_TEXT), relative)
             if kind == 'source':
                 confirmed = confirmed_ui_rights(provenance)
-                digest_key = 'sourceSha256'
             else:
                 confirmed = (provenance.get('licenses', {}).get('code', {}).get('status') == 'confirmed' and
                              provenance.get('licenses', {}).get('documents', {}).get('status') == 'confirmed' and
                              provenance.get('distribution', {}).get('scope') == 'public-redistribution' and
                              provenance.get('distribution', {}).get('publicRedistribution') == 'approved')
-                digest_key = 'cosmosSha256'
                 if provenance.get('knownSchemaDefects') != []:
                     audit.add(relative, 'canonical-schema-blocked')
             if not confirmed:
                 audit.add(relative, 'redistribution-rights-unconfirmed')
-            if not isinstance(review, dict) or review.get('provenance', {}).get(digest_key) != hashlib.sha256(data).hexdigest():
-                audit.add(relative, 'provenance-owner-review-required')
         except ValidationError as error:
             audit.catch(error)
         except (AttributeError, TypeError):
             audit.add(relative, 'malformed-provenance')
-    for kind, checks in EVIDENCE_CHECKS.items():
-        try:
-            reference = review.get('evidence', {}).get(kind) if isinstance(review, dict) else None
-            if not isinstance(reference, dict) or not isinstance(reference.get('path'), str):
-                raise ValidationError('evidence/' + kind, 'missing-head-tied-evidence')
-            data = read_file(root, reference['path'], MAX_TEXT)
-            evidence = json_data(data, 'evidence/' + kind)
-            if (reference.get('sha256') != hashlib.sha256(data).hexdigest() or not head or
-                    evidence.get('head') != head or evidence.get('result') != 'passed' or
-                    not all(evidence.get('checks', {}).get(c) is True for c in checks)):
-                raise ValidationError('evidence/' + kind, 'failed-or-stale-evidence')
-            if kind == 'iosRuntime' and (evidence.get('platform') != 'ios' or
-                                        not isinstance(evidence.get('runtime'), str) or not evidence['runtime'].strip()):
-                raise ValidationError('evidence/' + kind, 'ios-runtime-required')
-            if kind == 'androidFloorHaptics' and (evidence.get('platform') != 'android' or
-                    evidence.get('physicalDevice') is not True or type(evidence.get('apiLevel')) is not int or evidence['apiLevel'] != 28):
-                raise ValidationError('evidence/' + kind, 'physical-android-floor-haptics-required')
-            if kind == 'consumerIntegration' and not all(evidence.get('consumers', {}).get(c) is True for c in
-                                                       ('simt-app', 'simt-echo-android', 'simt-echo-ios')):
-                raise ValidationError('evidence/' + kind, 'consumer-integration-required')
-        except ValidationError as error:
-            audit.catch(error)
-        except (AttributeError, TypeError):
-            audit.add('evidence/' + kind, 'malformed-evidence')
     try:
-        # Release requires a fresh strict canonical-schema pass, not an integrity claim.
         script = safe_path(root, 'cosmos-spec/scripts/check.js')
         read_file(root, 'cosmos-spec/scripts/check.js', MAX_TEXT)
         run_command(root, ['node', str(script), 'canonical-schema'])
@@ -834,24 +775,14 @@ def release_documents(root, audit):
         audit.add('cosmos-spec/provenance.json', 'malformed-spec-inventory')
 
 
-def check_release(root, repo, version, approval):
-    audit = Audit('release-authorization-unsigned-only')
-    audit.merge(check_release_gates(root, version, approval))
+def check_release(root, repo, version):
+    audit = Audit('release-authorization')
+    audit.merge(check_release_gates(root, version))
     audit.merge(check_source(root))
     publication = check_publication(repo, version)
     audit.merge(publication)
     audit.inventory.update(('maven/' + p, value) for p, value in publication.inventory.items())
     release_documents(root, audit)
-    try:
-        review = load_approval(approval)
-        artifacts = review.get('artifacts')
-        expected = [{'path': p, **audit.inventory[p]} for p in sorted(audit.inventory)]
-        if not isinstance(artifacts, list) or artifacts != expected or not expected:
-            audit.add('approval', 'exact-audited-artifact-review-required')
-    except ValidationError as error:
-        audit.catch(error)
-    except AttributeError:
-        audit.add('approval', 'malformed-owner-approval')
     return audit
 
 
@@ -896,12 +827,12 @@ def stage_integration(root, repo, version, output):
     return audit
 
 
-def stage_release(root, repo, version, approval, output):
-    audit = check_release(root, repo, version, approval)
+def stage_release(root, repo, version, output):
+    audit = check_release(root, repo, version)
     audit.scope = 'unsigned-local-stage'
-    manifest = {'unsigned': True, 'signing': 'separate-release-owner-requirement'}
+    manifest = {'unsigned': True, 'signing': 'required-for-publication'}
     return write_stage(root, repo, version, audit, output, manifest,
-                       lambda: check_release_gates(root, version, approval))
+                       lambda: check_release_gates(root, version))
 
 
 def write_stage(root, repo, version, audit, output, manifest, final_check):
@@ -957,8 +888,8 @@ class SafeParser(argparse.ArgumentParser):
 
 
 def parser():
-    result = SafeParser(description='Offline SIMT UI source/publication audit; fail-closed release authorization. No signing/upload.',
-                        epilog='Exit 0: validated; exit 1: blocked. No force/environment bypass. Publication quality is not release approval.')
+    result = SafeParser(description='Offline SIMT UI source/publication audit and release validation. No signing/upload.',
+                        epilog='Exit 0: validated; exit 1: blocked. No force or environment bypass.')
     sub = result.add_subparsers(dest='command', required=True, parser_class=SafeParser)
     source = sub.add_parser('source', help='Audit Git working files and every committed blob across all refs (ignored files excluded).')
     source.add_argument('--root', required=True, help='Source Git workspace.')
@@ -971,13 +902,11 @@ def parser():
     integration.add_argument('--version', required=True, help='Exact stable or snapshot VERSION_NAME.')
     integration.add_argument('--output', required=True, help='New private .zip inside the workspace; no signing/upload.')
     for name in ('release', 'stage'):
-        command = sub.add_parser(name, help='Require owner rights/review, stable tag, clean tree, HEAD evidence, strict Cosmos and fresh artifacts.' +
-                                 (' Create local unsigned ZIP only after all gates.' if name == 'stage' else ''),
-                                 epilog='Approval schema and required evidence: README.md and EVIDENCE_CHECKS. Missing approval always blocks.')
+        command = sub.add_parser(name, help='Require confirmed rights, stable tag, clean tree, strict Cosmos and fresh audited artifacts.' +
+                                 (' Create local unsigned ZIP only after all gates.' if name == 'stage' else ''))
         command.add_argument('--root', required=True, help='Source Git workspace.')
         command.add_argument('--repo', required=True, help='Fresh local Maven repository.')
         command.add_argument('--version', required=True, help='Stable exact VERSION_NAME x.y.z; tag must be vVERSION at HEAD.')
-        command.add_argument('--approval', help='Explicit existing owner-review JSON; never generated here.')
         if name == 'stage':
             command.add_argument('--output', required=True, help='New .zip under an existing workspace directory; not uploaded or signed.')
     return result
@@ -991,11 +920,11 @@ def main(argv=None):
         elif args.command == 'publication':
             audit = check_publication(args.repo, args.version)
         elif args.command == 'release':
-            audit = check_release(args.root, args.repo, args.version, args.approval)
+            audit = check_release(args.root, args.repo, args.version)
         elif args.command == 'stage-integration':
             audit = stage_integration(args.root, args.repo, args.version, args.output)
         else:
-            audit = stage_release(args.root, args.repo, args.version, args.approval, args.output)
+            audit = stage_release(args.root, args.repo, args.version, args.output)
     except ValidationError as error:
         audit = Audit('validation')
         audit.catch(error)

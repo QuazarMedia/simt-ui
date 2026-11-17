@@ -18,4 +18,4 @@
 ### Security
 
 - Excluded application configuration, credentials, permissions, network clients, analytics, persistence, and private host data from the library boundary.
-- Added bounded source/history and nested publication audits; final public release still requires current owner-reviewed evidence and separate signing/upload authorization.
+- Added bounded source/history and nested publication audits; tagged publication additionally requires confirmed redistribution rights, strict Cosmos validation, protected-environment approval, and PGP signing.
