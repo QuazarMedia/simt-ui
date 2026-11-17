@@ -1,0 +1,411 @@
+{
+  "$schema": "https://simt.space/cosmos/design/specification.schema.json",
+  "version": "2.3.0",
+  "updated": "2026-10-03",
+  "status": "Normative specification",
+  "owner": "SIMT product design and platform maintainers",
+  "base": "https://simt.space/cosmos/design",
+  "scope": "Shared foundations plus four platform parts: web page, web app, mobile app and watch app.",
+  "implementationStatus": "The web product and the mobile product are built on this specification. Conformance is recorded rule by rule in a release record; examples use illustrative data.",
+  "inheritance": "Platform rules are additive to common; product safety, privacy and accessibility take precedence.",
+  "normativeLanguage": {
+    "must": "Required for conformance.",
+    "should": "Expected unless an explicit evidence-backed exception is recorded.",
+    "may": "Optional within the common constraints."
+  },
+  "metrics": {
+    "targets": {
+      "web": { "value": 44, "unit": "css-px" },
+      "android": { "value": 48, "unit": "dp" },
+      "wear": { "value": 48, "unit": "dp" }
+    },
+    "webVitals": { "lcpMs": 2500, "inpMs": 200, "cls": 0.1, "percentile": 75 },
+    "native": { "frameDeadline60HzMs": 16.67, "frameDeadline90HzMs": 11.11, "frameDeadline120HzMs": 8.33, "allowedJankPercent": 5 }
+  },
+  "budgets": {
+    "htmlBytesPerRoute": 81920,
+    "cssGzipBytes": 20480,
+    "jsGzipBytes": 6144,
+    "initialFontsBytes": 122880,
+    "specificationBytes": 24576,
+    "tokensBytes": 86016,
+    "partTokensBytes": 65536,
+    "partRulesBytes": 61440,
+    "contrastPairBytes": 73728,
+    "motionBytes": 28672,
+    "componentBytes": 24576,
+    "skillBytes": 24576
+  },
+  "resources": {
+    "manifest": "https://simt.space/cosmos/design/manifest.json",
+    "index": "https://simt.space/cosmos/design/specification.json",
+    "rules": "https://simt.space/cosmos/design/rules.json",
+    "tokens": "https://simt.space/cosmos/design/tokens.json",
+    "contrastPairs": "https://simt.space/cosmos/design/contrast-pairs.json",
+    "motion": "https://simt.space/cosmos/design/motion.json",
+    "components": "https://simt.space/cosmos/design/components.json",
+    "css": "https://simt.space/cosmos/design/tokens.css",
+    "skill": "https://simt.space/cosmos/design/cosmos-design-skill.md",
+    "markdown": "https://simt.space/cosmos/design/specification.md",
+    "changelog": "https://simt.space/cosmos/design/changelog.md",
+    "schema": "https://simt.space/cosmos/design/specification.schema.json",
+    "rulesSchema": "https://simt.space/cosmos/design/rules.schema.json",
+    "webPageTokens": "https://simt.space/cosmos/design/web-page/tokens.json",
+    "webPageRules": "https://simt.space/cosmos/design/web-page/rules.json",
+    "webAppTokens": "https://simt.space/cosmos/design/web-app/tokens.json",
+    "webAppRules": "https://simt.space/cosmos/design/web-app/rules.json",
+    "mobileAppTokens": "https://simt.space/cosmos/design/mobile-app/tokens.json",
+    "mobileAppRules": "https://simt.space/cosmos/design/mobile-app/rules.json",
+    "watchAppTokens": "https://simt.space/cosmos/design/watch-app/tokens.json",
+    "watchAppRules": "https://simt.space/cosmos/design/watch-app/rules.json",
+    "releaseTemplate": "https://simt.space/cosmos/design/release-template.json"
+  },
+  "ruleCount": 80,
+  "pages": [
+    {
+      "slug": "common",
+      "number": "00",
+      "label": "Common foundations",
+      "title": "One universe.\nA coherent language.",
+      "description": "The shared Cosmos contract: palette, type, geometry, components, accessibility, motion, data and production acceptance.",
+      "url": "https://simt.space/cosmos/design/common",
+      "markdown": "https://simt.space/cosmos/design/common.md",
+      "ruleCount": 30,
+      "sections": [
+        {
+          "id": "identity",
+          "title": "Identity & authority",
+          "url": "https://simt.space/cosmos/design/common#identity",
+          "ruleIds": ["C01", "C02", "C03"]
+        },
+        {
+          "id": "palette",
+          "title": "Color with a job",
+          "url": "https://simt.space/cosmos/design/common#palette",
+          "ruleIds": ["C04", "C05", "C06", "C29"]
+        },
+        {
+          "id": "light",
+          "title": "Light with a job",
+          "url": "https://simt.space/cosmos/design/common#light",
+          "ruleIds": ["C27"]
+        },
+        {
+          "id": "atmosphere",
+          "title": "Stars at the edge",
+          "url": "https://simt.space/cosmos/design/common#atmosphere",
+          "ruleIds": ["C11"]
+        },
+        {
+          "id": "typography",
+          "title": "Readable at every scale",
+          "url": "https://simt.space/cosmos/design/common#typography",
+          "ruleIds": ["C07", "C08"]
+        },
+        {
+          "id": "geometry",
+          "title": "Field, spine, aperture",
+          "url": "https://simt.space/cosmos/design/common#geometry",
+          "ruleIds": ["C09", "C10", "C25", "C26"]
+        },
+        {
+          "id": "components",
+          "title": "Component contracts",
+          "url": "https://simt.space/cosmos/design/common#components",
+          "ruleIds": ["C12", "C13", "C14", "C15", "C16"]
+        },
+        {
+          "id": "motion",
+          "title": "Motion earns its place",
+          "url": "https://simt.space/cosmos/design/common#motion",
+          "ruleIds": ["C17", "C18", "C30", "C31"]
+        },
+        {
+          "id": "accessibility",
+          "title": "Everyone keeps their bearings",
+          "url": "https://simt.space/cosmos/design/common#accessibility",
+          "ruleIds": ["C19", "C20", "C21"]
+        },
+        {
+          "id": "implementation",
+          "title": "Structured delivery & release",
+          "url": "https://simt.space/cosmos/design/common#implementation",
+          "ruleIds": ["C22", "C23", "C24"]
+        }
+      ]
+    },
+    {
+      "slug": "web-page",
+      "number": "01",
+      "label": "Web page",
+      "title": "A horizon\nworth exploring.",
+      "description": "Cosmos public and marketing websites: editorial horizons, a useful atlas, product evidence, conversion, SEO and restrained motion.",
+      "url": "https://simt.space/cosmos/design/web-page",
+      "markdown": "https://simt.space/cosmos/design/web-page.md",
+      "ruleCount": 11,
+      "sections": [
+        {
+          "id": "composition",
+          "title": "The editorial horizon",
+          "url": "https://simt.space/cosmos/design/web-page#composition",
+          "ruleIds": ["P01", "P02"]
+        },
+        {
+          "id": "layout",
+          "title": "Responsive composition",
+          "url": "https://simt.space/cosmos/design/web-page#layout",
+          "ruleIds": ["P03", "P04"]
+        },
+        {
+          "id": "atlas",
+          "title": "An atlas that tells the truth",
+          "url": "https://simt.space/cosmos/design/web-page#atlas",
+          "ruleIds": ["P05", "P06"]
+        },
+        {
+          "id": "conversion",
+          "title": "Confident, calm conversion",
+          "url": "https://simt.space/cosmos/design/web-page#conversion",
+          "ruleIds": ["P07", "P08"]
+        },
+        {
+          "id": "delivery",
+          "title": "Fast by construction",
+          "url": "https://simt.space/cosmos/design/web-page#delivery",
+          "ruleIds": ["P09", "P10"]
+        },
+        {
+          "id": "release",
+          "title": "Web page acceptance",
+          "url": "https://simt.space/cosmos/design/web-page#release",
+          "ruleIds": ["P11"]
+        }
+      ],
+      "tokens": "https://simt.space/cosmos/design/web-page/tokens.json",
+      "rules": "https://simt.space/cosmos/design/web-page/rules.json"
+    },
+    {
+      "slug": "web-app",
+      "number": "02",
+      "label": "Web app",
+      "title": "Every signal.\nIn context.",
+      "description": "Cosmos for Simt Social: continuous map/list discovery, context-preserving detail, activity composition, profiles, inbox and operations.",
+      "url": "https://simt.space/cosmos/design/web-app",
+      "markdown": "https://simt.space/cosmos/design/web-app.md",
+      "ruleCount": 13,
+      "sections": [
+        {
+          "id": "shell",
+          "title": "A persistent social field",
+          "url": "https://simt.space/cosmos/design/web-app#shell",
+          "ruleIds": ["A01", "A02"]
+        },
+        {
+          "id": "discovery",
+          "title": "Discover by place, time or people",
+          "url": "https://simt.space/cosmos/design/web-app#discovery",
+          "ruleIds": ["A03", "A04", "A05"]
+        },
+        {
+          "id": "participation",
+          "title": "Honest participation",
+          "url": "https://simt.space/cosmos/design/web-app#participation",
+          "ruleIds": ["A06", "A07"]
+        },
+        {
+          "id": "composer",
+          "title": "Compose with continuity",
+          "url": "https://simt.space/cosmos/design/web-app#composer",
+          "ruleIds": ["A08", "A09"]
+        },
+        {
+          "id": "operations",
+          "title": "A precise operational console",
+          "url": "https://simt.space/cosmos/design/web-app#operations",
+          "ruleIds": ["A10"]
+        },
+        {
+          "id": "performance",
+          "title": "A responsive working set",
+          "url": "https://simt.space/cosmos/design/web-app#performance",
+          "ruleIds": ["A11", "A12"]
+        },
+        {
+          "id": "release",
+          "title": "Web app acceptance",
+          "url": "https://simt.space/cosmos/design/web-app#release",
+          "ruleIds": ["A13"]
+        }
+      ],
+      "tokens": "https://simt.space/cosmos/design/web-app/tokens.json",
+      "rules": "https://simt.space/cosmos/design/web-app/rules.json"
+    },
+    {
+      "slug": "mobile-app",
+      "number": "03",
+      "label": "Mobile app",
+      "title": "A precise instrument.\nWithin reach.",
+      "description": "Cosmos for SIMT Android: compass, map, sky, tracking and tool layouts, adaptive postures, native input, sensors and measured performance.",
+      "url": "https://simt.space/cosmos/design/mobile-app",
+      "markdown": "https://simt.space/cosmos/design/mobile-app.md",
+      "ruleCount": 14,
+      "sections": [
+        {
+          "id": "anatomy",
+          "title": "The instrument field",
+          "url": "https://simt.space/cosmos/design/mobile-app#anatomy",
+          "ruleIds": ["M01", "M02"]
+        },
+        {
+          "id": "instruments",
+          "title": "Fixed frame, living reading",
+          "url": "https://simt.space/cosmos/design/mobile-app#instruments",
+          "ruleIds": ["M03", "M04", "M05"]
+        },
+        {
+          "id": "components",
+          "title": "Native affordances, Cosmos clarity",
+          "url": "https://simt.space/cosmos/design/mobile-app#components",
+          "ruleIds": ["M06", "M07"]
+        },
+        {
+          "id": "adaptive",
+          "title": "Adapt to the available field",
+          "url": "https://simt.space/cosmos/design/mobile-app#adaptive",
+          "ruleIds": ["M08", "M09"]
+        },
+        {
+          "id": "sensors",
+          "title": "Accurate data, humane permissions",
+          "url": "https://simt.space/cosmos/design/mobile-app#sensors",
+          "ruleIds": ["M10", "M11"]
+        },
+        {
+          "id": "performance",
+          "title": "Native performance contracts",
+          "url": "https://simt.space/cosmos/design/mobile-app#performance",
+          "ruleIds": ["M12", "M13"]
+        },
+        {
+          "id": "release",
+          "title": "Mobile acceptance",
+          "url": "https://simt.space/cosmos/design/mobile-app#release",
+          "ruleIds": ["M14"]
+        }
+      ],
+      "tokens": "https://simt.space/cosmos/design/mobile-app/tokens.json",
+      "rules": "https://simt.space/cosmos/design/mobile-app/rules.json"
+    },
+    {
+      "slug": "watch-app",
+      "number": "04",
+      "label": "Watch app",
+      "title": "One glance.\nOne useful answer.",
+      "description": "A simplified Cosmos for SIMT Wear OS: round-screen instruments, accessible rotary input, concise tools and battery-aware ambient states.",
+      "url": "https://simt.space/cosmos/design/watch-app",
+      "markdown": "https://simt.space/cosmos/design/watch-app.md",
+      "ruleCount": 12,
+      "sections": [
+        {
+          "id": "glance",
+          "title": "The single-glance contract",
+          "url": "https://simt.space/cosmos/design/watch-app#glance",
+          "ruleIds": ["W01", "W02"]
+        },
+        {
+          "id": "type-input",
+          "title": "Readable and reachable",
+          "url": "https://simt.space/cosmos/design/watch-app#type-input",
+          "ruleIds": ["W03", "W04"]
+        },
+        {
+          "id": "screens",
+          "title": "A small set of useful tools",
+          "url": "https://simt.space/cosmos/design/watch-app#screens",
+          "ruleIds": ["W05", "W06", "W07"]
+        },
+        {
+          "id": "ambient",
+          "title": "Ambient is a different composition",
+          "url": "https://simt.space/cosmos/design/watch-app#ambient",
+          "ruleIds": ["W08", "W09"]
+        },
+        {
+          "id": "performance",
+          "title": "Battery is part of UX",
+          "url": "https://simt.space/cosmos/design/watch-app#performance",
+          "ruleIds": ["W10", "W11"]
+        },
+        {
+          "id": "release",
+          "title": "Watch acceptance",
+          "url": "https://simt.space/cosmos/design/watch-app#release",
+          "ruleIds": ["W12"]
+        }
+      ],
+      "tokens": "https://simt.space/cosmos/design/watch-app/tokens.json",
+      "rules": "https://simt.space/cosmos/design/watch-app/rules.json"
+    }
+  ],
+  "provenance": [
+    {
+      "repository": "simt-landing (superseded by simt-space)",
+      "paths": ["cosmos-design/index.html", "styles/cosmos-design.less", "scripts/cosmos-design.js"],
+      "observed": "One large guide; page-owned animated star canvases and mixed native/web examples.",
+      "direction": "Replace with a static, linked specification with measurable rules and one optional atmospheric owner."
+    },
+    {
+      "repository": "simt-social-landing",
+      "paths": ["src/templates/partials/hero.hbs", "src/templates/partials/atlas.hbs", "src/styles/tokens.less"],
+      "observed": "Narrative hero, activity atlas, role discovery, privacy and multilingual public content.",
+      "direction": "Keep the human story and useful atlas; use editorial horizons and actual product evidence."
+    },
+    {
+      "repository": "simt-social",
+      "paths": ["app/styles/tokens-dark.css", "app/routes/discover.tsx", "mockups/README.md"],
+      "observed": "Canonical warm palette, persistent social shell, map/list discovery, activity composer and moderation console.",
+      "direction": "Preserve route responsibilities; improve context continuity, scanning, recovery and density."
+    },
+    {
+      "repository": "simt-app",
+      "paths": ["docs/design/COSMOS_REDESIGN.md", "core/ui/src/main/java/app/simt/core/ui/theme/Color.kt", "core/ui/src/main/java/app/simt/core/ui/theme/Motion.kt"],
+      "observed": "Native instrument palette and typography; adaptive maps, dials and tools.",
+      "direction": "Task-first instruments with stable reference frames, deliberate reach zones and system-owned back behavior."
+    },
+    {
+      "repository": "simt-app/wear",
+      "paths": ["src/main/java/app/simt/wear/screens/HomeScreen.kt", "src/main/java/app/simt/wear/screens/CompassScreen.kt", "src/main/java/app/simt/wear/theme/WearColors.kt"],
+      "observed": "Compass, sky, geofence, plumb bob, targets and settings; cyan has a legacy tool-specific value.",
+      "direction": "One-glance tools with shared signal meaning, round geometry and a genuinely quiet ambient state."
+    }
+  ],
+  "sources": [
+    {
+      "name": "WCAG 2.2",
+      "url": "https://www.w3.org/TR/WCAG22/",
+      "use": "Web accessibility baseline; Cosmos adopts a stronger 44 CSS px target than the 24 CSS px AA minimum."
+    },
+    { "name": "Core Web Vitals", "url": "https://web.dev/articles/vitals", "use": "Field LCP, INP and CLS thresholds at the 75th percentile." },
+    {
+      "name": "Wear accessibility",
+      "url": "https://developer.android.com/design/ui/wear/guides/foundations/accessibility",
+      "use": "Touch geometry, text and assistive input on round screens."
+    },
+    {
+      "name": "Wear always-on",
+      "url": "https://developer.android.com/training/wearables/always-on",
+      "use": "Ambient lifecycle, burn-in protection and battery-aware behavior."
+    },
+    {
+      "name": "Design Tokens format",
+      "url": "https://www.designtokens.org/tr/2025.10/format/",
+      "use": "Typed token interchange; exported sRGB components retain exact hex anchors in extensions."
+    }
+  ],
+  "releaseNotes": {
+    "document": "https://simt.space/cosmos/design/changelog.md",
+    "current": "2.3.0",
+    "versions": ["2.3.0"],
+    "count": 79
+  }
+}

@@ -1,0 +1,1779 @@
+{
+  "$description": "Cosmos 2.3.0 composited contrast for every role pair in every theme profile",
+  "version": "2.3.0",
+  "updated": "2026-10-03",
+  "status": "Normative specification",
+  "ratioField": "$value",
+  "guidanceField": "$extensions.app.simt.cosmos",
+  "fetchWhen": ["introducing a colour or gradient", "pairing a translucent, blurred or layered surface", "checking or changing a theme profile"],
+  "profiles": ["daylight", "astronomy", "watchAmbient"],
+  "contrastPairs": {
+    "$description": "Opaque sRGB WCAG contrast ratios, rounded to six decimals. Eligibility is published once per pair as aaNormalText rather than restated in prose: >= 4.5 is AA normal text, >= 3 is AA large text and non-text, and recommendedTextUse names the role the pair clears it for. Each pair resolves its exact hex colors through foregroundToken and backgroundToken in this document, and carries recommendedTextUse only when the pair clears AA for the role it was measured for; an absent recommendation means the pair is unsuitable or reserved for a non-text role. These measurements do not certify gradients, opacity, imagery, font sizing or an entire component.",
+    "deepSpace": {
+      "$description": "Base dark palette. Dim and boundary are not recommended as essential text even when a numeric threshold passes.",
+      "ink-on-void": {
+        "$type": "number",
+        "$value": 18.495578,
+        "$extensions": {
+          "app.simt.cosmos": { "foregroundToken": "color.ink", "backgroundToken": "color.void", "aaNormalText": true, "recommendedTextUse": "primary text" }
+        }
+      },
+      "muted-on-void": {
+        "$type": "number",
+        "$value": 9.159199,
+        "$extensions": {
+          "app.simt.cosmos": { "foregroundToken": "color.muted", "backgroundToken": "color.void", "aaNormalText": true, "recommendedTextUse": "supporting text" }
+        }
+      },
+      "faint-on-void": {
+        "$type": "number",
+        "$value": 6.05397,
+        "$extensions": {
+          "app.simt.cosmos": { "foregroundToken": "color.faint", "backgroundToken": "color.void", "aaNormalText": true, "recommendedTextUse": "tertiary text" }
+        }
+      },
+      "dim-on-void": {
+        "$type": "number",
+        "$value": 5.465893,
+        "$extensions": {
+          "app.simt.cosmos": { "foregroundToken": "color.dim", "backgroundToken": "color.void", "aaNormalText": true }
+        }
+      },
+      "ember-on-void": {
+        "$type": "number",
+        "$value": 8.415111,
+        "$extensions": {
+          "app.simt.cosmos": { "foregroundToken": "color.ember", "backgroundToken": "color.void", "aaNormalText": true, "recommendedTextUse": "agency label" }
+        }
+      },
+      "ember-soft-on-void": {
+        "$type": "number",
+        "$value": 11.036686,
+        "$extensions": {
+          "app.simt.cosmos": { "foregroundToken": "color.ember-soft", "backgroundToken": "color.void", "aaNormalText": true, "recommendedTextUse": "warm emphasis" }
+        }
+      },
+      "rose-on-void": {
+        "$type": "number",
+        "$value": 7.971681,
+        "$extensions": {
+          "app.simt.cosmos": { "foregroundToken": "color.rose", "backgroundToken": "color.void", "aaNormalText": true, "recommendedTextUse": "social label" }
+        }
+      },
+      "violet-on-void": {
+        "$type": "number",
+        "$value": 9.224868,
+        "$extensions": {
+          "app.simt.cosmos": { "foregroundToken": "color.violet", "backgroundToken": "color.void", "aaNormalText": true, "recommendedTextUse": "identity label" }
+        }
+      },
+      "gold-on-void": {
+        "$type": "number",
+        "$value": 12.613749,
+        "$extensions": {
+          "app.simt.cosmos": { "foregroundToken": "color.gold", "backgroundToken": "color.void", "aaNormalText": true, "recommendedTextUse": "precision label" }
+        }
+      },
+      "cyan-on-void": {
+        "$type": "number",
+        "$value": 12.649416,
+        "$extensions": {
+          "app.simt.cosmos": { "foregroundToken": "color.cyan", "backgroundToken": "color.void", "aaNormalText": true, "recommendedTextUse": "live-state label" }
+        }
+      },
+      "moss-on-void": {
+        "$type": "number",
+        "$value": 8.405289,
+        "$extensions": {
+          "app.simt.cosmos": { "foregroundToken": "color.moss", "backgroundToken": "color.void", "aaNormalText": true, "recommendedTextUse": "outdoor label" }
+        }
+      },
+      "danger-on-void": {
+        "$type": "number",
+        "$value": 6.989975,
+        "$extensions": {
+          "app.simt.cosmos": { "foregroundToken": "color.danger", "backgroundToken": "color.void", "aaNormalText": true, "recommendedTextUse": "error label" }
+        }
+      },
+      "success-on-void": {
+        "$type": "number",
+        "$value": 10.892792,
+        "$extensions": {
+          "app.simt.cosmos": { "foregroundToken": "color.success", "backgroundToken": "color.void", "aaNormalText": true, "recommendedTextUse": "completion label" }
+        }
+      },
+      "boundary-on-void": {
+        "$type": "number",
+        "$value": 6.05397,
+        "$extensions": {
+          "app.simt.cosmos": { "foregroundToken": "color.boundary", "backgroundToken": "color.void", "aaNormalText": true }
+        }
+      },
+      "ink-on-void-edge": {
+        "$type": "number",
+        "$value": 17.11302,
+        "$extensions": {
+          "app.simt.cosmos": { "foregroundToken": "color.ink", "backgroundToken": "color.void-edge", "aaNormalText": true, "recommendedTextUse": "primary text" }
+        }
+      },
+      "muted-on-void-edge": {
+        "$type": "number",
+        "$value": 8.474542,
+        "$extensions": {
+          "app.simt.cosmos": { "foregroundToken": "color.muted", "backgroundToken": "color.void-edge", "aaNormalText": true, "recommendedTextUse": "supporting text" }
+        }
+      },
+      "faint-on-void-edge": {
+        "$type": "number",
+        "$value": 5.601431,
+        "$extensions": {
+          "app.simt.cosmos": { "foregroundToken": "color.faint", "backgroundToken": "color.void-edge", "aaNormalText": true, "recommendedTextUse": "tertiary text" }
+        }
+      },
+      "dim-on-void-edge": {
+        "$type": "number",
+        "$value": 5.057314,
+        "$extensions": {
+          "app.simt.cosmos": { "foregroundToken": "color.dim", "backgroundToken": "color.void-edge", "aaNormalText": true }
+        }
+      },
+      "ember-on-void-edge": {
+        "$type": "number",
+        "$value": 7.786075,
+        "$extensions": {
+          "app.simt.cosmos": { "foregroundToken": "color.ember", "backgroundToken": "color.void-edge", "aaNormalText": true, "recommendedTextUse": "agency label" }
+        }
+      },
+      "ember-soft-on-void-edge": {
+        "$type": "number",
+        "$value": 10.211685,
+        "$extensions": {
+          "app.simt.cosmos": { "foregroundToken": "color.ember-soft", "backgroundToken": "color.void-edge", "aaNormalText": true, "recommendedTextUse": "warm emphasis" }
+        }
+      },
+      "rose-on-void-edge": {
+        "$type": "number",
+        "$value": 7.375792,
+        "$extensions": {
+          "app.simt.cosmos": { "foregroundToken": "color.rose", "backgroundToken": "color.void-edge", "aaNormalText": true, "recommendedTextUse": "social label" }
+        }
+      },
+      "violet-on-void-edge": {
+        "$type": "number",
+        "$value": 8.535303,
+        "$extensions": {
+          "app.simt.cosmos": { "foregroundToken": "color.violet", "backgroundToken": "color.void-edge", "aaNormalText": true, "recommendedTextUse": "identity label" }
+        }
+      },
+      "gold-on-void-edge": {
+        "$type": "number",
+        "$value": 11.670863,
+        "$extensions": {
+          "app.simt.cosmos": { "foregroundToken": "color.gold", "backgroundToken": "color.void-edge", "aaNormalText": true, "recommendedTextUse": "precision label" }
+        }
+      },
+      "cyan-on-void-edge": {
+        "$type": "number",
+        "$value": 11.703863,
+        "$extensions": {
+          "app.simt.cosmos": { "foregroundToken": "color.cyan", "backgroundToken": "color.void-edge", "aaNormalText": true, "recommendedTextUse": "live-state label" }
+        }
+      },
+      "moss-on-void-edge": {
+        "$type": "number",
+        "$value": 7.776987,
+        "$extensions": {
+          "app.simt.cosmos": { "foregroundToken": "color.moss", "backgroundToken": "color.void-edge", "aaNormalText": true, "recommendedTextUse": "outdoor label" }
+        }
+      },
+      "danger-on-void-edge": {
+        "$type": "number",
+        "$value": 6.467469,
+        "$extensions": {
+          "app.simt.cosmos": { "foregroundToken": "color.danger", "backgroundToken": "color.void-edge", "aaNormalText": true, "recommendedTextUse": "error label" }
+        }
+      },
+      "success-on-void-edge": {
+        "$type": "number",
+        "$value": 10.078548,
+        "$extensions": {
+          "app.simt.cosmos": { "foregroundToken": "color.success", "backgroundToken": "color.void-edge", "aaNormalText": true, "recommendedTextUse": "completion label" }
+        }
+      },
+      "boundary-on-void-edge": {
+        "$type": "number",
+        "$value": 5.601431,
+        "$extensions": {
+          "app.simt.cosmos": { "foregroundToken": "color.boundary", "backgroundToken": "color.void-edge", "aaNormalText": true }
+        }
+      },
+      "ink-on-hull": {
+        "$type": "number",
+        "$value": 17.213479,
+        "$extensions": {
+          "app.simt.cosmos": { "foregroundToken": "color.ink", "backgroundToken": "color.hull", "aaNormalText": true, "recommendedTextUse": "primary text" }
+        }
+      },
+      "muted-on-hull": {
+        "$type": "number",
+        "$value": 8.52429,
+        "$extensions": {
+          "app.simt.cosmos": { "foregroundToken": "color.muted", "backgroundToken": "color.hull", "aaNormalText": true, "recommendedTextUse": "supporting text" }
+        }
+      },
+      "faint-on-hull": {
+        "$type": "number",
+        "$value": 5.634313,
+        "$extensions": {
+          "app.simt.cosmos": { "foregroundToken": "color.faint", "backgroundToken": "color.hull", "aaNormalText": true, "recommendedTextUse": "tertiary text" }
+        }
+      },
+      "dim-on-hull": {
+        "$type": "number",
+        "$value": 5.087002,
+        "$extensions": {
+          "app.simt.cosmos": { "foregroundToken": "color.dim", "backgroundToken": "color.hull", "aaNormalText": true }
+        }
+      },
+      "ember-on-hull": {
+        "$type": "number",
+        "$value": 7.831782,
+        "$extensions": {
+          "app.simt.cosmos": { "foregroundToken": "color.ember", "backgroundToken": "color.hull", "aaNormalText": true, "recommendedTextUse": "agency label" }
+        }
+      },
+      "ember-soft-on-hull": {
+        "$type": "number",
+        "$value": 10.271631,
+        "$extensions": {
+          "app.simt.cosmos": { "foregroundToken": "color.ember-soft", "backgroundToken": "color.hull", "aaNormalText": true, "recommendedTextUse": "warm emphasis" }
+        }
+      },
+      "rose-on-hull": {
+        "$type": "number",
+        "$value": 7.419091,
+        "$extensions": {
+          "app.simt.cosmos": { "foregroundToken": "color.rose", "backgroundToken": "color.hull", "aaNormalText": true, "recommendedTextUse": "social label" }
+        }
+      },
+      "violet-on-hull": {
+        "$type": "number",
+        "$value": 8.585408,
+        "$extensions": {
+          "app.simt.cosmos": { "foregroundToken": "color.violet", "backgroundToken": "color.hull", "aaNormalText": true, "recommendedTextUse": "identity label" }
+        }
+      },
+      "gold-on-hull": {
+        "$type": "number",
+        "$value": 11.739374,
+        "$extensions": {
+          "app.simt.cosmos": { "foregroundToken": "color.gold", "backgroundToken": "color.hull", "aaNormalText": true, "recommendedTextUse": "precision label" }
+        }
+      },
+      "cyan-on-hull": {
+        "$type": "number",
+        "$value": 11.772569,
+        "$extensions": {
+          "app.simt.cosmos": { "foregroundToken": "color.cyan", "backgroundToken": "color.hull", "aaNormalText": true, "recommendedTextUse": "live-state label" }
+        }
+      },
+      "moss-on-hull": {
+        "$type": "number",
+        "$value": 7.822641,
+        "$extensions": {
+          "app.simt.cosmos": { "foregroundToken": "color.moss", "backgroundToken": "color.hull", "aaNormalText": true, "recommendedTextUse": "outdoor label" }
+        }
+      },
+      "danger-on-hull": {
+        "$type": "number",
+        "$value": 6.505436,
+        "$extensions": {
+          "app.simt.cosmos": { "foregroundToken": "color.danger", "backgroundToken": "color.hull", "aaNormalText": true, "recommendedTextUse": "error label" }
+        }
+      },
+      "success-on-hull": {
+        "$type": "number",
+        "$value": 10.137712,
+        "$extensions": {
+          "app.simt.cosmos": { "foregroundToken": "color.success", "backgroundToken": "color.hull", "aaNormalText": true, "recommendedTextUse": "completion label" }
+        }
+      },
+      "boundary-on-hull": {
+        "$type": "number",
+        "$value": 5.634313,
+        "$extensions": {
+          "app.simt.cosmos": { "foregroundToken": "color.boundary", "backgroundToken": "color.hull", "aaNormalText": true }
+        }
+      },
+      "ink-on-hull-raised": {
+        "$type": "number",
+        "$value": 15.695399,
+        "$extensions": {
+          "app.simt.cosmos": { "foregroundToken": "color.ink", "backgroundToken": "color.hull-raised", "aaNormalText": true, "recommendedTextUse": "primary text" }
+        }
+      },
+      "muted-on-hull-raised": {
+        "$type": "number",
+        "$value": 7.772522,
+        "$extensions": {
+          "app.simt.cosmos": { "foregroundToken": "color.muted", "backgroundToken": "color.hull-raised", "aaNormalText": true, "recommendedTextUse": "supporting text" }
+        }
+      },
+      "faint-on-hull-raised": {
+        "$type": "number",
+        "$value": 5.137415,
+        "$extensions": {
+          "app.simt.cosmos": { "foregroundToken": "color.faint", "backgroundToken": "color.hull-raised", "aaNormalText": true, "recommendedTextUse": "tertiary text" }
+        }
+      },
+      "dim-on-hull-raised": {
+        "$type": "number",
+        "$value": 4.638372,
+        "$extensions": {
+          "app.simt.cosmos": { "foregroundToken": "color.dim", "backgroundToken": "color.hull-raised", "aaNormalText": true }
+        }
+      },
+      "ember-on-hull-raised": {
+        "$type": "number",
+        "$value": 7.141086,
+        "$extensions": {
+          "app.simt.cosmos": { "foregroundToken": "color.ember", "backgroundToken": "color.hull-raised", "aaNormalText": true, "recommendedTextUse": "agency label" }
+        }
+      },
+      "ember-soft-on-hull-raised": {
+        "$type": "number",
+        "$value": 9.365762,
+        "$extensions": {
+          "app.simt.cosmos": { "foregroundToken": "color.ember-soft", "backgroundToken": "color.hull-raised", "aaNormalText": true, "recommendedTextUse": "warm emphasis" }
+        }
+      },
+      "rose-on-hull-raised": {
+        "$type": "number",
+        "$value": 6.764791,
+        "$extensions": {
+          "app.simt.cosmos": { "foregroundToken": "color.rose", "backgroundToken": "color.hull-raised", "aaNormalText": true, "recommendedTextUse": "social label" }
+        }
+      },
+      "violet-on-hull-raised": {
+        "$type": "number",
+        "$value": 7.828249,
+        "$extensions": {
+          "app.simt.cosmos": { "foregroundToken": "color.violet", "backgroundToken": "color.hull-raised", "aaNormalText": true, "recommendedTextUse": "identity label" }
+        }
+      },
+      "gold-on-hull-raised": {
+        "$type": "number",
+        "$value": 10.704062,
+        "$extensions": {
+          "app.simt.cosmos": { "foregroundToken": "color.gold", "backgroundToken": "color.hull-raised", "aaNormalText": true, "recommendedTextUse": "precision label" }
+        }
+      },
+      "cyan-on-hull-raised": {
+        "$type": "number",
+        "$value": 10.73433,
+        "$extensions": {
+          "app.simt.cosmos": { "foregroundToken": "color.cyan", "backgroundToken": "color.hull-raised", "aaNormalText": true, "recommendedTextUse": "live-state label" }
+        }
+      },
+      "moss-on-hull-raised": {
+        "$type": "number",
+        "$value": 7.132751,
+        "$extensions": {
+          "app.simt.cosmos": { "foregroundToken": "color.moss", "backgroundToken": "color.hull-raised", "aaNormalText": true, "recommendedTextUse": "outdoor label" }
+        }
+      },
+      "danger-on-hull-raised": {
+        "$type": "number",
+        "$value": 5.931712,
+        "$extensions": {
+          "app.simt.cosmos": { "foregroundToken": "color.danger", "backgroundToken": "color.hull-raised", "aaNormalText": true, "recommendedTextUse": "error label" }
+        }
+      },
+      "success-on-hull-raised": {
+        "$type": "number",
+        "$value": 9.243653,
+        "$extensions": {
+          "app.simt.cosmos": { "foregroundToken": "color.success", "backgroundToken": "color.hull-raised", "aaNormalText": true, "recommendedTextUse": "completion label" }
+        }
+      },
+      "boundary-on-hull-raised": {
+        "$type": "number",
+        "$value": 5.137415,
+        "$extensions": {
+          "app.simt.cosmos": { "foregroundToken": "color.boundary", "backgroundToken": "color.hull-raised", "aaNormalText": true }
+        }
+      },
+      "ink-on-hull-highest": {
+        "$type": "number",
+        "$value": 13.939188,
+        "$extensions": {
+          "app.simt.cosmos": { "foregroundToken": "color.ink", "backgroundToken": "color.hull-highest", "aaNormalText": true, "recommendedTextUse": "primary text" }
+        }
+      },
+      "muted-on-hull-highest": {
+        "$type": "number",
+        "$value": 6.902828,
+        "$extensions": {
+          "app.simt.cosmos": { "foregroundToken": "color.muted", "backgroundToken": "color.hull-highest", "aaNormalText": true, "recommendedTextUse": "supporting text" }
+        }
+      },
+      "faint-on-hull-highest": {
+        "$type": "number",
+        "$value": 4.562573,
+        "$extensions": {
+          "app.simt.cosmos": { "foregroundToken": "color.faint", "backgroundToken": "color.hull-highest", "aaNormalText": true, "recommendedTextUse": "tertiary text" }
+        }
+      },
+      "dim-on-hull-highest": {
+        "$type": "number",
+        "$value": 4.119369,
+        "$extensions": {
+          "app.simt.cosmos": { "foregroundToken": "color.dim", "backgroundToken": "color.hull-highest", "aaNormalText": false }
+        }
+      },
+      "ember-on-hull-highest": {
+        "$type": "number",
+        "$value": 6.342046,
+        "$extensions": {
+          "app.simt.cosmos": { "foregroundToken": "color.ember", "backgroundToken": "color.hull-highest", "aaNormalText": true, "recommendedTextUse": "agency label" }
+        }
+      },
+      "ember-soft-on-hull-highest": {
+        "$type": "number",
+        "$value": 8.317796,
+        "$extensions": {
+          "app.simt.cosmos": { "foregroundToken": "color.ember-soft", "backgroundToken": "color.hull-highest", "aaNormalText": true, "recommendedTextUse": "warm emphasis" }
+        }
+      },
+      "rose-on-hull-highest": {
+        "$type": "number",
+        "$value": 6.007856,
+        "$extensions": {
+          "app.simt.cosmos": { "foregroundToken": "color.rose", "backgroundToken": "color.hull-highest", "aaNormalText": true, "recommendedTextUse": "social label" }
+        }
+      },
+      "violet-on-hull-highest": {
+        "$type": "number",
+        "$value": 6.95232,
+        "$extensions": {
+          "app.simt.cosmos": { "foregroundToken": "color.violet", "backgroundToken": "color.hull-highest", "aaNormalText": true, "recommendedTextUse": "identity label" }
+        }
+      },
+      "gold-on-hull-highest": {
+        "$type": "number",
+        "$value": 9.506349,
+        "$extensions": {
+          "app.simt.cosmos": { "foregroundToken": "color.gold", "backgroundToken": "color.hull-highest", "aaNormalText": true, "recommendedTextUse": "precision label" }
+        }
+      },
+      "cyan-on-hull-highest": {
+        "$type": "number",
+        "$value": 9.53323,
+        "$extensions": {
+          "app.simt.cosmos": { "foregroundToken": "color.cyan", "backgroundToken": "color.hull-highest", "aaNormalText": true, "recommendedTextUse": "live-state label" }
+        }
+      },
+      "moss-on-hull-highest": {
+        "$type": "number",
+        "$value": 6.334644,
+        "$extensions": {
+          "app.simt.cosmos": { "foregroundToken": "color.moss", "backgroundToken": "color.hull-highest", "aaNormalText": true, "recommendedTextUse": "outdoor label" }
+        }
+      },
+      "danger-on-hull-highest": {
+        "$type": "number",
+        "$value": 5.267993,
+        "$extensions": {
+          "app.simt.cosmos": { "foregroundToken": "color.danger", "backgroundToken": "color.hull-highest", "aaNormalText": true, "recommendedTextUse": "error label" }
+        }
+      },
+      "success-on-hull-highest": {
+        "$type": "number",
+        "$value": 8.20935,
+        "$extensions": {
+          "app.simt.cosmos": { "foregroundToken": "color.success", "backgroundToken": "color.hull-highest", "aaNormalText": true, "recommendedTextUse": "completion label" }
+        }
+      },
+      "boundary-on-hull-highest": {
+        "$type": "number",
+        "$value": 4.562573,
+        "$extensions": {
+          "app.simt.cosmos": { "foregroundToken": "color.boundary", "backgroundToken": "color.hull-highest", "aaNormalText": true }
+        }
+      },
+      "ink-on-petrol": {
+        "$type": "number",
+        "$value": 14.055178,
+        "$extensions": {
+          "app.simt.cosmos": { "foregroundToken": "color.ink", "backgroundToken": "color.petrol", "aaNormalText": true, "recommendedTextUse": "primary text" }
+        }
+      },
+      "muted-on-petrol": {
+        "$type": "number",
+        "$value": 6.960268,
+        "$extensions": {
+          "app.simt.cosmos": { "foregroundToken": "color.muted", "backgroundToken": "color.petrol", "aaNormalText": true, "recommendedTextUse": "supporting text" }
+        }
+      },
+      "faint-on-petrol": {
+        "$type": "number",
+        "$value": 4.600539,
+        "$extensions": {
+          "app.simt.cosmos": { "foregroundToken": "color.faint", "backgroundToken": "color.petrol", "aaNormalText": true, "recommendedTextUse": "tertiary text" }
+        }
+      },
+      "dim-on-petrol": {
+        "$type": "number",
+        "$value": 4.153647,
+        "$extensions": {
+          "app.simt.cosmos": { "foregroundToken": "color.dim", "backgroundToken": "color.petrol", "aaNormalText": false }
+        }
+      },
+      "ember-on-petrol": {
+        "$type": "number",
+        "$value": 6.394819,
+        "$extensions": {
+          "app.simt.cosmos": { "foregroundToken": "color.ember", "backgroundToken": "color.petrol", "aaNormalText": true, "recommendedTextUse": "agency label" }
+        }
+      },
+      "ember-soft-on-petrol": {
+        "$type": "number",
+        "$value": 8.387009,
+        "$extensions": {
+          "app.simt.cosmos": { "foregroundToken": "color.ember-soft", "backgroundToken": "color.petrol", "aaNormalText": true, "recommendedTextUse": "warm emphasis" }
+        }
+      },
+      "rose-on-petrol": {
+        "$type": "number",
+        "$value": 6.057848,
+        "$extensions": {
+          "app.simt.cosmos": { "foregroundToken": "color.rose", "backgroundToken": "color.petrol", "aaNormalText": true, "recommendedTextUse": "social label" }
+        }
+      },
+      "violet-on-petrol": {
+        "$type": "number",
+        "$value": 7.010171,
+        "$extensions": {
+          "app.simt.cosmos": { "foregroundToken": "color.violet", "backgroundToken": "color.petrol", "aaNormalText": true, "recommendedTextUse": "identity label" }
+        }
+      },
+      "gold-on-petrol": {
+        "$type": "number",
+        "$value": 9.585453,
+        "$extensions": {
+          "app.simt.cosmos": { "foregroundToken": "color.gold", "backgroundToken": "color.petrol", "aaNormalText": true, "recommendedTextUse": "precision label" }
+        }
+      },
+      "cyan-on-petrol": {
+        "$type": "number",
+        "$value": 9.612557,
+        "$extensions": {
+          "app.simt.cosmos": { "foregroundToken": "color.cyan", "backgroundToken": "color.petrol", "aaNormalText": true, "recommendedTextUse": "live-state label" }
+        }
+      },
+      "moss-on-petrol": {
+        "$type": "number",
+        "$value": 6.387355,
+        "$extensions": {
+          "app.simt.cosmos": { "foregroundToken": "color.moss", "backgroundToken": "color.petrol", "aaNormalText": true, "recommendedTextUse": "outdoor label" }
+        }
+      },
+      "danger-on-petrol": {
+        "$type": "number",
+        "$value": 5.311829,
+        "$extensions": {
+          "app.simt.cosmos": { "foregroundToken": "color.danger", "backgroundToken": "color.petrol", "aaNormalText": true, "recommendedTextUse": "error label" }
+        }
+      },
+      "success-on-petrol": {
+        "$type": "number",
+        "$value": 8.277661,
+        "$extensions": {
+          "app.simt.cosmos": { "foregroundToken": "color.success", "backgroundToken": "color.petrol", "aaNormalText": true, "recommendedTextUse": "completion label" }
+        }
+      },
+      "boundary-on-petrol": {
+        "$type": "number",
+        "$value": 4.600539,
+        "$extensions": {
+          "app.simt.cosmos": { "foregroundToken": "color.boundary", "backgroundToken": "color.petrol", "aaNormalText": true }
+        }
+      },
+      "ink-on-water": {
+        "$type": "number",
+        "$value": 11.265463,
+        "$extensions": {
+          "app.simt.cosmos": { "foregroundToken": "color.ink", "backgroundToken": "color.water", "aaNormalText": true, "recommendedTextUse": "primary text" }
+        }
+      },
+      "muted-on-water": {
+        "$type": "number",
+        "$value": 5.578772,
+        "$extensions": {
+          "app.simt.cosmos": { "foregroundToken": "color.muted", "backgroundToken": "color.water", "aaNormalText": true, "recommendedTextUse": "supporting text" }
+        }
+      },
+      "faint-on-water": {
+        "$type": "number",
+        "$value": 3.687409,
+        "$extensions": {
+          "app.simt.cosmos": { "foregroundToken": "color.faint", "backgroundToken": "color.water", "aaNormalText": false }
+        }
+      },
+      "dim-on-water": {
+        "$type": "number",
+        "$value": 3.329218,
+        "$extensions": {
+          "app.simt.cosmos": { "foregroundToken": "color.dim", "backgroundToken": "color.water", "aaNormalText": false }
+        }
+      },
+      "ember-on-water": {
+        "$type": "number",
+        "$value": 5.125556,
+        "$extensions": {
+          "app.simt.cosmos": { "foregroundToken": "color.ember", "backgroundToken": "color.water", "aaNormalText": true, "recommendedTextUse": "agency label" }
+        }
+      },
+      "ember-soft-on-water": {
+        "$type": "number",
+        "$value": 6.722329,
+        "$extensions": {
+          "app.simt.cosmos": { "foregroundToken": "color.ember-soft", "backgroundToken": "color.water", "aaNormalText": true, "recommendedTextUse": "warm emphasis" }
+        }
+      },
+      "rose-on-water": {
+        "$type": "number",
+        "$value": 4.855467,
+        "$extensions": {
+          "app.simt.cosmos": { "foregroundToken": "color.rose", "backgroundToken": "color.water", "aaNormalText": true, "recommendedTextUse": "social label" }
+        }
+      },
+      "violet-on-water": {
+        "$type": "number",
+        "$value": 5.61877,
+        "$extensions": {
+          "app.simt.cosmos": { "foregroundToken": "color.violet", "backgroundToken": "color.water", "aaNormalText": true, "recommendedTextUse": "identity label" }
+        }
+      },
+      "gold-on-water": {
+        "$type": "number",
+        "$value": 7.682902,
+        "$extensions": {
+          "app.simt.cosmos": { "foregroundToken": "color.gold", "backgroundToken": "color.water", "aaNormalText": true, "recommendedTextUse": "precision label" }
+        }
+      },
+      "cyan-on-water": {
+        "$type": "number",
+        "$value": 7.704627,
+        "$extensions": {
+          "app.simt.cosmos": { "foregroundToken": "color.cyan", "backgroundToken": "color.water", "aaNormalText": true, "recommendedTextUse": "live-state label" }
+        }
+      },
+      "moss-on-water": {
+        "$type": "number",
+        "$value": 5.119573,
+        "$extensions": {
+          "app.simt.cosmos": { "foregroundToken": "color.moss", "backgroundToken": "color.water", "aaNormalText": true, "recommendedTextUse": "outdoor label" }
+        }
+      },
+      "danger-on-water": {
+        "$type": "number",
+        "$value": 4.25752,
+        "$extensions": {
+          "app.simt.cosmos": { "foregroundToken": "color.danger", "backgroundToken": "color.water", "aaNormalText": false }
+        }
+      },
+      "success-on-water": {
+        "$type": "number",
+        "$value": 6.634685,
+        "$extensions": {
+          "app.simt.cosmos": { "foregroundToken": "color.success", "backgroundToken": "color.water", "aaNormalText": true, "recommendedTextUse": "completion label" }
+        }
+      },
+      "boundary-on-water": {
+        "$type": "number",
+        "$value": 3.687409,
+        "$extensions": {
+          "app.simt.cosmos": { "foregroundToken": "color.boundary", "backgroundToken": "color.water", "aaNormalText": false }
+        }
+      },
+      "void-on-ember": {
+        "$type": "number",
+        "$value": 8.415111,
+        "$extensions": {
+          "app.simt.cosmos": { "foregroundToken": "color.void", "backgroundToken": "color.ember", "aaNormalText": true, "recommendedTextUse": "primary action text" }
+        }
+      },
+      "void-on-ember-soft": {
+        "$type": "number",
+        "$value": 11.036686,
+        "$extensions": {
+          "app.simt.cosmos": { "foregroundToken": "color.void", "backgroundToken": "color.ember-soft", "aaNormalText": true, "recommendedTextUse": "primary action text" }
+        }
+      }
+    },
+    "daylight": {
+      "$description": "daylight semantic role pairs. Status meaning still requires labels/icons, including monochrome astronomy.",
+      "text-on-background": {
+        "$type": "number",
+        "$value": 15.934761,
+        "$extensions": {
+          "app.simt.cosmos": { "foregroundToken": "adapters.daylight.text", "backgroundToken": "adapters.daylight.background", "aaNormalText": true, "recommendedTextUse": "primary text" }
+        }
+      },
+      "muted-on-background": {
+        "$type": "number",
+        "$value": 8.727991,
+        "$extensions": {
+          "app.simt.cosmos": {
+            "foregroundToken": "adapters.daylight.muted",
+            "backgroundToken": "adapters.daylight.background",
+            "aaNormalText": true,
+            "recommendedTextUse": "supporting text"
+          }
+        }
+      },
+      "faint-on-background": {
+        "$type": "number",
+        "$value": 5.773072,
+        "$extensions": {
+          "app.simt.cosmos": { "foregroundToken": "adapters.daylight.faint", "backgroundToken": "adapters.daylight.background", "aaNormalText": true, "recommendedTextUse": "tertiary text" }
+        }
+      },
+      "accentText-on-background": {
+        "$type": "number",
+        "$value": 5.383985,
+        "$extensions": {
+          "app.simt.cosmos": {
+            "foregroundToken": "adapters.daylight.accentText",
+            "backgroundToken": "adapters.daylight.background",
+            "aaNormalText": true,
+            "recommendedTextUse": "accent label"
+          }
+        }
+      },
+      "social-on-background": {
+        "$type": "number",
+        "$value": 5.329521,
+        "$extensions": {
+          "app.simt.cosmos": { "foregroundToken": "adapters.daylight.social", "backgroundToken": "adapters.daylight.background", "aaNormalText": true, "recommendedTextUse": "social label" }
+        }
+      },
+      "identity-on-background": {
+        "$type": "number",
+        "$value": 5.377339,
+        "$extensions": {
+          "app.simt.cosmos": {
+            "foregroundToken": "adapters.daylight.identity",
+            "backgroundToken": "adapters.daylight.background",
+            "aaNormalText": true,
+            "recommendedTextUse": "identity label"
+          }
+        }
+      },
+      "precision-on-background": {
+        "$type": "number",
+        "$value": 5.311218,
+        "$extensions": {
+          "app.simt.cosmos": {
+            "foregroundToken": "adapters.daylight.precision",
+            "backgroundToken": "adapters.daylight.background",
+            "aaNormalText": true,
+            "recommendedTextUse": "precision label"
+          }
+        }
+      },
+      "live-on-background": {
+        "$type": "number",
+        "$value": 6.00263,
+        "$extensions": {
+          "app.simt.cosmos": {
+            "foregroundToken": "adapters.daylight.live",
+            "backgroundToken": "adapters.daylight.background",
+            "aaNormalText": true,
+            "recommendedTextUse": "live-state label"
+          }
+        }
+      },
+      "outdoors-on-background": {
+        "$type": "number",
+        "$value": 6.409151,
+        "$extensions": {
+          "app.simt.cosmos": {
+            "foregroundToken": "adapters.daylight.outdoors",
+            "backgroundToken": "adapters.daylight.background",
+            "aaNormalText": true,
+            "recommendedTextUse": "outdoor label"
+          }
+        }
+      },
+      "danger-on-background": {
+        "$type": "number",
+        "$value": 7.297419,
+        "$extensions": {
+          "app.simt.cosmos": { "foregroundToken": "adapters.daylight.danger", "backgroundToken": "adapters.daylight.background", "aaNormalText": true, "recommendedTextUse": "error label" }
+        }
+      },
+      "success-on-background": {
+        "$type": "number",
+        "$value": 6.575239,
+        "$extensions": {
+          "app.simt.cosmos": {
+            "foregroundToken": "adapters.daylight.success",
+            "backgroundToken": "adapters.daylight.background",
+            "aaNormalText": true,
+            "recommendedTextUse": "completion label"
+          }
+        }
+      },
+      "focus-on-background": {
+        "$type": "number",
+        "$value": 5.311218,
+        "$extensions": {
+          "app.simt.cosmos": { "foregroundToken": "adapters.daylight.focus", "backgroundToken": "adapters.daylight.background", "aaNormalText": true }
+        }
+      },
+      "boundary-on-background": {
+        "$type": "number",
+        "$value": 8.727991,
+        "$extensions": {
+          "app.simt.cosmos": { "foregroundToken": "adapters.daylight.boundary", "backgroundToken": "adapters.daylight.background", "aaNormalText": true }
+        }
+      },
+      "text-on-surface": {
+        "$type": "number",
+        "$value": 16.29076,
+        "$extensions": {
+          "app.simt.cosmos": { "foregroundToken": "adapters.daylight.text", "backgroundToken": "adapters.daylight.surface", "aaNormalText": true, "recommendedTextUse": "primary text" }
+        }
+      },
+      "muted-on-surface": {
+        "$type": "number",
+        "$value": 8.922983,
+        "$extensions": {
+          "app.simt.cosmos": { "foregroundToken": "adapters.daylight.muted", "backgroundToken": "adapters.daylight.surface", "aaNormalText": true, "recommendedTextUse": "supporting text" }
+        }
+      },
+      "faint-on-surface": {
+        "$type": "number",
+        "$value": 5.902049,
+        "$extensions": {
+          "app.simt.cosmos": { "foregroundToken": "adapters.daylight.faint", "backgroundToken": "adapters.daylight.surface", "aaNormalText": true, "recommendedTextUse": "tertiary text" }
+        }
+      },
+      "accentText-on-surface": {
+        "$type": "number",
+        "$value": 5.504269,
+        "$extensions": {
+          "app.simt.cosmos": {
+            "foregroundToken": "adapters.daylight.accentText",
+            "backgroundToken": "adapters.daylight.surface",
+            "aaNormalText": true,
+            "recommendedTextUse": "accent label"
+          }
+        }
+      },
+      "social-on-surface": {
+        "$type": "number",
+        "$value": 5.448588,
+        "$extensions": {
+          "app.simt.cosmos": { "foregroundToken": "adapters.daylight.social", "backgroundToken": "adapters.daylight.surface", "aaNormalText": true, "recommendedTextUse": "social label" }
+        }
+      },
+      "identity-on-surface": {
+        "$type": "number",
+        "$value": 5.497475,
+        "$extensions": {
+          "app.simt.cosmos": {
+            "foregroundToken": "adapters.daylight.identity",
+            "backgroundToken": "adapters.daylight.surface",
+            "aaNormalText": true,
+            "recommendedTextUse": "identity label"
+          }
+        }
+      },
+      "precision-on-surface": {
+        "$type": "number",
+        "$value": 5.429876,
+        "$extensions": {
+          "app.simt.cosmos": {
+            "foregroundToken": "adapters.daylight.precision",
+            "backgroundToken": "adapters.daylight.surface",
+            "aaNormalText": true,
+            "recommendedTextUse": "precision label"
+          }
+        }
+      },
+      "live-on-surface": {
+        "$type": "number",
+        "$value": 6.136735,
+        "$extensions": {
+          "app.simt.cosmos": { "foregroundToken": "adapters.daylight.live", "backgroundToken": "adapters.daylight.surface", "aaNormalText": true, "recommendedTextUse": "live-state label" }
+        }
+      },
+      "outdoors-on-surface": {
+        "$type": "number",
+        "$value": 6.552338,
+        "$extensions": {
+          "app.simt.cosmos": { "foregroundToken": "adapters.daylight.outdoors", "backgroundToken": "adapters.daylight.surface", "aaNormalText": true, "recommendedTextUse": "outdoor label" }
+        }
+      },
+      "danger-on-surface": {
+        "$type": "number",
+        "$value": 7.46045,
+        "$extensions": {
+          "app.simt.cosmos": { "foregroundToken": "adapters.daylight.danger", "backgroundToken": "adapters.daylight.surface", "aaNormalText": true, "recommendedTextUse": "error label" }
+        }
+      },
+      "success-on-surface": {
+        "$type": "number",
+        "$value": 6.722137,
+        "$extensions": {
+          "app.simt.cosmos": {
+            "foregroundToken": "adapters.daylight.success",
+            "backgroundToken": "adapters.daylight.surface",
+            "aaNormalText": true,
+            "recommendedTextUse": "completion label"
+          }
+        }
+      },
+      "focus-on-surface": {
+        "$type": "number",
+        "$value": 5.429876,
+        "$extensions": {
+          "app.simt.cosmos": { "foregroundToken": "adapters.daylight.focus", "backgroundToken": "adapters.daylight.surface", "aaNormalText": true }
+        }
+      },
+      "boundary-on-surface": {
+        "$type": "number",
+        "$value": 8.922983,
+        "$extensions": {
+          "app.simt.cosmos": { "foregroundToken": "adapters.daylight.boundary", "backgroundToken": "adapters.daylight.surface", "aaNormalText": true }
+        }
+      },
+      "text-on-raised": {
+        "$type": "number",
+        "$value": 14.099097,
+        "$extensions": {
+          "app.simt.cosmos": { "foregroundToken": "adapters.daylight.text", "backgroundToken": "adapters.daylight.raised", "aaNormalText": true, "recommendedTextUse": "primary text" }
+        }
+      },
+      "muted-on-raised": {
+        "$type": "number",
+        "$value": 7.722538,
+        "$extensions": {
+          "app.simt.cosmos": { "foregroundToken": "adapters.daylight.muted", "backgroundToken": "adapters.daylight.raised", "aaNormalText": true, "recommendedTextUse": "supporting text" }
+        }
+      },
+      "faint-on-raised": {
+        "$type": "number",
+        "$value": 5.108022,
+        "$extensions": {
+          "app.simt.cosmos": { "foregroundToken": "adapters.daylight.faint", "backgroundToken": "adapters.daylight.raised", "aaNormalText": true, "recommendedTextUse": "tertiary text" }
+        }
+      },
+      "accentText-on-raised": {
+        "$type": "number",
+        "$value": 4.763757,
+        "$extensions": {
+          "app.simt.cosmos": { "foregroundToken": "adapters.daylight.accentText", "backgroundToken": "adapters.daylight.raised", "aaNormalText": true, "recommendedTextUse": "accent label" }
+        }
+      },
+      "social-on-raised": {
+        "$type": "number",
+        "$value": 4.715567,
+        "$extensions": {
+          "app.simt.cosmos": { "foregroundToken": "adapters.daylight.social", "backgroundToken": "adapters.daylight.raised", "aaNormalText": true, "recommendedTextUse": "social label" }
+        }
+      },
+      "identity-on-raised": {
+        "$type": "number",
+        "$value": 4.757877,
+        "$extensions": {
+          "app.simt.cosmos": { "foregroundToken": "adapters.daylight.identity", "backgroundToken": "adapters.daylight.raised", "aaNormalText": true, "recommendedTextUse": "identity label" }
+        }
+      },
+      "precision-on-raised": {
+        "$type": "number",
+        "$value": 4.699373,
+        "$extensions": {
+          "app.simt.cosmos": {
+            "foregroundToken": "adapters.daylight.precision",
+            "backgroundToken": "adapters.daylight.raised",
+            "aaNormalText": true,
+            "recommendedTextUse": "precision label"
+          }
+        }
+      },
+      "live-on-raised": {
+        "$type": "number",
+        "$value": 5.311135,
+        "$extensions": {
+          "app.simt.cosmos": { "foregroundToken": "adapters.daylight.live", "backgroundToken": "adapters.daylight.raised", "aaNormalText": true, "recommendedTextUse": "live-state label" }
+        }
+      },
+      "outdoors-on-raised": {
+        "$type": "number",
+        "$value": 5.670825,
+        "$extensions": {
+          "app.simt.cosmos": { "foregroundToken": "adapters.daylight.outdoors", "backgroundToken": "adapters.daylight.raised", "aaNormalText": true, "recommendedTextUse": "outdoor label" }
+        }
+      },
+      "danger-on-raised": {
+        "$type": "number",
+        "$value": 6.456765,
+        "$extensions": {
+          "app.simt.cosmos": { "foregroundToken": "adapters.daylight.danger", "backgroundToken": "adapters.daylight.raised", "aaNormalText": true, "recommendedTextUse": "error label" }
+        }
+      },
+      "success-on-raised": {
+        "$type": "number",
+        "$value": 5.81778,
+        "$extensions": {
+          "app.simt.cosmos": {
+            "foregroundToken": "adapters.daylight.success",
+            "backgroundToken": "adapters.daylight.raised",
+            "aaNormalText": true,
+            "recommendedTextUse": "completion label"
+          }
+        }
+      },
+      "focus-on-raised": {
+        "$type": "number",
+        "$value": 4.699373,
+        "$extensions": {
+          "app.simt.cosmos": { "foregroundToken": "adapters.daylight.focus", "backgroundToken": "adapters.daylight.raised", "aaNormalText": true }
+        }
+      },
+      "boundary-on-raised": {
+        "$type": "number",
+        "$value": 7.722538,
+        "$extensions": {
+          "app.simt.cosmos": { "foregroundToken": "adapters.daylight.boundary", "backgroundToken": "adapters.daylight.raised", "aaNormalText": true }
+        }
+      },
+      "text-on-highest": {
+        "$type": "number",
+        "$value": 13.639915,
+        "$extensions": {
+          "app.simt.cosmos": { "foregroundToken": "adapters.daylight.text", "backgroundToken": "adapters.daylight.highest", "aaNormalText": true, "recommendedTextUse": "primary text" }
+        }
+      },
+      "muted-on-highest": {
+        "$type": "number",
+        "$value": 7.471028,
+        "$extensions": {
+          "app.simt.cosmos": { "foregroundToken": "adapters.daylight.muted", "backgroundToken": "adapters.daylight.highest", "aaNormalText": true, "recommendedTextUse": "supporting text" }
+        }
+      },
+      "faint-on-highest": {
+        "$type": "number",
+        "$value": 4.941663,
+        "$extensions": {
+          "app.simt.cosmos": { "foregroundToken": "adapters.daylight.faint", "backgroundToken": "adapters.daylight.highest", "aaNormalText": true, "recommendedTextUse": "tertiary text" }
+        }
+      },
+      "accentText-on-highest": {
+        "$type": "number",
+        "$value": 4.60861,
+        "$extensions": {
+          "app.simt.cosmos": {
+            "foregroundToken": "adapters.daylight.accentText",
+            "backgroundToken": "adapters.daylight.highest",
+            "aaNormalText": true,
+            "recommendedTextUse": "accent label"
+          }
+        }
+      },
+      "social-on-highest": {
+        "$type": "number",
+        "$value": 4.56199,
+        "$extensions": {
+          "app.simt.cosmos": { "foregroundToken": "adapters.daylight.social", "backgroundToken": "adapters.daylight.highest", "aaNormalText": true, "recommendedTextUse": "social label" }
+        }
+      },
+      "identity-on-highest": {
+        "$type": "number",
+        "$value": 4.602921,
+        "$extensions": {
+          "app.simt.cosmos": {
+            "foregroundToken": "adapters.daylight.identity",
+            "backgroundToken": "adapters.daylight.highest",
+            "aaNormalText": true,
+            "recommendedTextUse": "identity label"
+          }
+        }
+      },
+      "precision-on-highest": {
+        "$type": "number",
+        "$value": 4.546323,
+        "$extensions": {
+          "app.simt.cosmos": {
+            "foregroundToken": "adapters.daylight.precision",
+            "backgroundToken": "adapters.daylight.highest",
+            "aaNormalText": true,
+            "recommendedTextUse": "precision label"
+          }
+        }
+      },
+      "live-on-highest": {
+        "$type": "number",
+        "$value": 5.13816,
+        "$extensions": {
+          "app.simt.cosmos": { "foregroundToken": "adapters.daylight.live", "backgroundToken": "adapters.daylight.highest", "aaNormalText": true, "recommendedTextUse": "live-state label" }
+        }
+      },
+      "outdoors-on-highest": {
+        "$type": "number",
+        "$value": 5.486136,
+        "$extensions": {
+          "app.simt.cosmos": { "foregroundToken": "adapters.daylight.outdoors", "backgroundToken": "adapters.daylight.highest", "aaNormalText": true, "recommendedTextUse": "outdoor label" }
+        }
+      },
+      "danger-on-highest": {
+        "$type": "number",
+        "$value": 6.24648,
+        "$extensions": {
+          "app.simt.cosmos": { "foregroundToken": "adapters.daylight.danger", "backgroundToken": "adapters.daylight.highest", "aaNormalText": true, "recommendedTextUse": "error label" }
+        }
+      },
+      "success-on-highest": {
+        "$type": "number",
+        "$value": 5.628305,
+        "$extensions": {
+          "app.simt.cosmos": {
+            "foregroundToken": "adapters.daylight.success",
+            "backgroundToken": "adapters.daylight.highest",
+            "aaNormalText": true,
+            "recommendedTextUse": "completion label"
+          }
+        }
+      },
+      "focus-on-highest": {
+        "$type": "number",
+        "$value": 4.546323,
+        "$extensions": {
+          "app.simt.cosmos": { "foregroundToken": "adapters.daylight.focus", "backgroundToken": "adapters.daylight.highest", "aaNormalText": true }
+        }
+      },
+      "boundary-on-highest": {
+        "$type": "number",
+        "$value": 7.471028,
+        "$extensions": {
+          "app.simt.cosmos": { "foregroundToken": "adapters.daylight.boundary", "backgroundToken": "adapters.daylight.highest", "aaNormalText": true }
+        }
+      },
+      "onAction-on-action": {
+        "$type": "number",
+        "$value": 4.641742,
+        "$extensions": {
+          "app.simt.cosmos": {
+            "foregroundToken": "adapters.daylight.onAction",
+            "backgroundToken": "adapters.daylight.action",
+            "aaNormalText": true,
+            "recommendedTextUse": "primary action text"
+          }
+        }
+      }
+    },
+    "astronomy": {
+      "$description": "astronomy semantic role pairs. Status meaning still requires labels/icons, including monochrome astronomy.",
+      "text-on-background": {
+        "$type": "number",
+        "$value": 8.263999,
+        "$extensions": {
+          "app.simt.cosmos": { "foregroundToken": "adapters.astronomy.text", "backgroundToken": "adapters.astronomy.background", "aaNormalText": true, "recommendedTextUse": "primary text" }
+        }
+      },
+      "muted-on-background": {
+        "$type": "number",
+        "$value": 6.516692,
+        "$extensions": {
+          "app.simt.cosmos": {
+            "foregroundToken": "adapters.astronomy.muted",
+            "backgroundToken": "adapters.astronomy.background",
+            "aaNormalText": true,
+            "recommendedTextUse": "supporting text"
+          }
+        }
+      },
+      "faint-on-background": {
+        "$type": "number",
+        "$value": 5.44081,
+        "$extensions": {
+          "app.simt.cosmos": {
+            "foregroundToken": "adapters.astronomy.faint",
+            "backgroundToken": "adapters.astronomy.background",
+            "aaNormalText": true,
+            "recommendedTextUse": "tertiary text"
+          }
+        }
+      },
+      "accentText-on-background": {
+        "$type": "number",
+        "$value": 8.263999,
+        "$extensions": {
+          "app.simt.cosmos": {
+            "foregroundToken": "adapters.astronomy.accentText",
+            "backgroundToken": "adapters.astronomy.background",
+            "aaNormalText": true,
+            "recommendedTextUse": "accent label"
+          }
+        }
+      },
+      "social-on-background": {
+        "$type": "number",
+        "$value": 8.263999,
+        "$extensions": {
+          "app.simt.cosmos": {
+            "foregroundToken": "adapters.astronomy.social",
+            "backgroundToken": "adapters.astronomy.background",
+            "aaNormalText": true,
+            "recommendedTextUse": "social label"
+          }
+        }
+      },
+      "identity-on-background": {
+        "$type": "number",
+        "$value": 8.263999,
+        "$extensions": {
+          "app.simt.cosmos": {
+            "foregroundToken": "adapters.astronomy.identity",
+            "backgroundToken": "adapters.astronomy.background",
+            "aaNormalText": true,
+            "recommendedTextUse": "identity label"
+          }
+        }
+      },
+      "precision-on-background": {
+        "$type": "number",
+        "$value": 8.263999,
+        "$extensions": {
+          "app.simt.cosmos": {
+            "foregroundToken": "adapters.astronomy.precision",
+            "backgroundToken": "adapters.astronomy.background",
+            "aaNormalText": true,
+            "recommendedTextUse": "precision label"
+          }
+        }
+      },
+      "live-on-background": {
+        "$type": "number",
+        "$value": 8.263999,
+        "$extensions": {
+          "app.simt.cosmos": {
+            "foregroundToken": "adapters.astronomy.live",
+            "backgroundToken": "adapters.astronomy.background",
+            "aaNormalText": true,
+            "recommendedTextUse": "live-state label"
+          }
+        }
+      },
+      "outdoors-on-background": {
+        "$type": "number",
+        "$value": 8.263999,
+        "$extensions": {
+          "app.simt.cosmos": {
+            "foregroundToken": "adapters.astronomy.outdoors",
+            "backgroundToken": "adapters.astronomy.background",
+            "aaNormalText": true,
+            "recommendedTextUse": "outdoor label"
+          }
+        }
+      },
+      "danger-on-background": {
+        "$type": "number",
+        "$value": 12.193604,
+        "$extensions": {
+          "app.simt.cosmos": {
+            "foregroundToken": "adapters.astronomy.danger",
+            "backgroundToken": "adapters.astronomy.background",
+            "aaNormalText": true,
+            "recommendedTextUse": "error label"
+          }
+        }
+      },
+      "success-on-background": {
+        "$type": "number",
+        "$value": 8.263999,
+        "$extensions": {
+          "app.simt.cosmos": {
+            "foregroundToken": "adapters.astronomy.success",
+            "backgroundToken": "adapters.astronomy.background",
+            "aaNormalText": true,
+            "recommendedTextUse": "completion label"
+          }
+        }
+      },
+      "focus-on-background": {
+        "$type": "number",
+        "$value": 8.263999,
+        "$extensions": {
+          "app.simt.cosmos": { "foregroundToken": "adapters.astronomy.focus", "backgroundToken": "adapters.astronomy.background", "aaNormalText": true }
+        }
+      },
+      "boundary-on-background": {
+        "$type": "number",
+        "$value": 6.516692,
+        "$extensions": {
+          "app.simt.cosmos": { "foregroundToken": "adapters.astronomy.boundary", "backgroundToken": "adapters.astronomy.background", "aaNormalText": true }
+        }
+      },
+      "text-on-surface": {
+        "$type": "number",
+        "$value": 8.018463,
+        "$extensions": {
+          "app.simt.cosmos": { "foregroundToken": "adapters.astronomy.text", "backgroundToken": "adapters.astronomy.surface", "aaNormalText": true, "recommendedTextUse": "primary text" }
+        }
+      },
+      "muted-on-surface": {
+        "$type": "number",
+        "$value": 6.323072,
+        "$extensions": {
+          "app.simt.cosmos": {
+            "foregroundToken": "adapters.astronomy.muted",
+            "backgroundToken": "adapters.astronomy.surface",
+            "aaNormalText": true,
+            "recommendedTextUse": "supporting text"
+          }
+        }
+      },
+      "faint-on-surface": {
+        "$type": "number",
+        "$value": 5.279155,
+        "$extensions": {
+          "app.simt.cosmos": { "foregroundToken": "adapters.astronomy.faint", "backgroundToken": "adapters.astronomy.surface", "aaNormalText": true, "recommendedTextUse": "tertiary text" }
+        }
+      },
+      "accentText-on-surface": {
+        "$type": "number",
+        "$value": 8.018463,
+        "$extensions": {
+          "app.simt.cosmos": {
+            "foregroundToken": "adapters.astronomy.accentText",
+            "backgroundToken": "adapters.astronomy.surface",
+            "aaNormalText": true,
+            "recommendedTextUse": "accent label"
+          }
+        }
+      },
+      "social-on-surface": {
+        "$type": "number",
+        "$value": 8.018463,
+        "$extensions": {
+          "app.simt.cosmos": { "foregroundToken": "adapters.astronomy.social", "backgroundToken": "adapters.astronomy.surface", "aaNormalText": true, "recommendedTextUse": "social label" }
+        }
+      },
+      "identity-on-surface": {
+        "$type": "number",
+        "$value": 8.018463,
+        "$extensions": {
+          "app.simt.cosmos": {
+            "foregroundToken": "adapters.astronomy.identity",
+            "backgroundToken": "adapters.astronomy.surface",
+            "aaNormalText": true,
+            "recommendedTextUse": "identity label"
+          }
+        }
+      },
+      "precision-on-surface": {
+        "$type": "number",
+        "$value": 8.018463,
+        "$extensions": {
+          "app.simt.cosmos": {
+            "foregroundToken": "adapters.astronomy.precision",
+            "backgroundToken": "adapters.astronomy.surface",
+            "aaNormalText": true,
+            "recommendedTextUse": "precision label"
+          }
+        }
+      },
+      "live-on-surface": {
+        "$type": "number",
+        "$value": 8.018463,
+        "$extensions": {
+          "app.simt.cosmos": {
+            "foregroundToken": "adapters.astronomy.live",
+            "backgroundToken": "adapters.astronomy.surface",
+            "aaNormalText": true,
+            "recommendedTextUse": "live-state label"
+          }
+        }
+      },
+      "outdoors-on-surface": {
+        "$type": "number",
+        "$value": 8.018463,
+        "$extensions": {
+          "app.simt.cosmos": {
+            "foregroundToken": "adapters.astronomy.outdoors",
+            "backgroundToken": "adapters.astronomy.surface",
+            "aaNormalText": true,
+            "recommendedTextUse": "outdoor label"
+          }
+        }
+      },
+      "danger-on-surface": {
+        "$type": "number",
+        "$value": 11.831315,
+        "$extensions": {
+          "app.simt.cosmos": { "foregroundToken": "adapters.astronomy.danger", "backgroundToken": "adapters.astronomy.surface", "aaNormalText": true, "recommendedTextUse": "error label" }
+        }
+      },
+      "success-on-surface": {
+        "$type": "number",
+        "$value": 8.018463,
+        "$extensions": {
+          "app.simt.cosmos": {
+            "foregroundToken": "adapters.astronomy.success",
+            "backgroundToken": "adapters.astronomy.surface",
+            "aaNormalText": true,
+            "recommendedTextUse": "completion label"
+          }
+        }
+      },
+      "focus-on-surface": {
+        "$type": "number",
+        "$value": 8.018463,
+        "$extensions": {
+          "app.simt.cosmos": { "foregroundToken": "adapters.astronomy.focus", "backgroundToken": "adapters.astronomy.surface", "aaNormalText": true }
+        }
+      },
+      "boundary-on-surface": {
+        "$type": "number",
+        "$value": 6.323072,
+        "$extensions": {
+          "app.simt.cosmos": { "foregroundToken": "adapters.astronomy.boundary", "backgroundToken": "adapters.astronomy.surface", "aaNormalText": true }
+        }
+      },
+      "text-on-raised": {
+        "$type": "number",
+        "$value": 7.620436,
+        "$extensions": {
+          "app.simt.cosmos": { "foregroundToken": "adapters.astronomy.text", "backgroundToken": "adapters.astronomy.raised", "aaNormalText": true, "recommendedTextUse": "primary text" }
+        }
+      },
+      "muted-on-raised": {
+        "$type": "number",
+        "$value": 6.009202,
+        "$extensions": {
+          "app.simt.cosmos": { "foregroundToken": "adapters.astronomy.muted", "backgroundToken": "adapters.astronomy.raised", "aaNormalText": true, "recommendedTextUse": "supporting text" }
+        }
+      },
+      "faint-on-raised": {
+        "$type": "number",
+        "$value": 5.017104,
+        "$extensions": {
+          "app.simt.cosmos": { "foregroundToken": "adapters.astronomy.faint", "backgroundToken": "adapters.astronomy.raised", "aaNormalText": true, "recommendedTextUse": "tertiary text" }
+        }
+      },
+      "accentText-on-raised": {
+        "$type": "number",
+        "$value": 7.620436,
+        "$extensions": {
+          "app.simt.cosmos": {
+            "foregroundToken": "adapters.astronomy.accentText",
+            "backgroundToken": "adapters.astronomy.raised",
+            "aaNormalText": true,
+            "recommendedTextUse": "accent label"
+          }
+        }
+      },
+      "social-on-raised": {
+        "$type": "number",
+        "$value": 7.620436,
+        "$extensions": {
+          "app.simt.cosmos": { "foregroundToken": "adapters.astronomy.social", "backgroundToken": "adapters.astronomy.raised", "aaNormalText": true, "recommendedTextUse": "social label" }
+        }
+      },
+      "identity-on-raised": {
+        "$type": "number",
+        "$value": 7.620436,
+        "$extensions": {
+          "app.simt.cosmos": {
+            "foregroundToken": "adapters.astronomy.identity",
+            "backgroundToken": "adapters.astronomy.raised",
+            "aaNormalText": true,
+            "recommendedTextUse": "identity label"
+          }
+        }
+      },
+      "precision-on-raised": {
+        "$type": "number",
+        "$value": 7.620436,
+        "$extensions": {
+          "app.simt.cosmos": {
+            "foregroundToken": "adapters.astronomy.precision",
+            "backgroundToken": "adapters.astronomy.raised",
+            "aaNormalText": true,
+            "recommendedTextUse": "precision label"
+          }
+        }
+      },
+      "live-on-raised": {
+        "$type": "number",
+        "$value": 7.620436,
+        "$extensions": {
+          "app.simt.cosmos": { "foregroundToken": "adapters.astronomy.live", "backgroundToken": "adapters.astronomy.raised", "aaNormalText": true, "recommendedTextUse": "live-state label" }
+        }
+      },
+      "outdoors-on-raised": {
+        "$type": "number",
+        "$value": 7.620436,
+        "$extensions": {
+          "app.simt.cosmos": {
+            "foregroundToken": "adapters.astronomy.outdoors",
+            "backgroundToken": "adapters.astronomy.raised",
+            "aaNormalText": true,
+            "recommendedTextUse": "outdoor label"
+          }
+        }
+      },
+      "danger-on-raised": {
+        "$type": "number",
+        "$value": 11.244022,
+        "$extensions": {
+          "app.simt.cosmos": { "foregroundToken": "adapters.astronomy.danger", "backgroundToken": "adapters.astronomy.raised", "aaNormalText": true, "recommendedTextUse": "error label" }
+        }
+      },
+      "success-on-raised": {
+        "$type": "number",
+        "$value": 7.620436,
+        "$extensions": {
+          "app.simt.cosmos": {
+            "foregroundToken": "adapters.astronomy.success",
+            "backgroundToken": "adapters.astronomy.raised",
+            "aaNormalText": true,
+            "recommendedTextUse": "completion label"
+          }
+        }
+      },
+      "focus-on-raised": {
+        "$type": "number",
+        "$value": 7.620436,
+        "$extensions": {
+          "app.simt.cosmos": { "foregroundToken": "adapters.astronomy.focus", "backgroundToken": "adapters.astronomy.raised", "aaNormalText": true }
+        }
+      },
+      "boundary-on-raised": {
+        "$type": "number",
+        "$value": 6.009202,
+        "$extensions": {
+          "app.simt.cosmos": { "foregroundToken": "adapters.astronomy.boundary", "backgroundToken": "adapters.astronomy.raised", "aaNormalText": true }
+        }
+      },
+      "text-on-highest": {
+        "$type": "number",
+        "$value": 7.337777,
+        "$extensions": {
+          "app.simt.cosmos": { "foregroundToken": "adapters.astronomy.text", "backgroundToken": "adapters.astronomy.highest", "aaNormalText": true, "recommendedTextUse": "primary text" }
+        }
+      },
+      "muted-on-highest": {
+        "$type": "number",
+        "$value": 5.786307,
+        "$extensions": {
+          "app.simt.cosmos": {
+            "foregroundToken": "adapters.astronomy.muted",
+            "backgroundToken": "adapters.astronomy.highest",
+            "aaNormalText": true,
+            "recommendedTextUse": "supporting text"
+          }
+        }
+      },
+      "faint-on-highest": {
+        "$type": "number",
+        "$value": 4.831009,
+        "$extensions": {
+          "app.simt.cosmos": { "foregroundToken": "adapters.astronomy.faint", "backgroundToken": "adapters.astronomy.highest", "aaNormalText": true, "recommendedTextUse": "tertiary text" }
+        }
+      },
+      "accentText-on-highest": {
+        "$type": "number",
+        "$value": 7.337777,
+        "$extensions": {
+          "app.simt.cosmos": {
+            "foregroundToken": "adapters.astronomy.accentText",
+            "backgroundToken": "adapters.astronomy.highest",
+            "aaNormalText": true,
+            "recommendedTextUse": "accent label"
+          }
+        }
+      },
+      "social-on-highest": {
+        "$type": "number",
+        "$value": 7.337777,
+        "$extensions": {
+          "app.simt.cosmos": { "foregroundToken": "adapters.astronomy.social", "backgroundToken": "adapters.astronomy.highest", "aaNormalText": true, "recommendedTextUse": "social label" }
+        }
+      },
+      "identity-on-highest": {
+        "$type": "number",
+        "$value": 7.337777,
+        "$extensions": {
+          "app.simt.cosmos": {
+            "foregroundToken": "adapters.astronomy.identity",
+            "backgroundToken": "adapters.astronomy.highest",
+            "aaNormalText": true,
+            "recommendedTextUse": "identity label"
+          }
+        }
+      },
+      "precision-on-highest": {
+        "$type": "number",
+        "$value": 7.337777,
+        "$extensions": {
+          "app.simt.cosmos": {
+            "foregroundToken": "adapters.astronomy.precision",
+            "backgroundToken": "adapters.astronomy.highest",
+            "aaNormalText": true,
+            "recommendedTextUse": "precision label"
+          }
+        }
+      },
+      "live-on-highest": {
+        "$type": "number",
+        "$value": 7.337777,
+        "$extensions": {
+          "app.simt.cosmos": {
+            "foregroundToken": "adapters.astronomy.live",
+            "backgroundToken": "adapters.astronomy.highest",
+            "aaNormalText": true,
+            "recommendedTextUse": "live-state label"
+          }
+        }
+      },
+      "outdoors-on-highest": {
+        "$type": "number",
+        "$value": 7.337777,
+        "$extensions": {
+          "app.simt.cosmos": {
+            "foregroundToken": "adapters.astronomy.outdoors",
+            "backgroundToken": "adapters.astronomy.highest",
+            "aaNormalText": true,
+            "recommendedTextUse": "outdoor label"
+          }
+        }
+      },
+      "danger-on-highest": {
+        "$type": "number",
+        "$value": 10.826956,
+        "$extensions": {
+          "app.simt.cosmos": { "foregroundToken": "adapters.astronomy.danger", "backgroundToken": "adapters.astronomy.highest", "aaNormalText": true, "recommendedTextUse": "error label" }
+        }
+      },
+      "success-on-highest": {
+        "$type": "number",
+        "$value": 7.337777,
+        "$extensions": {
+          "app.simt.cosmos": {
+            "foregroundToken": "adapters.astronomy.success",
+            "backgroundToken": "adapters.astronomy.highest",
+            "aaNormalText": true,
+            "recommendedTextUse": "completion label"
+          }
+        }
+      },
+      "focus-on-highest": {
+        "$type": "number",
+        "$value": 7.337777,
+        "$extensions": {
+          "app.simt.cosmos": { "foregroundToken": "adapters.astronomy.focus", "backgroundToken": "adapters.astronomy.highest", "aaNormalText": true }
+        }
+      },
+      "boundary-on-highest": {
+        "$type": "number",
+        "$value": 5.786307,
+        "$extensions": {
+          "app.simt.cosmos": { "foregroundToken": "adapters.astronomy.boundary", "backgroundToken": "adapters.astronomy.highest", "aaNormalText": true }
+        }
+      },
+      "onAction-on-action": {
+        "$type": "number",
+        "$value": 5.887603,
+        "$extensions": {
+          "app.simt.cosmos": {
+            "foregroundToken": "adapters.astronomy.onAction",
+            "backgroundToken": "adapters.astronomy.action",
+            "aaNormalText": true,
+            "recommendedTextUse": "primary action text"
+          }
+        }
+      }
+    },
+    "watchAmbient": {
+      "$description": "watchAmbient semantic role pairs. Status meaning still requires labels/icons, including monochrome astronomy.",
+      "text-on-background": {
+        "$type": "number",
+        "$value": 9.884951,
+        "$extensions": {
+          "app.simt.cosmos": {
+            "foregroundToken": "adapters.watchAmbient.text",
+            "backgroundToken": "adapters.watchAmbient.background",
+            "aaNormalText": true,
+            "recommendedTextUse": "primary text"
+          }
+        }
+      },
+      "faint-on-background": {
+        "$type": "number",
+        "$value": 6.533671,
+        "$extensions": {
+          "app.simt.cosmos": {
+            "foregroundToken": "adapters.watchAmbient.faint",
+            "backgroundToken": "adapters.watchAmbient.background",
+            "aaNormalText": true,
+            "recommendedTextUse": "tertiary text"
+          }
+        }
+      },
+      "bearing-on-background": {
+        "$type": "number",
+        "$value": 13.613231,
+        "$extensions": {
+          "app.simt.cosmos": {
+            "foregroundToken": "adapters.watchAmbient.bearing",
+            "backgroundToken": "adapters.watchAmbient.background",
+            "aaNormalText": true,
+            "recommendedTextUse": "bearing label"
+          }
+        }
+      },
+      "text-on-surface": {
+        "$type": "number",
+        "$value": 9.884951,
+        "$extensions": {
+          "app.simt.cosmos": {
+            "foregroundToken": "adapters.watchAmbient.text",
+            "backgroundToken": "adapters.watchAmbient.surface",
+            "aaNormalText": true,
+            "recommendedTextUse": "primary text"
+          }
+        }
+      },
+      "faint-on-surface": {
+        "$type": "number",
+        "$value": 6.533671,
+        "$extensions": {
+          "app.simt.cosmos": {
+            "foregroundToken": "adapters.watchAmbient.faint",
+            "backgroundToken": "adapters.watchAmbient.surface",
+            "aaNormalText": true,
+            "recommendedTextUse": "tertiary text"
+          }
+        }
+      },
+      "bearing-on-surface": {
+        "$type": "number",
+        "$value": 13.613231,
+        "$extensions": {
+          "app.simt.cosmos": {
+            "foregroundToken": "adapters.watchAmbient.bearing",
+            "backgroundToken": "adapters.watchAmbient.surface",
+            "aaNormalText": true,
+            "recommendedTextUse": "bearing label"
+          }
+        }
+      }
+    }
+  }
+}

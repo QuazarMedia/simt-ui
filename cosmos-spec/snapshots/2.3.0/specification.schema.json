@@ -1,0 +1,74 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://simt.space/cosmos/design/specification.schema.json",
+  "title": "Cosmos specification index",
+  "description": "The map of the Cosmos specification: pages, sections and the rule IDs in each. Rule prose lives in rules.json and tokens in tokens.json; both are listed in resources.",
+  "type": "object",
+  "required": ["version", "updated", "status", "implementationStatus", "releaseNotes", "resources", "ruleCount", "metrics", "budgets", "pages", "sources", "provenance"],
+  "properties": {
+    "version": { "type": "string", "pattern": "^\\d+\\.\\d+\\.\\d+$" },
+    "updated": { "type": "string", "format": "date" },
+    "status": { "const": "Normative specification" },
+    "normativeLanguage": { "type": "object" },
+    "resources": {
+      "type": "object",
+      "required": ["rules", "tokens"],
+      "additionalProperties": { "type": "string", "format": "uri" }
+    },
+    "ruleCount": { "type": "integer", "minimum": 1 },
+    "pages": {
+      "type": "array",
+      "minItems": 5,
+      "maxItems": 5,
+      "items": {
+        "type": "object",
+        "required": ["slug", "label", "description", "url", "ruleCount", "sections"],
+        "properties": {
+          "slug": {
+            "enum": ["common", "web-page", "web-app", "mobile-app", "watch-app"]
+          },
+          "sections": {
+            "type": "array",
+            "minItems": 1,
+            "items": {
+              "type": "object",
+              "required": ["id", "title", "url", "ruleIds"],
+              "properties": {
+                "id": {
+                  "type": "string",
+                  "pattern": "^[a-z][a-z0-9-]*$"
+                },
+                "ruleIds": {
+                  "type": "array",
+                  "minItems": 1,
+                  "items": { "$ref": "https://simt.space/cosmos/design/rules.schema.json#/$defs/ruleId" }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "metrics": { "type": "object" },
+    "releaseNotes": {
+      "type": "object",
+      "required": ["document", "current", "versions", "count"],
+      "properties": {
+        "document": { "type": "string", "format": "uri" },
+        "current": { "type": "string" },
+        "versions": {
+          "type": "array",
+          "minItems": 1,
+          "items": { "type": "string" }
+        },
+        "count": { "type": "integer", "minimum": 1 }
+      }
+    },
+    "budgets": {
+      "type": "object",
+      "additionalProperties": { "type": "integer", "minimum": 1 }
+    },
+    "sources": { "type": "array" },
+    "provenance": { "type": "array" }
+  }
+}

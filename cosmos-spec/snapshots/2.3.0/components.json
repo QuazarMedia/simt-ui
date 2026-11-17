@@ -1,0 +1,557 @@
+{
+  "$description": "Cosmos 2.3.0 component index: for every component the rules it inherits, the theme roles, layer and corner role it consumes, the states it can be in, the motif that animates it and the counterpart that already exists in each product. References only — every treatment stays in the rules the entries name. Sliced by platform part under parts.",
+  "version": "2.3.0",
+  "updated": "2026-10-03",
+  "status": "Normative specification",
+  "fetchWhen": [
+    "building or changing any surface, before choosing a pattern",
+    "deciding which rules a component inherits and therefore which it must satisfy",
+    "porting a component to a native toolkit and finding the counterpart that exists"
+  ],
+  "referencesOnly": true,
+  "roles": {
+    "theme": [
+      "background",
+      "surface",
+      "raised",
+      "highest",
+      "text",
+      "muted",
+      "faint",
+      "line",
+      "action",
+      "accentText",
+      "onAction",
+      "social",
+      "identity",
+      "precision",
+      "live",
+      "outdoors",
+      "danger",
+      "success",
+      "focus",
+      "boundary"
+    ],
+    "layer": ["field", "chrome", "context", "scrim", "modal", "feedback", "skip"],
+    "radius": ["control", "record", "overlay", "secondary", "emphasis", "circle"]
+  },
+  "states": {
+    "default": {
+      "rules": ["C12"]
+    },
+    "hover": {
+      "rules": ["C12"]
+    },
+    "pressed": {
+      "rules": ["C12"]
+    },
+    "focus": {
+      "rules": ["C12", "C19"]
+    },
+    "pending": {
+      "rules": ["C12"]
+    },
+    "disabled": {
+      "rules": ["C12"]
+    },
+    "error": {
+      "rules": ["C13", "C16"]
+    },
+    "confirmed": {
+      "rules": ["C12"]
+    },
+    "selected": {
+      "rules": ["C12", "C14"]
+    },
+    "stale": {
+      "rules": ["C16"]
+    },
+    "offline": {
+      "rules": ["C16"]
+    }
+  },
+  "notApplicable": {
+    "notInteractive": { "why": "The component has no hover or press affordance of its own; whatever the pointer is really addressing is the control inside or behind it." },
+    "notFocusable": { "why": "Nothing of it takes focus. What takes focus is the control it hosts or the surface it reports into." },
+    "notAsync": { "why": "The component is already on screen with its final reading, so there is no state between the request and the answer." },
+    "alwaysAvailable": { "why": "There is nothing to disable. It carries no action to withhold, so a disabled variant would be a decoration." },
+    "noFailureMode": { "why": "It cannot fail on its own. Anything that can goes through the banner, the toast or the dialog that owns the failure." },
+    "confirmedElsewhere": { "why": "Confirmation is a separate dialog, so the component itself has no settled confirmed state to draw." },
+    "notSelectable": { "why": "There is no selected and unselected condition. Choosing it is an action or a dialog, not a mode it holds." },
+    "notFetched": { "why": "It shows no remote data, so it cannot be out of date. Whatever is stale about it is stale about a record or a list." },
+    "notNetworkBound": { "why": "It does not depend on a connection, so it cannot be offline. What can be offline is the screen carrying it." }
+  },
+  "parts": {
+    "webPage": {
+      "label": "Web page",
+      "components": [
+        "primaryAction",
+        "secondaryAction",
+        "destructiveAction",
+        "clearableField",
+        "chipSelection",
+        "recordRow",
+        "dialog",
+        "banner",
+        "toast",
+        "emptyState",
+        "readingStat",
+        "contextSpine",
+        "horizonRibbon"
+      ]
+    },
+    "webApp": {
+      "label": "Web app",
+      "components": [
+        "primaryAction",
+        "secondaryAction",
+        "destructiveAction",
+        "clearableField",
+        "chipSelection",
+        "recordRow",
+        "sheet",
+        "dialog",
+        "banner",
+        "toast",
+        "emptyState",
+        "readingStat",
+        "contextSpine",
+        "horizonRibbon"
+      ]
+    },
+    "android": {
+      "label": "Mobile app",
+      "components": [
+        "primaryAction",
+        "secondaryAction",
+        "destructiveAction",
+        "sheet",
+        "dialog",
+        "banner",
+        "toast",
+        "emptyState",
+        "readingStat",
+        "compassDial",
+        "targetMarker",
+        "contextSpine",
+        "horizonRibbon"
+      ]
+    },
+    "watch": {
+      "label": "Watch app",
+      "components": ["compassDial", "targetMarker", "watchActionCapsule"]
+    }
+  },
+  "components": [
+    {
+      "id": "primaryAction",
+      "name": "Primary action",
+      "parts": ["webPage", "webApp", "android"],
+      "rules": ["C12", "C19", "C26"],
+      "anatomy": ["label", "optionalLeadingIcon", "progressMark"],
+      "roles": ["action", "onAction", "focus", "boundary"],
+      "radius": "control",
+      "motion": "targetAcquired",
+      "states": ["default", "hover", "pressed", "focus", "pending", "disabled", "error", "confirmed"],
+      "a11y": ["C19", "C12"],
+      "native": { "web": "Button", "android": "SimtButton", "wear": null },
+      "timing": {
+        "motif": "targetAcquired",
+        "duration": "state",
+        "easing": ["standard", "arrival"]
+      },
+      "notApplicable": { "selected": "notSelectable", "stale": "notFetched", "offline": "notNetworkBound" }
+    },
+    {
+      "id": "secondaryAction",
+      "name": "Secondary action",
+      "parts": ["webPage", "webApp", "android"],
+      "rules": ["C12", "C19"],
+      "anatomy": ["label", "optionalLeadingIcon"],
+      "roles": ["raised", "text", "focus", "boundary"],
+      "radius": "control",
+      "motion": "targetAcquired",
+      "states": ["default", "hover", "pressed", "focus", "pending", "disabled"],
+      "a11y": ["C19", "C12"],
+      "native": { "web": "Button", "android": "SimtButton", "wear": null },
+      "timing": {
+        "motif": "targetAcquired",
+        "duration": "state",
+        "easing": ["standard", "arrival"]
+      },
+      "notApplicable": { "error": "noFailureMode", "confirmed": "confirmedElsewhere", "selected": "notSelectable", "stale": "notFetched", "offline": "notNetworkBound" }
+    },
+    {
+      "id": "destructiveAction",
+      "name": "Destructive action",
+      "parts": ["webPage", "webApp", "android"],
+      "rules": ["C12", "C15", "C19"],
+      "anatomy": ["label", "optionalLeadingIcon", "consequenceSummary"],
+      "roles": ["danger", "text", "focus", "boundary"],
+      "radius": "control",
+      "motion": "targetAcquired",
+      "states": ["default", "hover", "pressed", "focus", "pending", "disabled", "error", "confirmed"],
+      "a11y": ["C19", "C15"],
+      "native": { "web": "Button", "android": "SimtButton", "wear": null },
+      "timing": {
+        "motif": "targetAcquired",
+        "duration": "state",
+        "easing": ["standard", "arrival"]
+      },
+      "notApplicable": { "selected": "notSelectable", "stale": "notFetched", "offline": "notNetworkBound" }
+    },
+    {
+      "id": "clearableField",
+      "name": "Field with Clear",
+      "parts": ["webPage", "webApp"],
+      "rules": ["C13", "C19", "C20"],
+      "anatomy": ["label", "input", "hint", "error", "clearButton", "counter"],
+      "roles": ["surface", "text", "muted", "line", "danger", "focus", "boundary"],
+      "radius": "control",
+      "motion": "dataStale",
+      "states": ["default", "focus", "pending", "disabled", "error", "stale"],
+      "a11y": ["C13", "C19", "C20"],
+      "native": { "web": "Field", "android": "ClearableTextField", "wear": null },
+      "timing": {
+        "motif": "dataStale",
+        "duration": "feedback",
+        "easing": ["standard"]
+      },
+      "notApplicable": { "hover": "notInteractive", "pressed": "notInteractive", "confirmed": "confirmedElsewhere", "selected": "notSelectable", "offline": "notNetworkBound" }
+    },
+    {
+      "id": "chipSelection",
+      "name": "Chips and selection",
+      "parts": ["webPage", "webApp"],
+      "rules": ["C12", "C14", "C19"],
+      "anatomy": ["label", "check", "leadingMarker"],
+      "roles": ["raised", "text", "muted", "focus", "boundary", "identity"],
+      "radius": "control",
+      "motion": "listReveal",
+      "states": ["default", "hover", "pressed", "focus", "selected", "disabled"],
+      "a11y": ["C12", "C19"],
+      "native": { "web": "Chip", "android": "SimtFilterChip", "wear": null },
+      "timing": {
+        "motif": "listReveal",
+        "duration": "feedback",
+        "easing": ["arrival"]
+      },
+      "notApplicable": { "pending": "notAsync", "error": "noFailureMode", "confirmed": "confirmedElsewhere", "stale": "notFetched", "offline": "notNetworkBound" }
+    },
+    {
+      "id": "recordRow",
+      "name": "Record row",
+      "parts": ["webPage", "webApp"],
+      "rules": ["C14", "C10", "C19"],
+      "anatomy": ["identity", "primaryReading", "secondaryReading", "trailingAffordance"],
+      "roles": ["surface", "text", "muted", "faint", "line", "boundary"],
+      "radius": "record",
+      "motion": "listReveal",
+      "states": ["default", "hover", "pressed", "focus", "selected", "stale"],
+      "a11y": ["C14", "C19", "C08"],
+      "native": { "web": null, "android": null, "wear": null },
+      "timing": {
+        "motif": "listReveal",
+        "duration": "feedback",
+        "easing": ["arrival"]
+      },
+      "notApplicable": { "pending": "notAsync", "disabled": "alwaysAvailable", "error": "noFailureMode", "confirmed": "confirmedElsewhere", "offline": "notNetworkBound" }
+    },
+    {
+      "id": "sheet",
+      "name": "Sheet",
+      "parts": ["android", "webApp"],
+      "rules": ["C15", "C26", "M07", "C19"],
+      "anatomy": ["grabber", "title", "body", "actions"],
+      "roles": ["raised", "highest", "text", "muted", "line"],
+      "layers": ["scrim", "modal"],
+      "radius": "overlay",
+      "motion": "sheetRise",
+      "states": ["default", "pressed", "pending", "error", "offline"],
+      "a11y": ["C15", "C19", "M07"],
+      "native": { "web": null, "android": "SimtSheetSurface", "wear": null },
+      "timing": {
+        "motif": "sheetRise",
+        "duration": "state",
+        "easing": ["arrival", "departure"]
+      },
+      "notApplicable": {
+        "hover": "notInteractive",
+        "focus": "notFocusable",
+        "disabled": "alwaysAvailable",
+        "confirmed": "confirmedElsewhere",
+        "selected": "notSelectable",
+        "stale": "notFetched"
+      }
+    },
+    {
+      "id": "dialog",
+      "name": "Dialog",
+      "parts": ["webPage", "webApp", "android"],
+      "rules": ["C15", "C19"],
+      "anatomy": ["title", "body", "closeAction", "actions"],
+      "roles": ["highest", "text", "muted", "line", "focus"],
+      "layers": ["scrim", "modal"],
+      "radius": "overlay",
+      "motion": "sheetRise",
+      "states": ["default", "pending", "disabled", "error", "confirmed"],
+      "a11y": ["C15", "C19"],
+      "native": { "web": "ConfirmDialog", "android": "SimtDialog", "wear": null },
+      "timing": {
+        "motif": "sheetRise",
+        "duration": "state",
+        "easing": ["arrival", "departure"]
+      },
+      "notApplicable": {
+        "hover": "notInteractive",
+        "pressed": "notInteractive",
+        "focus": "notFocusable",
+        "selected": "notSelectable",
+        "stale": "notFetched",
+        "offline": "notNetworkBound"
+      }
+    },
+    {
+      "id": "banner",
+      "name": "Banner",
+      "parts": ["webPage", "webApp", "android"],
+      "rules": ["C16", "C21", "C19"],
+      "anatomy": ["icon", "message", "recoveryAction"],
+      "roles": ["raised", "text", "muted", "line", "danger", "live", "focus", "boundary"],
+      "radius": "record",
+      "motion": "dataStale",
+      "states": ["default", "pending", "error", "stale", "offline"],
+      "a11y": ["C16", "C19", "C21"],
+      "native": { "web": "InlineError", "android": "SimtBanner", "wear": null },
+      "timing": {
+        "motif": "dataStale",
+        "duration": "feedback",
+        "easing": ["standard"]
+      },
+      "notApplicable": {
+        "hover": "notInteractive",
+        "pressed": "notInteractive",
+        "focus": "notFocusable",
+        "disabled": "alwaysAvailable",
+        "confirmed": "confirmedElsewhere",
+        "selected": "notSelectable"
+      }
+    },
+    {
+      "id": "toast",
+      "name": "Toast",
+      "parts": ["webPage", "webApp", "android"],
+      "rules": ["C16", "C19"],
+      "anatomy": ["message", "dismissAction"],
+      "roles": ["highest", "text", "muted", "line", "success"],
+      "radius": "record",
+      "motion": "routeChange",
+      "states": ["default", "pending", "confirmed", "error"],
+      "a11y": ["C16", "C19"],
+      "native": { "web": "ToastProvider", "android": "SimtToast", "wear": null },
+      "timing": {
+        "motif": "routeChange",
+        "duration": "context",
+        "easing": ["arrival", "departure"]
+      },
+      "notApplicable": {
+        "hover": "notInteractive",
+        "pressed": "notInteractive",
+        "focus": "notFocusable",
+        "disabled": "alwaysAvailable",
+        "selected": "notSelectable",
+        "stale": "notFetched",
+        "offline": "notNetworkBound"
+      }
+    },
+    {
+      "id": "emptyState",
+      "name": "Empty state",
+      "parts": ["webPage", "webApp", "android"],
+      "rules": ["C16", "C01", "C19"],
+      "anatomy": ["title", "explanation", "primaryAction"],
+      "roles": ["surface", "text", "muted", "line"],
+      "radius": "record",
+      "motion": null,
+      "states": ["default"],
+      "a11y": ["C16", "C19"],
+      "native": { "web": "EmptyState", "android": "SimtEmptyState", "wear": null },
+      "timing": null,
+      "notApplicable": {
+        "hover": "notInteractive",
+        "pressed": "notInteractive",
+        "focus": "notFocusable",
+        "pending": "notAsync",
+        "disabled": "alwaysAvailable",
+        "error": "noFailureMode",
+        "confirmed": "confirmedElsewhere",
+        "selected": "notSelectable",
+        "stale": "notFetched",
+        "offline": "notNetworkBound"
+      }
+    },
+    {
+      "id": "readingStat",
+      "name": "Reading and stat",
+      "parts": ["webPage", "webApp", "android"],
+      "rules": ["C08", "C21", "C19"],
+      "anatomy": ["value", "unit", "qualifier"],
+      "roles": ["text", "muted", "faint", "identity"],
+      "radius": null,
+      "motion": "dataStale",
+      "states": ["default", "stale", "offline"],
+      "a11y": ["C08", "C19", "C21"],
+      "native": { "web": null, "android": "SimtReading", "wear": "WearReading" },
+      "timing": {
+        "motif": "dataStale",
+        "duration": "feedback",
+        "easing": ["standard"]
+      },
+      "notApplicable": {
+        "hover": "notInteractive",
+        "pressed": "notInteractive",
+        "focus": "notFocusable",
+        "pending": "notAsync",
+        "disabled": "alwaysAvailable",
+        "error": "noFailureMode",
+        "confirmed": "confirmedElsewhere",
+        "selected": "notSelectable"
+      }
+    },
+    {
+      "id": "compassDial",
+      "name": "Compass dial",
+      "parts": ["android", "watch"],
+      "rules": ["M03", "M10", "W06", "C18", "C19"],
+      "anatomy": ["bearingRing", "needle", "lubberLine", "label"],
+      "roles": ["surface", "text", "muted", "line", "identity"],
+      "radius": "circle",
+      "motion": "spineAdvance",
+      "states": ["default", "pressed", "stale", "offline"],
+      "a11y": ["M03", "M10", "C19"],
+      "native": { "web": null, "android": "SimtCompassDial", "wear": "CompassScreen" },
+      "timing": {
+        "motif": "spineAdvance",
+        "duration": "state",
+        "easing": ["standard"]
+      },
+      "notApplicable": {
+        "hover": "notInteractive",
+        "focus": "notFocusable",
+        "pending": "notAsync",
+        "disabled": "alwaysAvailable",
+        "error": "noFailureMode",
+        "confirmed": "confirmedElsewhere",
+        "selected": "notSelectable"
+      }
+    },
+    {
+      "id": "targetMarker",
+      "name": "Target marker",
+      "parts": ["android", "watch"],
+      "rules": ["C18", "M03", "M05", "W05", "C27"],
+      "anatomy": ["body", "label", "bearingTick"],
+      "roles": ["identity", "text", "line", "boundary"],
+      "radius": "circle",
+      "motion": "targetAcquired",
+      "states": ["default", "pressed", "selected", "stale"],
+      "a11y": ["C18", "M05", "C19"],
+      "native": { "web": null, "android": "SimtTargetMarker", "wear": "CompassScreen" },
+      "timing": {
+        "motif": "targetAcquired",
+        "duration": "state",
+        "easing": ["standard", "arrival"]
+      },
+      "notApplicable": {
+        "hover": "notInteractive",
+        "focus": "notFocusable",
+        "pending": "notAsync",
+        "disabled": "alwaysAvailable",
+        "error": "noFailureMode",
+        "confirmed": "confirmedElsewhere",
+        "offline": "notNetworkBound"
+      }
+    },
+    {
+      "id": "contextSpine",
+      "name": "Context spine",
+      "parts": ["webPage", "webApp", "android"],
+      "rules": ["A02", "C26", "C10"],
+      "anatomy": ["currentPosition", "steps", "trailingAffordance"],
+      "roles": ["text", "muted", "line", "focus"],
+      "layers": ["chrome"],
+      "radius": "control",
+      "motion": "spineAdvance",
+      "states": ["default", "pressed", "selected", "pending", "offline"],
+      "a11y": ["A02", "C19", "C26"],
+      "native": { "web": null, "android": "SimtContextSpine", "wear": null },
+      "timing": {
+        "motif": "spineAdvance",
+        "duration": "state",
+        "easing": ["standard"]
+      },
+      "notApplicable": {
+        "hover": "notInteractive",
+        "focus": "notFocusable",
+        "disabled": "alwaysAvailable",
+        "error": "noFailureMode",
+        "confirmed": "confirmedElsewhere",
+        "stale": "notFetched"
+      }
+    },
+    {
+      "id": "horizonRibbon",
+      "name": "Horizon ribbon",
+      "parts": ["webPage", "webApp", "android"],
+      "rules": ["A04", "C27", "C26"],
+      "anatomy": ["title", "progressTrack", "elapsedLabel"],
+      "roles": ["text", "muted", "line", "live"],
+      "layers": ["chrome"],
+      "radius": "control",
+      "motion": "horizonSweep",
+      "states": ["default", "pending", "stale", "offline"],
+      "a11y": ["A04", "C19"],
+      "native": { "web": null, "android": "SimtHorizonRibbon", "wear": null },
+      "timing": {
+        "motif": "horizonSweep",
+        "duration": "context",
+        "easing": ["standard"]
+      },
+      "notApplicable": {
+        "hover": "notInteractive",
+        "pressed": "notInteractive",
+        "focus": "notFocusable",
+        "disabled": "alwaysAvailable",
+        "error": "noFailureMode",
+        "confirmed": "confirmedElsewhere",
+        "selected": "notSelectable"
+      }
+    },
+    {
+      "id": "watchActionCapsule",
+      "name": "Watch action capsule",
+      "parts": ["watch"],
+      "rules": ["W02", "W05", "W03", "C19"],
+      "anatomy": ["icon", "label", "progressArc"],
+      "roles": ["surface", "text", "muted", "boundary", "focus"],
+      "radius": null,
+      "motion": "targetAcquired",
+      "states": ["default", "pressed", "focus", "pending", "disabled"],
+      "a11y": ["W02", "W03", "W04", "C19"],
+      "native": { "web": null, "android": null, "wear": "WearActionCapsule" },
+      "timing": {
+        "motif": "targetAcquired",
+        "duration": "state",
+        "easing": ["standard", "arrival"]
+      },
+      "notApplicable": {
+        "hover": "notInteractive",
+        "error": "noFailureMode",
+        "confirmed": "confirmedElsewhere",
+        "selected": "notSelectable",
+        "stale": "notFetched",
+        "offline": "notNetworkBound"
+      }
+    }
+  ]
+}

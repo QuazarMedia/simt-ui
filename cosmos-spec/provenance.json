@@ -1,0 +1,247 @@
+{
+  "formatVersion": 1,
+  "upstream": {
+    "repository": "simt-space",
+    "url": "https://github.com/QuazarMedia/simt-space.git",
+    "urlEvidence": "upstream Git origin URL at the pinned commit checkout",
+    "canonical": "https://simt.space/cosmos/design",
+    "commit": "637edcf633b4e7d6407b4f9a715dad359c41fce8",
+    "version": "2.3.0",
+    "updated": "2026-10-03",
+    "trackedCleanVerifiedBeforeCopy": true
+  },
+  "authority": {
+    "repository": "simt-space",
+    "statement": "Platform rules are additive to common; product safety, privacy and accessibility take precedence.",
+    "localRole": "Byte-identical private-development snapshot; not an authoritative fork. Authored JavaScript is inert, never imported or executed. Upstream references are preserved; excluded referenced resources are not bundled.",
+    "iosAdapter": "No normative iOS adapter exists in this pinned source; none is supplied or inferred."
+  },
+  "licenses": {
+    "code": {
+      "status": "unconfirmed",
+      "permission": "No license assigned or public redistribution permission asserted."
+    },
+    "documents": {
+      "status": "unconfirmed",
+      "permission": "No license assigned or public redistribution permission asserted."
+    }
+  },
+  "distribution": {
+    "scope": "private-development-only",
+    "publicRedistribution": "blocked",
+    "reason": "Code and document licenses remain separately unconfirmed; scoped rule payloads also fail their declared canonical schema."
+  },
+  "generator": {
+    "package": "simt-space",
+    "version": "2.3.0",
+    "commit": "637edcf633b4e7d6407b4f9a715dad359c41fce8",
+    "script": "scripts/build.js",
+    "sha256": "261efeb5b34bad73244c8bc0ab865a9a4199d0cdff0f9bf0e9dc2d69436f09fc",
+    "executedLocallyForExtraction": false,
+    "checkEvidence": {
+      "command": "npm run check",
+      "reportedBy": "coordinator before extraction",
+      "result": "passed",
+      "generatedFiles": 75,
+      "assets": 18,
+      "rules": 80,
+      "contrastPairs": 212,
+      "profiles": 4,
+      "seoTests": 8
+    }
+  },
+  "knownSchemaDefects": [
+    {
+      "file": "snapshots/2.3.0/mobile-app/rules.json",
+      "schema": "https://simt.space/cosmos/design/rules.schema.json",
+      "instancePath": "/sections",
+      "schemaPath": "#/properties/sections/minItems",
+      "keyword": "minItems",
+      "limit": 36,
+      "actualSections": 17,
+      "cause": "scripts/build.js:870-908 sets union minItems; 994-1005 emits common + platform scoped sections."
+    },
+    {
+      "file": "snapshots/2.3.0/web-page/rules.json",
+      "schema": "https://simt.space/cosmos/design/rules.schema.json",
+      "instancePath": "/sections",
+      "schemaPath": "#/properties/sections/minItems",
+      "keyword": "minItems",
+      "limit": 36,
+      "actualSections": 16,
+      "cause": "scripts/build.js:870-908 sets union minItems; 994-1005 emits common + platform scoped sections."
+    },
+    {
+      "file": "snapshots/2.3.0/web-app/rules.json",
+      "schema": "https://simt.space/cosmos/design/rules.schema.json",
+      "instancePath": "/sections",
+      "schemaPath": "#/properties/sections/minItems",
+      "keyword": "minItems",
+      "limit": 36,
+      "actualSections": 17,
+      "cause": "scripts/build.js:870-908 sets union minItems; 994-1005 emits common + platform scoped sections."
+    },
+    {
+      "file": "snapshots/2.3.0/watch-app/rules.json",
+      "schema": "https://simt.space/cosmos/design/rules.schema.json",
+      "instancePath": "/sections",
+      "schemaPath": "#/properties/sections/minItems",
+      "keyword": "minItems",
+      "limit": 36,
+      "actualSections": 16,
+      "cause": "scripts/build.js:870-908 sets union minItems; 994-1005 emits common + platform scoped sections."
+    }
+  ],
+  "inventory": [
+    {
+      "path": "snapshots/2.3.0/common.md",
+      "upstreamPath": "dist/cosmos/design/common.md",
+      "sha256": "09cf923ed438064e19cd6d43549d99e786f2b76a7c025d40ba51a9c52324d181"
+    },
+    {
+      "path": "snapshots/2.3.0/components.json",
+      "upstreamPath": "dist/cosmos/design/components.json",
+      "sha256": "ed089979b9d8d72a8d97f5a6ce73385d001d0e3f5a3ac17e2781028ca7a906f6"
+    },
+    {
+      "path": "snapshots/2.3.0/contrast-pairs.json",
+      "upstreamPath": "dist/cosmos/design/contrast-pairs.json",
+      "sha256": "15ff7537e0aff4372bc606de1fbf50ee47a405e81f22024a7d50a491b99cabf9"
+    },
+    {
+      "path": "snapshots/2.3.0/manifest.json",
+      "upstreamPath": "dist/cosmos/design/manifest.json",
+      "sha256": "c25ad8b1542bb9b365abeecc85ebf638b7913d71c33f347b7ff88f22eb19bcee"
+    },
+    {
+      "path": "snapshots/2.3.0/mobile-app.md",
+      "upstreamPath": "dist/cosmos/design/mobile-app.md",
+      "sha256": "1e318711e1e6aab26ea16c2c710ab458ecb6f1d66f78de3e6d5625023faa5119"
+    },
+    {
+      "path": "snapshots/2.3.0/mobile-app/rules.json",
+      "upstreamPath": "dist/cosmos/design/mobile-app/rules.json",
+      "sha256": "417dba56af6c8d7fb9d75ffc45a83f37e3453ed155bbfb1185a229fc22ddf1e9"
+    },
+    {
+      "path": "snapshots/2.3.0/mobile-app/tokens.json",
+      "upstreamPath": "dist/cosmos/design/mobile-app/tokens.json",
+      "sha256": "0c697aa2a1656b07c7277ecb0e3d96003294e9f976e6266314feda5081ed8a7d"
+    },
+    {
+      "path": "snapshots/2.3.0/motion.json",
+      "upstreamPath": "dist/cosmos/design/motion.json",
+      "sha256": "1ab14abdf6825e6033e27710598692233868f39eaf99750838b13962c9261290"
+    },
+    {
+      "path": "snapshots/2.3.0/rules.json",
+      "upstreamPath": "dist/cosmos/design/rules.json",
+      "sha256": "2b5f1a99e57ffcea66a66cbb854b4d55fa203328578836e805b3dc6321f35e03"
+    },
+    {
+      "path": "snapshots/2.3.0/rules.schema.json",
+      "upstreamPath": "dist/cosmos/design/rules.schema.json",
+      "sha256": "6b5cc58b8d098becfcb51bfaea2e2f0d9e38f9d0994574109b8ea23edd84d661"
+    },
+    {
+      "path": "snapshots/2.3.0/specification.json",
+      "upstreamPath": "dist/cosmos/design/specification.json",
+      "sha256": "feabfa911cd24d36980a2339495a506f0039040b6d7ed011eb7aafc88307d41c"
+    },
+    {
+      "path": "snapshots/2.3.0/specification.md",
+      "upstreamPath": "dist/cosmos/design/specification.md",
+      "sha256": "0689632287225f6875fd2a387a053776bd29ccac0f5779f6aa0a39b42c649cf0"
+    },
+    {
+      "path": "snapshots/2.3.0/specification.schema.json",
+      "upstreamPath": "dist/cosmos/design/specification.schema.json",
+      "sha256": "3822455f80ca1833e6f777c89990a2af02ebd744e733e6c44af033ced34471d5"
+    },
+    {
+      "path": "snapshots/2.3.0/tokens.json",
+      "upstreamPath": "dist/cosmos/design/tokens.json",
+      "sha256": "c201e2d1b7bd86342b1490fd17e5081645974c2cbeaa6701bbc802a95484d039"
+    },
+    {
+      "path": "snapshots/2.3.0/watch-app.md",
+      "upstreamPath": "dist/cosmos/design/watch-app.md",
+      "sha256": "4cf39ac93a803d4e702a825cc38c3a98d59331c1974aa27283a217053cca2d7b"
+    },
+    {
+      "path": "snapshots/2.3.0/watch-app/rules.json",
+      "upstreamPath": "dist/cosmos/design/watch-app/rules.json",
+      "sha256": "cbd9a41f2d3cc1013db42b7cc6cd91faca2e6921f06694c276aaccb7d31925d7"
+    },
+    {
+      "path": "snapshots/2.3.0/watch-app/tokens.json",
+      "upstreamPath": "dist/cosmos/design/watch-app/tokens.json",
+      "sha256": "936e174ff45942ae525658ab9f3d841e6d3466a858724ac5df22bcaec6733217"
+    },
+    {
+      "path": "snapshots/2.3.0/web-app.md",
+      "upstreamPath": "dist/cosmos/design/web-app.md",
+      "sha256": "2733ff3f917aae2275879955934374732f09554f9165f237c08f8493e76178f3"
+    },
+    {
+      "path": "snapshots/2.3.0/web-app/rules.json",
+      "upstreamPath": "dist/cosmos/design/web-app/rules.json",
+      "sha256": "6a6dfe6227236aa7e07c509f539defbc3eb195bb3f8cad944d06f7be7093b4d4"
+    },
+    {
+      "path": "snapshots/2.3.0/web-app/tokens.json",
+      "upstreamPath": "dist/cosmos/design/web-app/tokens.json",
+      "sha256": "5fa96f81e131e13f2b17f97d83fda94223a2743a64f9e903efbc4b47cf1049b0"
+    },
+    {
+      "path": "snapshots/2.3.0/web-page.md",
+      "upstreamPath": "dist/cosmos/design/web-page.md",
+      "sha256": "6b4042f55fdcca9c6d5858a2d4015e8f31ec2272bc32f6bb28022f85ede9f0c0"
+    },
+    {
+      "path": "snapshots/2.3.0/web-page/rules.json",
+      "upstreamPath": "dist/cosmos/design/web-page/rules.json",
+      "sha256": "6c47172932519c538e8287ec76b69c9fc17857d2a9faf64b86ac4d3e1c35ba7d"
+    },
+    {
+      "path": "snapshots/2.3.0/web-page/tokens.json",
+      "upstreamPath": "dist/cosmos/design/web-page/tokens.json",
+      "sha256": "7c30823b05b84f132e141d00c3fe925bd55ce0e74e789a06676d1475ba833245"
+    },
+    {
+      "path": "upstream/2.3.0/cosmos/design/color.js",
+      "upstreamPath": "cosmos/design/color.js",
+      "sha256": "af7baac84c4ae597462f47434825b894b3cd4186ff420a353be5216e627230a2"
+    },
+    {
+      "path": "upstream/2.3.0/cosmos/design/components.js",
+      "upstreamPath": "cosmos/design/components.js",
+      "sha256": "6d4f9395772f863617ad9eb871ab7bed1659684f7c9cc62dff597009138920a1"
+    },
+    {
+      "path": "upstream/2.3.0/cosmos/design/contrast.js",
+      "upstreamPath": "cosmos/design/contrast.js",
+      "sha256": "ff556da63220bc0ce7bf662dd162b6ab809efa89e79986f171f8ffec9451c40b"
+    },
+    {
+      "path": "upstream/2.3.0/cosmos/design/motion.js",
+      "upstreamPath": "cosmos/design/motion.js",
+      "sha256": "825c8cb6fa2e5316d8fbfc4b4b987b1f28259a016cec42be1064ffe99132fb72"
+    },
+    {
+      "path": "upstream/2.3.0/cosmos/design/specification.js",
+      "upstreamPath": "cosmos/design/specification.js",
+      "sha256": "787d53266b89d1ad3d80754e501190ce366021f0c0582ca1c189b7d75eff365b"
+    },
+    {
+      "path": "upstream/2.3.0/cosmos/design/starfield.js",
+      "upstreamPath": "cosmos/design/starfield.js",
+      "sha256": "695215821ca776485626d655f2255aceda3869a428981372e94754cba7298c7e"
+    },
+    {
+      "path": "upstream/2.3.0/cosmos/design/tokens.js",
+      "upstreamPath": "cosmos/design/tokens.js",
+      "sha256": "c9c878bc87cf796e795da45ba837dd2aee753a6be7a6968057cf1ed9703a406c"
+    }
+  ]
+}

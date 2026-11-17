@@ -1,0 +1,238 @@
+{
+  "version": "2.3.0",
+  "updated": "2026-10-03",
+  "status": "Normative specification",
+  "canonical": "https://simt.space/cosmos/design",
+  "language": "en",
+  "common": "https://simt.space/cosmos/design/common",
+  "platforms": [
+    {
+      "id": "web-page",
+      "label": "Web page",
+      "url": "https://simt.space/cosmos/design/web-page",
+      "inherits": ["https://simt.space/cosmos/design/common"],
+      "markdown": "https://simt.space/cosmos/design/web-page.md",
+      "sections": [
+        { "id": "composition", "url": "https://simt.space/cosmos/design/web-page#composition" },
+        { "id": "layout", "url": "https://simt.space/cosmos/design/web-page#layout" },
+        { "id": "atlas", "url": "https://simt.space/cosmos/design/web-page#atlas" },
+        { "id": "conversion", "url": "https://simt.space/cosmos/design/web-page#conversion" },
+        { "id": "delivery", "url": "https://simt.space/cosmos/design/web-page#delivery" },
+        { "id": "release", "url": "https://simt.space/cosmos/design/web-page#release" }
+      ],
+      "ruleIds": ["P01", "P02", "P03", "P04", "P05", "P06", "P07", "P08", "P09", "P10", "P11"],
+      "adapter": "webPage",
+      "tokens": "https://simt.space/cosmos/design/web-page/tokens.json",
+      "rules": "https://simt.space/cosmos/design/web-page/rules.json"
+    },
+    {
+      "id": "web-app",
+      "label": "Web app",
+      "url": "https://simt.space/cosmos/design/web-app",
+      "inherits": ["https://simt.space/cosmos/design/common"],
+      "markdown": "https://simt.space/cosmos/design/web-app.md",
+      "sections": [
+        { "id": "shell", "url": "https://simt.space/cosmos/design/web-app#shell" },
+        { "id": "discovery", "url": "https://simt.space/cosmos/design/web-app#discovery" },
+        { "id": "participation", "url": "https://simt.space/cosmos/design/web-app#participation" },
+        { "id": "composer", "url": "https://simt.space/cosmos/design/web-app#composer" },
+        { "id": "operations", "url": "https://simt.space/cosmos/design/web-app#operations" },
+        { "id": "performance", "url": "https://simt.space/cosmos/design/web-app#performance" },
+        { "id": "release", "url": "https://simt.space/cosmos/design/web-app#release" }
+      ],
+      "ruleIds": ["A01", "A02", "A03", "A04", "A05", "A06", "A07", "A08", "A09", "A10", "A11", "A12", "A13"],
+      "adapter": "webApp",
+      "tokens": "https://simt.space/cosmos/design/web-app/tokens.json",
+      "rules": "https://simt.space/cosmos/design/web-app/rules.json"
+    },
+    {
+      "id": "mobile-app",
+      "label": "Mobile app",
+      "url": "https://simt.space/cosmos/design/mobile-app",
+      "inherits": ["https://simt.space/cosmos/design/common"],
+      "markdown": "https://simt.space/cosmos/design/mobile-app.md",
+      "sections": [
+        { "id": "anatomy", "url": "https://simt.space/cosmos/design/mobile-app#anatomy" },
+        { "id": "instruments", "url": "https://simt.space/cosmos/design/mobile-app#instruments" },
+        { "id": "components", "url": "https://simt.space/cosmos/design/mobile-app#components" },
+        { "id": "adaptive", "url": "https://simt.space/cosmos/design/mobile-app#adaptive" },
+        { "id": "sensors", "url": "https://simt.space/cosmos/design/mobile-app#sensors" },
+        { "id": "performance", "url": "https://simt.space/cosmos/design/mobile-app#performance" },
+        { "id": "release", "url": "https://simt.space/cosmos/design/mobile-app#release" }
+      ],
+      "ruleIds": ["M01", "M02", "M03", "M04", "M05", "M06", "M07", "M08", "M09", "M10", "M11", "M12", "M13", "M14"],
+      "adapter": "android",
+      "tokens": "https://simt.space/cosmos/design/mobile-app/tokens.json",
+      "rules": "https://simt.space/cosmos/design/mobile-app/rules.json"
+    },
+    {
+      "id": "watch-app",
+      "label": "Watch app",
+      "url": "https://simt.space/cosmos/design/watch-app",
+      "inherits": ["https://simt.space/cosmos/design/common"],
+      "markdown": "https://simt.space/cosmos/design/watch-app.md",
+      "sections": [
+        { "id": "glance", "url": "https://simt.space/cosmos/design/watch-app#glance" },
+        { "id": "type-input", "url": "https://simt.space/cosmos/design/watch-app#type-input" },
+        { "id": "screens", "url": "https://simt.space/cosmos/design/watch-app#screens" },
+        { "id": "ambient", "url": "https://simt.space/cosmos/design/watch-app#ambient" },
+        { "id": "performance", "url": "https://simt.space/cosmos/design/watch-app#performance" },
+        { "id": "release", "url": "https://simt.space/cosmos/design/watch-app#release" }
+      ],
+      "ruleIds": ["W01", "W02", "W03", "W04", "W05", "W06", "W07", "W08", "W09", "W10", "W11", "W12"],
+      "adapter": "watch",
+      "tokens": "https://simt.space/cosmos/design/watch-app/tokens.json",
+      "rules": "https://simt.space/cosmos/design/watch-app/rules.json"
+    }
+  ],
+  "resources": {
+    "manifest": "https://simt.space/cosmos/design/manifest.json",
+    "index": "https://simt.space/cosmos/design/specification.json",
+    "rules": "https://simt.space/cosmos/design/rules.json",
+    "tokens": "https://simt.space/cosmos/design/tokens.json",
+    "contrastPairs": "https://simt.space/cosmos/design/contrast-pairs.json",
+    "motion": "https://simt.space/cosmos/design/motion.json",
+    "components": "https://simt.space/cosmos/design/components.json",
+    "css": "https://simt.space/cosmos/design/tokens.css",
+    "skill": "https://simt.space/cosmos/design/cosmos-design-skill.md",
+    "markdown": "https://simt.space/cosmos/design/specification.md",
+    "changelog": "https://simt.space/cosmos/design/changelog.md",
+    "schema": "https://simt.space/cosmos/design/specification.schema.json",
+    "rulesSchema": "https://simt.space/cosmos/design/rules.schema.json",
+    "webPageTokens": "https://simt.space/cosmos/design/web-page/tokens.json",
+    "webPageRules": "https://simt.space/cosmos/design/web-page/rules.json",
+    "webAppTokens": "https://simt.space/cosmos/design/web-app/tokens.json",
+    "webAppRules": "https://simt.space/cosmos/design/web-app/rules.json",
+    "mobileAppTokens": "https://simt.space/cosmos/design/mobile-app/tokens.json",
+    "mobileAppRules": "https://simt.space/cosmos/design/mobile-app/rules.json",
+    "watchAppTokens": "https://simt.space/cosmos/design/watch-app/tokens.json",
+    "watchAppRules": "https://simt.space/cosmos/design/watch-app/rules.json",
+    "releaseTemplate": "https://simt.space/cosmos/design/release-template.json"
+  },
+  "gallery": {
+    "index": "https://simt.space/cosmos/design/gallery",
+    "summary": "Components and motion motifs shown as static state matrices, sliced by family.",
+    "families": [
+      {
+        "id": "actions",
+        "label": "Actions and selection",
+        "url": "https://simt.space/cosmos/design/gallery/actions",
+        "components": ["primaryAction", "secondaryAction", "destructiveAction", "chipSelection", "watchActionCapsule"]
+      },
+      {
+        "id": "inputs",
+        "label": "Inputs and validation",
+        "url": "https://simt.space/cosmos/design/gallery/inputs",
+        "components": ["clearableField"]
+      },
+      {
+        "id": "records",
+        "label": "Records and navigation",
+        "url": "https://simt.space/cosmos/design/gallery/records",
+        "components": ["recordRow"]
+      },
+      {
+        "id": "layers",
+        "label": "Layers and dialogs",
+        "url": "https://simt.space/cosmos/design/gallery/layers",
+        "components": ["sheet", "dialog", "contextSpine", "horizonRibbon"]
+      },
+      {
+        "id": "feedback",
+        "label": "Feedback at the source",
+        "url": "https://simt.space/cosmos/design/gallery/feedback",
+        "components": ["banner", "toast", "emptyState"]
+      },
+      {
+        "id": "instruments",
+        "label": "Instruments and readings",
+        "url": "https://simt.space/cosmos/design/gallery/instruments",
+        "components": ["readingStat", "compassDial", "targetMarker"]
+      }
+    ]
+  },
+  "authority": "Platform rules are additive to common; product safety, privacy and accessibility take precedence.",
+  "implementationStatus": "The web product and the mobile product are built on this specification. Conformance is recorded rule by rule in a release record; examples use illustrative data.",
+  "provenance": [
+    {
+      "repository": "simt-landing (superseded by simt-space)",
+      "paths": ["cosmos-design/index.html", "styles/cosmos-design.less", "scripts/cosmos-design.js"],
+      "observed": "One large guide; page-owned animated star canvases and mixed native/web examples.",
+      "direction": "Replace with a static, linked specification with measurable rules and one optional atmospheric owner."
+    },
+    {
+      "repository": "simt-social-landing",
+      "paths": ["src/templates/partials/hero.hbs", "src/templates/partials/atlas.hbs", "src/styles/tokens.less"],
+      "observed": "Narrative hero, activity atlas, role discovery, privacy and multilingual public content.",
+      "direction": "Keep the human story and useful atlas; use editorial horizons and actual product evidence."
+    },
+    {
+      "repository": "simt-social",
+      "paths": ["app/styles/tokens-dark.css", "app/routes/discover.tsx", "mockups/README.md"],
+      "observed": "Canonical warm palette, persistent social shell, map/list discovery, activity composer and moderation console.",
+      "direction": "Preserve route responsibilities; improve context continuity, scanning, recovery and density."
+    },
+    {
+      "repository": "simt-app",
+      "paths": ["docs/design/COSMOS_REDESIGN.md", "core/ui/src/main/java/app/simt/core/ui/theme/Color.kt", "core/ui/src/main/java/app/simt/core/ui/theme/Motion.kt"],
+      "observed": "Native instrument palette and typography; adaptive maps, dials and tools.",
+      "direction": "Task-first instruments with stable reference frames, deliberate reach zones and system-owned back behavior."
+    },
+    {
+      "repository": "simt-app/wear",
+      "paths": ["src/main/java/app/simt/wear/screens/HomeScreen.kt", "src/main/java/app/simt/wear/screens/CompassScreen.kt", "src/main/java/app/simt/wear/theme/WearColors.kt"],
+      "observed": "Compass, sky, geofence, plumb bob, targets and settings; cyan has a legacy tool-specific value.",
+      "direction": "One-glance tools with shared signal meaning, round geometry and a genuinely quiet ambient state."
+    }
+  ],
+  "foundation": {
+    "id": "common",
+    "url": "https://simt.space/cosmos/design/common",
+    "markdown": "https://simt.space/cosmos/design/common.md",
+    "ruleIds": [
+      "C01",
+      "C02",
+      "C03",
+      "C04",
+      "C05",
+      "C06",
+      "C29",
+      "C27",
+      "C11",
+      "C07",
+      "C08",
+      "C09",
+      "C10",
+      "C25",
+      "C26",
+      "C12",
+      "C13",
+      "C14",
+      "C15",
+      "C16",
+      "C17",
+      "C18",
+      "C30",
+      "C31",
+      "C19",
+      "C20",
+      "C21",
+      "C22",
+      "C23",
+      "C24"
+    ],
+    "sections": [
+      { "id": "identity", "url": "https://simt.space/cosmos/design/common#identity" },
+      { "id": "palette", "url": "https://simt.space/cosmos/design/common#palette" },
+      { "id": "light", "url": "https://simt.space/cosmos/design/common#light" },
+      { "id": "atmosphere", "url": "https://simt.space/cosmos/design/common#atmosphere" },
+      { "id": "typography", "url": "https://simt.space/cosmos/design/common#typography" },
+      { "id": "geometry", "url": "https://simt.space/cosmos/design/common#geometry" },
+      { "id": "components", "url": "https://simt.space/cosmos/design/common#components" },
+      { "id": "motion", "url": "https://simt.space/cosmos/design/common#motion" },
+      { "id": "accessibility", "url": "https://simt.space/cosmos/design/common#accessibility" },
+      { "id": "implementation", "url": "https://simt.space/cosmos/design/common#implementation" }
+    ]
+  },
+  "ruleCount": 80
+}
