@@ -1,7 +1,7 @@
 # SIMT UI: shared Compose library extraction
 
 - Investigation date: 2026-11-17.
-- Status: investigation complete; implementation proposed, not started.
+- Status: investigation complete; implementation started on 2026-11-17. UI-01 scaffold validated; compatibility spike remains in progress.
 - Owner: `simt-ui`, with producer-first integration in `simt-app` and `simt-echo`.
 - Scope of this change: create this plan and its parent directories only. No source extraction, Git initialization, consumer changes, builds, commits, remote creation, or publication occurred.
 
@@ -264,12 +264,15 @@ Wakt uses the old app-ui submodule and is not an authorized migration target her
 
 ## 8. Implementation slices and acceptance gates
 
-No implementation row is marked complete. Rows record future independently valuable slices; publication and app integration require separate authorization.
+Implementation proceeds in validated, committed chunks. UI-01 is split into build infrastructure (UI-01a), portable component/resource behavior (UI-01b), and independent published-artifact consumers (UI-01c). App integration and public artifact publication remain gated; no source license is assumed.
 
 | id | lane | depends | title | state | evidence |
 |---|---|---|---|---|---|
 | UI-00 | simt-ui / rights owners | - | Approve export manifest, code/spec licenses, provenance, and public-data boundaries | Pending | Rights/export review required |
-| UI-01 | simt-ui | - | Independent KMP/resource/API compatibility spike plus two published-artifact consumer fixtures | Pending | Build, resolution, packaging, Android/iOS runtime evidence required |
+| UI-01 | simt-ui | - | Independent KMP/resource/API compatibility spike plus two published-artifact consumer fixtures | In progress | UI-01a scaffold gates pass; component behavior and consumer runtime gates remain |
+| UI-01a | simt-ui | - | Standalone wrapper/catalog, KMP Android/iOS targets, resource wiring, and local publication | Validated | Commands below passed; commit identifies this chunk |
+| UI-01b | simt-ui | UI-01a | Portable primitives/resources and behavioral tests | Pending | Target compilation, locale packaging, and focused tests required |
+| UI-01c | simt-ui | UI-01b | Independent ordinary Android and CMP published-artifact consumers | Pending | Variant selection, runtime resources, and Native framework linking required |
 | UI-02 | simt-ui | UI-00, UI-01 | Extract eight primitives, resource locales, platform seams, API baseline, and behavior tests | Pending | Clean standalone build and cross-platform UI tests required |
 | UI-03 | simt-ui / simt-space | UI-00 | Pin/export Cosmos specs with offline schema/checksum and authority verification | Pending | Licensed export and reproducibility evidence required |
 | UI-04 | simt-ui | UI-02, UI-03 | API docs, signed local aggregation rehearsal, artifact scan, and release validation workflow | Pending | Complete platform publications and safety checks required |
@@ -323,6 +326,17 @@ Not executed: KMP spike, Gradle dependency resolution/builds/tests, native linki
 Remaining release blockers: code/spec redistribution rights; actual AGP/KGP/Gradle/Xcode compatibility beyond documented ranges; Material tooltip common API; packaged CMP resources without manual copies; exact fullscreen/haptic semantics; other upstream consumer pins; final exported source/history/artifact audit.
 
 The next independently valuable step is UI-01's local compatibility spike, alongside UI-00 rights/export approval. If both pass, proceed with the shared `:app-ui` design; an Android-only library is the contingency, not the default.
+
+### Implementation evidence: UI-01a (2026-11-17)
+
+- Initial plan committed as `7eddd39` and pushed to the requested empty private GitHub repository. Subsequent implementation commits are local unless separately approved for push.
+- Build pins: Kotlin `2.4.21`, CMP `1.12.2`, AGP `9.3.1`, checksum-verified Gradle `9.7.0`; toolchain JDK 21, Android bytecode JVM 11, API 28 floor, SDK 37. Existing application builds/catalogs are unchanged.
+- Resolved CMP defaults replaced by explicit catalog coordinates: Material3 `1.9.0` maps to AndroidX `1.4.0`; extended icons `1.7.3` maps to AndroidX `1.7.6` before any consumer BOM alignment. Base Compose maps to AndroidX `1.12.1`.
+- Xcode `27.1` is installed but not globally selected; commands use `DEVELOPER_DIR` without changing system settings. This exceeds the documented KGP table's Xcode version, so successful klib compilation is not a claim of officially supported Native linking/runtime.
+- Passed through the new wrapper: `tasks --all`, `wrapper`, `spotlessApply`, `spotlessCheck`, `:app-ui:assembleAndroidMain`, `:app-ui:compileKotlinIosArm64`, `:app-ui:compileKotlinIosSimulatorArm64`, `:app-ui:publishAllPublicationsToLocalValidationRepository`, and `:cosmos-spec:check`.
+- Locally generated root/Android/two iOS publications have metadata and matching artifact checksums. Output stays under ignored `build/maven-repository`; no Maven Local or remote artifact upload occurred.
+- This chunk contains build/configuration only; compilation covers generated resource scaffolding, not extracted components. No behavioral test exists or is claimed yet; the docs-only module has no snapshot to verify. Bounded source-pattern checks passed, not a comprehensive secret audit.
+- Root Spotless excludes generated wrapper properties after Gradle detected an implicit producer/formatter task dependency; wrapper generation and format checks now pass separately.
 
 ## 10. External guidance consulted
 

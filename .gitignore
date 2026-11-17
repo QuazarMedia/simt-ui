@@ -1,0 +1,16 @@
+.gradle/
+.kotlin/
+**/build/
+.idea/
+*.iml
+.DS_Store
+local.properties
+.env
+.env.*
+*.jks
+*.keystore
+*.p12
+*.p8
+*.mobileprovision
+google-services.json
+GoogleService-Info.plist
