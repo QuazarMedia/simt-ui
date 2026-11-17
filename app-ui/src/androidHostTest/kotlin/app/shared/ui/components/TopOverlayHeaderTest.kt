@@ -185,6 +185,43 @@ class TopOverlayHeaderTest {
     }
 
     @Test
+    fun firstEntryAndReentryAfterCompletedExitExpandOverTime() {
+        val slot = mutableStateOf<(@Composable () -> Unit)?>(null)
+        val card: @Composable () -> Unit = { Text("Detail", Modifier.size(96.dp)) }
+        compose.mainClock.autoAdvance = false
+        compose.setContent {
+            MaterialTheme {
+                TopOverlayHeader("Title", {}, Modifier.testTag("header"), applyTopInsets = false, contentCard = slot.value)
+            }
+        }
+        compose.waitForIdle()
+
+        fun height() = compose.onNodeWithTag("header").fetchSemanticsNode().boundsInRoot.height
+        val emptyHeight = height()
+        repeat(2) {
+            compose.runOnIdle {
+                slot.value = card
+                Snapshot.sendApplyNotifications()
+            }
+            compose.mainClock.advanceTimeBy(96)
+            compose.waitForIdle()
+            val enteringHeight = height()
+            compose.mainClock.advanceTimeBy(400)
+            compose.waitForIdle()
+            val expandedHeight = height()
+            assertTrue("Card did not expand beyond empty header", enteringHeight > emptyHeight)
+            assertTrue("Card entered immediately at full height", enteringHeight < expandedHeight - 1f)
+            compose.runOnIdle {
+                slot.value = null
+                Snapshot.sendApplyNotifications()
+            }
+            compose.mainClock.advanceTimeBy(400)
+            compose.waitForIdle()
+            assertEquals(emptyHeight, height(), 1f)
+        }
+    }
+
+    @Test
     fun motionDisabledReleasesSlotImmediatelyAndPreservesAllHeaderSlots() {
         var titleCalls = 0
         var closeCalls = 0

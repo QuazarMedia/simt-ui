@@ -41,7 +41,6 @@ import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -89,10 +88,6 @@ fun TopOverlayHeader(
     onTitleAreaClick: (() -> Unit)? = null,
 ) {
     val widthFraction = headerWidthFraction()
-    var retainContentCardSlot by remember { mutableStateOf(contentCard != null) }
-    SideEffect {
-        if (contentCard != null) retainContentCardSlot = true
-    }
 
     Column(
         modifier =
@@ -152,14 +147,11 @@ fun TopOverlayHeader(
                 }
             }
         }
-        if (contentCard != null || retainContentCardSlot) {
-            TopOverlayHeaderContentCard(
-                contentCard = contentCard,
-                widthFraction = widthFraction,
-                containerColor = containerColor,
-                onReleased = { retainContentCardSlot = false },
-            )
-        }
+        TopOverlayHeaderContentCard(
+            contentCard = contentCard,
+            widthFraction = widthFraction,
+            containerColor = containerColor,
+        )
     }
 }
 
@@ -254,10 +246,8 @@ private fun TopOverlayHeaderContentCard(
     contentCard: (@Composable () -> Unit)?,
     widthFraction: Float,
     containerColor: Color,
-    onReleased: () -> Unit,
 ) {
     var rememberedContentCard by remember { mutableStateOf(contentCard) }
-    val release by rememberUpdatedState(onReleased)
     val motionEnabled = LocalUiMotionEnabled.current
     val duration = if (motionEnabled) 300 else 0
     SideEffect {
@@ -267,7 +257,6 @@ private fun TopOverlayHeaderContentCard(
         if (contentCard == null) {
             delay(duration.toLong())
             rememberedContentCard = null
-            release()
         }
     }
     val displayedContent = contentCard ?: rememberedContentCard
