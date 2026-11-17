@@ -78,19 +78,19 @@ class Fixture:
                     self.write(target, key, self.legal_zip)
                     continue  # Required Maven attachment, deliberately no Gradle variant.
                 if classifier == 'sources':
-                    data = archive({'commonMain/app/shared/ui/Example.kt': 'package app.shared.ui\nclass Example'})
+                    data = archive({'commonMain/app/simt/ui/Example.kt': 'package app.simt.ui\nclass Example'})
                 elif classifier == 'javadoc':
-                    data = archive({'index.html': '<html><body>Dokka documentation for app.shared.ui</body></html>',
-                                    'app-ui/app.shared.ui/-example/index.html': '<html><body><h1>Example</h1>app.shared.ui API</body></html>'})
+                    data = archive({'index.html': '<html><body>Dokka documentation for app.simt.ui</body></html>',
+                                    'app-ui/app.simt.ui/-example/index.html': '<html><body><h1>Example</h1>app.simt.ui API</body></html>'})
                 elif extension == 'json':
                     data = encoded({'schemaVersion': '1.0', 'buildSystem': 'Gradle'})
                 elif extension == 'aar':
-                    data = archive({'AndroidManifest.xml': '<manifest package="app.shared.ui"/>',
-                                    'classes.jar': archive({'app/shared/ui/Example.class': b'compiled-code'})})
+                    data = archive({'AndroidManifest.xml': '<manifest package="app.simt.ui"/>',
+                                    'classes.jar': archive({'app/simt/ui/Example.class': b'compiled-code'})})
                 elif extension == 'klib':
                     data = archive({'default/manifest': 'compiler_version=2.4.21', 'default/ir/strings.knt': b'Example'})
                 elif extension == 'kotlin_resources.zip':
-                    data = archive({'composeResources/app.shared.ui/values/strings.xml': '<resources><string name="clear">Clear</string></resources>'})
+                    data = archive({'composeResources/app.simt.ui/values/strings.xml': '<resources><string name="clear">Clear</string></resources>'})
                 else:
                     data = archive({'META-INF/module.kotlin_metadata': b'metadata'})
                 self.write(target, key, data)
@@ -401,6 +401,21 @@ class PublicationTests(unittest.TestCase):
         self.fixture.write('app-ui', ('javadoc', 'jar'), archive({'README.txt': 'Documentation placeholder'}), True)
         self.assertBlocked('missing-generated-html-docs')
 
+    def test_generated_html_docs_reject_old_only_namespace(self):
+        for namespace in ('app.shared.ui', 'app/shared/ui'):
+            with self.subTest(namespace=namespace):
+                self.fixture.write('app-ui', ('javadoc', 'jar'), archive({
+                    'index.html': '<html><body>' + namespace + ' API</body></html>'}), True)
+                self.assertBlocked('missing-generated-html-docs')
+
+    def test_generated_html_docs_accept_current_namespace(self):
+        for namespace in ('app.simt.ui', 'app/simt/ui'):
+            with self.subTest(namespace=namespace):
+                self.fixture.write('app-ui', ('javadoc', 'jar'), archive({
+                    'index.html': '<html><body>' + namespace + ' API</body></html>'}), True)
+                result = self.fixture.check()
+                self.assertTrue(result.ok, result.payload())
+
     def test_empty_sources(self):
         self.fixture.write('app-ui', ('sources', 'jar'), archive({'Example.kt': ''}), True)
         self.assertBlocked('empty-sources')
@@ -689,7 +704,7 @@ class ReleaseTests(unittest.TestCase):
         for relative in audit.RELEASE_DOCS:
             if relative not in LEGAL_DOCUMENTS:
                 self.fixture.put(relative, 'Owner-confirmed release document')
-        self.fixture.put('app-ui/api/app-ui.api', 'public class app/shared/ui/Example')
+        self.fixture.put('app-ui/api/app-ui.api', 'public class app/simt/ui/Example')
         self.fixture.put('cosmos-spec/scripts/check.js', '// fixed strict schema checker fixture')
         self.fixture.put('cosmos-spec/snapshots/specification.md', 'Approved specification')
         source = json.loads(LEGAL_DOCUMENTS['app-ui/source-provenance.json'])

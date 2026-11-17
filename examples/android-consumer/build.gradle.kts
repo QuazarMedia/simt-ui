@@ -82,8 +82,15 @@ tasks.register("verifyPackagedLocales") {
                         "values-es" to ("Borrar texto" to "Cerrar"),
                         "values-ar" to ("مسح النص" to "إغلاق"),
                     )
+                val resourcePaths =
+                    zip.entries().asSequence()
+                        .filter { it.name.endsWith("/strings.commonMain.cvr") }
+                        .map { it.name }.toSet()
+                check(resourcePaths == expected.keys.map { "assets/composeResources/app.simt.ui.resources/$it/strings.commonMain.cvr" }.toSet()) {
+                    "Unexpected published resource namespaces or locales in $apk"
+                }
                 expected.forEach { (locale, labels) ->
-                    val path = "assets/composeResources/app.shared.ui.resources/$locale/strings.commonMain.cvr"
+                    val path = "assets/composeResources/app.simt.ui.resources/$locale/strings.commonMain.cvr"
                     val entry = checkNotNull(zip.getEntry(path)) { "Missing published $locale resources in $apk" }
                     val values =
                         zip.getInputStream(entry).bufferedReader(Charsets.UTF_8).use { reader ->

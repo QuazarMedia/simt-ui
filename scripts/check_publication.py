@@ -643,7 +643,7 @@ class Publication:
             html = [i for i in archive.infolist() if i.filename.endswith('.html') and not i.is_dir()]
             pages = [archive.read(i) for i in html]
             if not pages or not any(re.search(rb'<html\b', p, re.I) and re.search(rb'<body\b', p, re.I) and
-                                    re.search(rb'(?:dokka|app\.shared\.ui|app/shared/ui)', p, re.I) for p in pages):
+                                    re.search(rb'(?:dokka|app\.simt\.ui|app/simt/ui)', p, re.I) for p in pages):
                 raise ValidationError(docs, 'missing-generated-html-docs')
         sources = self.selected[artifact][('sources', 'jar')]
         with zipfile.ZipFile(io.BytesIO(self.read(sources))) as archive:

@@ -23,17 +23,17 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import app.shared.ui.components.TopOverlayHeader
-import app.shared.ui.components.WindowedList
-import app.shared.ui.components.forms.CityCountryFields
-import app.shared.ui.components.forms.ClearableTextField
-import app.shared.ui.effects.CountdownEffect
-import app.shared.ui.effects.LocalUiHapticsEnabled
-import app.shared.ui.effects.LocalUiMotionEnabled
-import app.shared.ui.effects.LongPressTooltipEffect
-import app.shared.ui.effects.ScrollEdgeEffect
-import app.shared.ui.utils.fullScreenBottomInsets
-import app.shared.ui.utils.fullScreenTopInsets
+import app.simt.ui.components.TopOverlayHeader
+import app.simt.ui.components.WindowedList
+import app.simt.ui.components.forms.CityCountryFields
+import app.simt.ui.components.forms.ClearableTextField
+import app.simt.ui.effects.CountdownEffect
+import app.simt.ui.effects.LocalUiHapticsEnabled
+import app.simt.ui.effects.LocalUiMotionEnabled
+import app.simt.ui.effects.LongPressTooltipEffect
+import app.simt.ui.effects.ScrollEdgeEffect
+import app.simt.ui.utils.fullScreenBottomInsets
+import app.simt.ui.utils.fullScreenTopInsets
 
 // Only synthetic values. Defaults exercise published localized labels, not fixture substitutes.
 @OptIn(androidx.compose.material3.ExperimentalMaterial3Api::class)

@@ -21,7 +21,7 @@ kotlin {
     }
     jvmToolchain(21)
     android {
-        namespace = "app.shared.ui"
+        namespace = "app.simt.ui"
         compileSdk = libs.versions.compileSdk.get().toInt()
         minSdk = libs.versions.minSdk.get().toInt()
         androidResources { enable = true }
@@ -85,7 +85,7 @@ tasks.withType<Test>().configureEach {
 }
 
 compose.resources {
-    packageOfResClass = "app.shared.ui.resources"
+    packageOfResClass = "app.simt.ui.resources"
     publicResClass = false
 }
 

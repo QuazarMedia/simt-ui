@@ -89,7 +89,7 @@ simt-ui/
   app-ui/
     build.gradle.kts
     api/
-    src/commonMain/kotlin/app/shared/ui/
+    src/commonMain/kotlin/app/simt/ui/
       components/       # current header/list files retain their packages initially
         forms/
       effects/          # current names retained; no extraction-only API rename
@@ -97,8 +97,8 @@ simt-ui/
       internal/platform/
     src/commonMain/composeResources/
       values/, values-fr/, values-ar/, values-es/
-    src/androidMain/kotlin/app/shared/ui/internal/platform/
-    src/iosMain/kotlin/app/shared/ui/internal/platform/
+    src/androidMain/kotlin/app/simt/ui/internal/platform/
+    src/iosMain/kotlin/app/simt/ui/internal/platform/
     src/commonTest/kotlin/
     src/androidHostTest/kotlin/
     src/androidDeviceTest/kotlin/
@@ -130,7 +130,7 @@ Do not split eight files into separate effects, layouts, forms, tokens, platform
 
 ### 3.1 Component/effect/layout organization and public APIs
 
-Preserve `app.shared.ui` packages and current entrypoint names for the initial migration. Coordinates and repository names do not require package renaming. No forwarding compatibility wrappers or aliases are needed. Semantic groupings below apply to new APIs or a separately approved breaking release, not mandatory import churn:
+The initial extraction preserved `app.shared.ui`; the owner's subsequent naming request changes the prerelease public package and generated resources to `app.simt.ui`. Entrypoint names and `app.simt:app-ui` coordinates remain unchanged. Original source paths/hashes in provenance remain historical. No forwarding compatibility wrappers or aliases are added. Semantic groupings below apply to new APIs or a separately approved breaking release:
 
 | Family | Put here | Do not put here |
 |---|---|---|
@@ -275,9 +275,9 @@ Implementation proceeds in validated, committed chunks. UI-01 is split into buil
 | UI-01c | simt-ui | UI-01b | Independent ordinary Android and CMP published-artifact consumers | Local builds complete; runtime gates pending | Android 18 host / 9 emulator tests, CMP 8 host / 8 emulator tests, unsigned R8 release, and both Native frameworks pass; no iOS UI or physical API 28 claim |
 | UI-02 | simt-ui | UI-00, UI-01 | Extract eight primitives, resource locales, platform seams, API baseline, and behavior tests | Private implementation complete; public/runtime blocked | Eight primitives/resources/platform seams, 28 host / 13 emulator tests, explicit API and checked Android/both Native ABI baselines pass; iOS runtime, physical API 28 and final release approval remain external gates |
 | UI-03 | simt-ui / simt-space | UI-00 | Pin/export Cosmos specs with offline schema/checksum and authority verification | Licensed canonical snapshot complete | Upstream pin 86b36f9; 33 byte-identical allowlisted sources/exports/notices, 52 offline tests, every canonical schema and deterministic licensed ZIP pass; no iOS adapter or release approval inferred |
-| UI-04 | simt-ui | UI-02, UI-03 | API docs, owner-gated unsigned local aggregation tooling, artifact scan, and release validation workflow | Licensed private staging complete; actual release/signing blocked | Generated HTML, checked ABI, 111 audit regressions, current/all-ref source and all four licensed publications pass; private integration stage carries licenses/notices; final release still rejects absent runtime/owner/artifact approval and stable version |
-| UI-05 | simt-app | UI-04 | Replace core-ui API dependency, add sibling substitution, retire app-ui gitlink/config safely | Blocked; not implemented | Actual producer staging refuses rights/runtime/owner/release gates; existing API dependency, submodule pin and host configuration preserved |
-| UI-06 | simt-echo | UI-04 | Add common dependency/substitution and adopt one bounded generic primitive | Blocked; not implemented | Same producer gates plus actual Android/iOS adoption evidence required; bounded candidate confirmed, no host dependency or UI changed |
+| UI-04 | simt-ui | UI-02, UI-03 | API docs, owner-gated unsigned local aggregation tooling, artifact scan, and release validation workflow | Licensed private staging complete; actual release/signing blocked | Generated HTML, checked renamed ABI, 113 audit regressions, current/all-ref source and all four licensed publications pass; private integration stage carries licenses/notices; final release still rejects absent runtime/owner/artifact approval and stable version |
+| UI-05 | simt-app | UI-04 | Replace core-ui API dependency/imports and settings inclusion; add sibling substitution; retain original gitlink | Pending private integration | Licensed private stage is available; validate the renamed publication before host edits; original submodule files/history remain untouched |
+| UI-06 | simt-echo | UI-04 | Add common dependency/substitution and adopt one bounded generic primitive | Pending private integration | Licensed private staging permits the rehearsal; preserve FilmStrip semantics/theme/motion; Android checks and Native linking do not establish iOS runtime approval |
 | UI-07 | simt-ui / owners | UI-05, UI-06 | Final public-source/artifact/license review and first Central release | Blocked; not published | Complete runtime/security evidence, host migrations, stable release/tag and final explicit owner/artifact approval; retain confirmed licenses and strict Cosmos validation |
 
 ### UI-01: go/no-go compatibility spike
@@ -307,9 +307,9 @@ Run focused Android host/device tests and iOS tests through the new wrapper afte
 
 ### UI-05/UI-06: producer-first migration and rollback
 
-Before source replacement, use the audited private `stageIntegration` artifact, or a separately approved released artifact. Private staging does not require completed host integration and is not public redistribution/runtime approval; final `releaseCheck`/`stageRelease` retain every owner, rights, runtime, integration and strict Cosmos gate. simt-app changes `api(project(":app-ui"))` to the catalog dependency, adds the composite mapping, and removes `include(":app-ui")`, its gitlink entry, `.gitmodules` entry, and the root Spotless exception only after confirming no remaining module/config references. Submodule removal is a deliberate reviewed operation; never delete `.git/modules/app-ui` or discard local submodule work as cleanup.
+Before source replacement, use the audited private `stageIntegration` artifact, or a separately approved released artifact. Private staging does not require completed host integration and is not public redistribution/runtime approval; final `releaseCheck`/`stageRelease` retain every owner, rights, runtime, integration and strict Cosmos gate. simt-app changes `api(project(":app-ui"))` to the catalog dependency, adds an explicit staged-repository override and sibling composite mapping, and removes only the old settings project inclusion. Retain its gitlink, `.gitmodules` entry, root Spotless exception and original source checkout; retirement is a separate deliberate reviewed operation, not migration cleanup. Never delete `.git/modules/app-ui` or discard local submodule work.
 
-Keep existing imports and app-level wrappers. Run `:core:ui` tests, the measure countdown path, compass immersive/header/tooltip paths, camera overlays, target forms/lists, and representative help/billing screens; then assemble app debug/release as the cross-system phase gate. Preserve current rendering and modal policy unless an explicit accessibility correction is covered by tests.
+Rename current imports to `app.simt.ui` and keep app-level wrappers. Run `:core:ui` tests, the measure countdown path, compass immersive/header/tooltip paths, camera overlays, target forms/lists, and representative help/billing screens; then assemble app debug/release as the cross-system phase gate. Preserve current rendering and modal policy unless an explicit accessibility correction is covered by tests.
 
 For ECHO, add the dependency to `commonMain`, retain the existing application/theme/route/brand structure, and replace only a genuinely equivalent primitive. Link its `Shared` frameworks for both Apple targets and launch the adopted component in Android and iOS hosts. Do not claim host Robolectric tests prove the iOS UI.
 
@@ -435,6 +435,14 @@ The shared `:app-ui` implementation is locally viable without converting simt-ap
 - `spotlessApply localQuality :cosmos-spec:privateSnapshotZip` passes, including 111 audit regressions, 52 Cosmos tests, unchanged Android/both Native ABI checks, existing producer host checks and fresh four-target licensed publications. This run's bounded source/history scan checks 474 entries; publication scan checks 634 entries and selects 66 metadata/artifact/sidecar files. The real licensed private stage contains 72 checksummed entries and explicitly denies final public/runtime approval; archive SHA-256 `67382c2dee269ce8b106cf45f8576ba5ed03d2d6a41bc1ff10cb3ad64d6498b3`. All staged entries are independently rehashed.
 - The real final release command still refuses snapshot version, dirty tree, absent release changelog, five HEAD-tied evidence records and final owner/artifact approval. It no longer reports unconfirmed licenses or canonical-schema defects. No release candidate is created, signed or uploaded.
 - Android IDE previews, the `app.simt.ui` package rename and production consumer migrations remain separate next chunks. No physical Android API 28, iOS runtime or final release approval is fabricated; the unrelated daemon-JVM configuration remains untouched.
+
+### Requested prerelease namespace migration (2026-11-17)
+
+- Current producer packages, Kotlin source directories, Android namespace, private Compose resources, independent consumer imports, generated docs and reviewed Android/Native ABI baselines now use `app.simt.ui`. Maven coordinates and entrypoint names are unchanged; no compatibility aliases are added. All 27 tracked source/resource files and both regenerated ABI dumps are independently compared against the prior committed bytes, permitting naming substitutions only. Original upstream source paths/hashes and frozen Cosmos bytes remain unchanged.
+- `:app-ui:updateKotlinAbi` is explicitly run before verification. The source moves are staged before the tracked-file safety audit. A clean producer rebuild passes `spotlessApply localQuality :app-ui:connectedAndroidDeviceTest`: 113 audit regressions, 52 offline Cosmos tests, 28 host checks, 13 emulator checks, both Native ABI comparisons, generated docs and fresh licensed publications. Bounded source/history scan checks 494 entries; publication scan checks 634 entries, with no findings.
+- Inspection of the first incremental publication found stale old-namespace resource folders alongside the new ones despite passing behavior tests. Cleaning only generated producer/fixture outputs removes them. The ordinary Android packaging check now requires the exact four new-namespace locale paths, rejecting duplicate or foreign resource folders in debug and unsigned R8 release APKs.
+- The clean private stage SHA-256 is `009dbd926ec92eb49f5b0e38b50925b454589ddf4e5588c6e1fde92e24c7b9d9`. All 72 inventory entries are rehashed; Android classes/resources, all four doc archives and both Native resource archives contain no old package folders. Its public/runtime approval flags remain false. Clean independent builds resolve only its extracted `maven/` directory: Android 18 host/nine emulator checks plus exact locales and unsigned R8 packaging pass; CMP eight host/eight emulator checks, common Native metadata and both static frameworks pass.
+- Original submodule checkout/history and host source remain untouched. The pre-migration Android host `:core:ui:testDebugUnitTest --tests app.simt.core.ui.components.forms.IconPickerPaletteTest` passes. No installed iOS runtime is available; no physical API 28 or iOS launch/haptic evidence is inferred. The unrelated daemon-JVM properties remain untouched and excluded from commits.
 
 ## 10. External guidance consulted
 

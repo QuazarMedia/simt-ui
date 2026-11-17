@@ -6,7 +6,7 @@ Shared Compose primitives for Android and Kotlin Multiplatform iOS consumers, pl
 
 ## Modules and boundaries
 
-- `app-ui`: eight generic UI primitives in `app.shared.ui`, private Compose resources, and narrow Android/iOS inset, width, dispatcher and haptic implementations. Targets: Android API 28+, `iosArm64`, `iosSimulatorArm64`. No application framework, service configuration, analytics, persistence, requested permission or runtime network client.
+- `app-ui`: eight generic UI primitives in `app.simt.ui`, private Compose resources, and narrow Android/iOS inset, width, dispatcher and haptic implementations. Targets: Android API 28+, `iosArm64`, `iosSimulatorArm64`. No application framework, service configuration, analytics, persistence, requested permission or runtime network client.
 - `cosmos-spec`: inert, byte-pinned Cosmos 2.3.0 sources and exports from simt-space. No dependency from the runtime library. The pin includes upstream licensing and the canonical union/platform scope fix; all declared schemas must pass.
 - `examples/android-consumer`: separate ordinary Android Compose build, with no CMP plugin, using published filesystem Maven artifacts.
 - `examples/multiplatform-consumer`: separate CMP build using the same published root coordinate and linking both Apple frameworks.

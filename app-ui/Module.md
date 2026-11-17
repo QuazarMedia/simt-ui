@@ -1,6 +1,6 @@
 # Module app-ui
 
-Generic, caller-state-owned Compose primitives in `app.shared.ui` for Android API 28+ and Kotlin consumers targeting `iosArm64` or `iosSimulatorArm64`. Said Elimam confirmed the required UI rights and granted Apache-2.0 licensing and public redistribution on 2026-11-17. This license grant is not final public-release approval; these remain private-development artifacts, not a published stable release.
+Generic, caller-state-owned Compose primitives in `app.simt.ui` for Android API 28+ and Kotlin consumers targeting `iosArm64` or `iosSimulatorArm64`. Said Elimam confirmed the required UI rights and granted Apache-2.0 licensing and public redistribution on 2026-11-17. This license grant is not final public-release approval; these remain private-development artifacts, not a published stable release.
 
 Use the caller's Material3 theme. Labels, callbacks, state, window policy, reduced motion, visibility and host lifecycle remain application-owned. Resources are private and automatically packaged; callers do not reconstruct Android resource IDs or copy assets. English, French, Spanish and Arabic strings are preserved, with default English fallback for unsupported locales.
 
