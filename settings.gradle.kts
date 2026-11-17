@@ -8,6 +8,19 @@ pluginManagement {
 
 plugins {
     id("org.gradle.toolchains.foojay-resolver-convention") version "1.0.0"
+    id("com.gradleup.nmcp.settings") version "1.6.2"
+}
+
+nmcpSettings {
+    centralPortal {
+        username = providers.gradleProperty("centralPortalUsername").orNull
+            ?: System.getenv("CENTRAL_PORTAL_USERNAME")
+            ?: ""
+        password = providers.gradleProperty("centralPortalPassword").orNull
+            ?: System.getenv("CENTRAL_PORTAL_PASSWORD")
+            ?: ""
+        publishingType = "AUTOMATIC"
+    }
 }
 
 dependencyResolutionManagement {

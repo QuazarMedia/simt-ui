@@ -11,6 +11,7 @@ plugins {
     alias(libs.plugins.compose.compiler)
     alias(libs.plugins.dokka)
     `maven-publish`
+    signing
 }
 
 @OptIn(ExperimentalAbiValidation::class)
@@ -151,10 +152,27 @@ publishing {
                     distribution = "repo"
                 }
             }
+            developers {
+                developer {
+                    id = "saidelimam"
+                    name = "Said Elimam"
+                    email = "contact@simt.app"
+                }
+            }
             scm {
-                connection = "scm:git:https://github.com/QuazarMedia/simt-ui.git"
-                url = "https://github.com/QuazarMedia/simt-ui"
+                connection = "scm:git:git://github.com/QuazarMedia/simt-ui.git"
+                developerConnection = "scm:git:ssh://github.com:QuazarMedia/simt-ui.git"
+                url = "https://github.com/QuazarMedia/simt-ui/tree/main"
             }
         }
+    }
+}
+
+signing {
+    val signingKey = providers.gradleProperty("signingKey").orNull
+    val signingPassword = providers.gradleProperty("signingPassword").orNull
+    if (signingKey != null && signingPassword != null) {
+        useInMemoryPgpKeys(signingKey, signingPassword)
+        sign(publishing.publications)
     }
 }

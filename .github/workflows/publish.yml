@@ -1,0 +1,140 @@
+name: publish
+
+on:
+  push:
+    tags: ['v*']
+
+permissions:
+  contents: read
+
+concurrency:
+  group: publish-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  publish:
+    name: publish to Maven Central
+    runs-on: macos-15
+    timeout-minutes: 90
+    environment: release
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+
+      - name: Resolve and validate version
+        id: version
+        env:
+          TAG: ${{ github.ref_name }}
+        run: |
+          set -euo pipefail
+          version="${TAG#v}"
+          if [[ ! "$version" =~ ^(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)$ ]]; then
+            echo "::error::Release tags must use stable SemVer: vMAJOR.MINOR.PATCH"
+            exit 1
+          fi
+          declared="$(awk -F= '$1 == "VERSION_NAME" { print $2 }' gradle.properties)"
+          if [ "$declared" != "$version" ]; then
+            echo "::error::Tag $TAG does not match VERSION_NAME=$declared"
+            exit 1
+          fi
+          approval="release/approvals/$version.json"
+          if [ ! -f "$approval" ]; then
+            echo "::error::Missing committed owner approval: $approval"
+            exit 1
+          fi
+          echo "value=$version" >> "$GITHUB_OUTPUT"
+          echo "approval=$approval" >> "$GITHUB_OUTPUT"
+
+      - name: Check release secrets
+        env:
+          CENTRAL_USERNAME: ${{ secrets.CENTRAL_PORTAL_USERNAME }}
+          CENTRAL_PASSWORD: ${{ secrets.CENTRAL_PORTAL_PASSWORD }}
+          SIGNING_KEY: ${{ secrets.SIGNING_KEY }}
+          SIGNING_PASSWORD: ${{ secrets.SIGNING_PASSWORD }}
+        run: |
+          missing=""
+          [ -n "$CENTRAL_USERNAME" ] || missing="$missing CENTRAL_PORTAL_USERNAME"
+          [ -n "$CENTRAL_PASSWORD" ] || missing="$missing CENTRAL_PORTAL_PASSWORD"
+          [ -n "$SIGNING_KEY" ] || missing="$missing SIGNING_KEY"
+          [ -n "$SIGNING_PASSWORD" ] || missing="$missing SIGNING_PASSWORD"
+          if [ -n "$missing" ]; then
+            echo "::error::Missing release environment secrets:$missing"
+            exit 1
+          fi
+
+      - name: Set up JDK 21
+        uses: actions/setup-java@v6
+        with:
+          distribution: temurin
+          java-version: '21'
+
+      - name: Set up Node 22
+        uses: actions/setup-node@v6
+        with:
+          node-version: '22'
+          cache: npm
+          cache-dependency-path: cosmos-spec/package-lock.json
+
+      - name: Set up Android SDK
+        uses: android-actions/setup-android@v4
+        with:
+          packages: 'platform-tools platforms;android-37 build-tools;37.0.0'
+
+      - name: Set up Gradle
+        uses: gradle/actions/setup-gradle@v6
+
+      - name: Install locked Cosmos tooling
+        run: npm --prefix cosmos-spec ci --ignore-scripts --no-audit --no-fund
+
+      - name: Verify release authorization
+        run: >-
+          ./gradlew --no-daemon --max-workers=2 releaseCheck
+          -PVERSION_NAME="${{ steps.version.outputs.value }}"
+          -PreleaseApproval="${{ steps.version.outputs.approval }}"
+
+      - name: Publish to Maven Central
+        env:
+          CENTRAL_PORTAL_USERNAME: ${{ secrets.CENTRAL_PORTAL_USERNAME }}
+          CENTRAL_PORTAL_PASSWORD: ${{ secrets.CENTRAL_PORTAL_PASSWORD }}
+          ORG_GRADLE_PROJECT_signingKey: ${{ secrets.SIGNING_KEY }}
+          ORG_GRADLE_PROJECT_signingPassword: ${{ secrets.SIGNING_PASSWORD }}
+        run: >-
+          ./gradlew --no-daemon --max-workers=2 publishAggregationToCentralPortal
+          -PVERSION_NAME="${{ steps.version.outputs.value }}"
+          --stacktrace
+
+  release:
+    name: create GitHub release
+    needs: publish
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v7
+
+      - name: Create GitHub release
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TAG: ${{ github.ref_name }}
+        run: |
+          set -euo pipefail
+          version="${TAG#v}"
+          notes="$(awk -v v="$version" '
+            $0 ~ "^## " v "([[:space:]]|$)" { found = 1; next }
+            found && /^## / { exit }
+            found && NF == 0 && !started { next }
+            found { started = 1; print }
+          ' CHANGELOG.md)"
+          {
+            if [ -n "$notes" ]; then
+              printf '%s\n\n' "$notes"
+            fi
+            printf 'Published to Maven Central as `app.simt:app-ui:%s`.\n' "$version"
+          } > release-notes.md
+          gh release create "$TAG" \
+            --repo "$GITHUB_REPOSITORY" \
+            --title "$TAG" \
+            --verify-tag \
+            --notes-file release-notes.md

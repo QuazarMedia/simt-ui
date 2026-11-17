@@ -26,7 +26,7 @@ npm --prefix cosmos-spec ci --ignore-scripts --no-audit --no-fund
 
 The npm bootstrap is explicit and may download locked dependencies. Subsequent specification checks resolve schemas offline and never install dependencies or run the upstream generator. Gradle/dependency bootstrap may use the configured public repositories; this is separate from offline library runtime behavior.
 
-Local Maven publications live in ignored `build/maven-repository`. All four publications carry metadata, sources and generated HTML documentation; native targets also carry resource ZIPs. No Maven Local or remote uploader is configured. ABI dumps in `app-ui/api` are reviewed source-controlled baselines: `:app-ui:checkKotlinAbi` checks them, while `:app-ui:updateKotlinAbi` is an explicit maintainer action, never an automatic repair during verification.
+Local Maven publications live in ignored `build/maven-repository`. All four publications carry metadata, sources and generated HTML documentation; native targets also carry resource ZIPs. Local tasks do not upload unless `publishAggregationToCentralPortal` is explicitly invoked with release credentials. ABI dumps in `app-ui/api` are reviewed source-controlled baselines: `:app-ui:checkKotlinAbi` checks them, while `:app-ui:updateKotlinAbi` is an explicit maintainer action, never an automatic repair during verification.
 
 ## Independent consumption rehearsal
 
@@ -59,6 +59,14 @@ npm --prefix cosmos-spec run check:canonical-schema
 ```
 
 The first command validates the exact licensed pin and 52 offline tests, and creates a deterministic local ZIP retaining the three upstream license/notice files. The strict second command passes: the committed upstream schema requires exactly 36 union sections and the correct 17/16 common-plus-platform sets, rejecting missing, duplicate, extra and foreign sections. All 33 reviewed files are byte-identical to upstream commit `86b36f9e9b13e2426d54207b60beb7323fbcd5d6`; no local canonical bytes are weakened or repaired. Cosmos remains authoritative upstream; this snapshot does not introduce a normative iOS adapter.
+
+## Release automation
+
+Pushing a stable `vMAJOR.MINOR.PATCH` tag runs `.github/workflows/publish.yml` on macOS. The workflow requires the tag version to match `VERSION_NAME`, installs the locked Cosmos tooling, passes `releaseCheck`, signs every publication in memory, uploads the aggregate to the Maven Central Portal with automatic release, and creates the matching GitHub Release only after Central accepts the deployment.
+
+Configure a protected GitHub `release` environment with `CENTRAL_PORTAL_USERNAME`, `CENTRAL_PORTAL_PASSWORD`, `SIGNING_KEY`, and `SIGNING_PASSWORD`. The Central credentials are the generated Sonatype user token; the signing key is an ASCII-armored private PGP key. No credential belongs in the repository.
+
+Before creating a tag, commit `release/approvals/VERSION.json` and every workspace-relative evidence document it references. The approval must satisfy the exact schema below, bind to the tagged HEAD and audited artifact inventory, and pass locally with `./gradlew releaseCheck -PreleaseApproval=release/approvals/VERSION.json`. The workflow never manufactures approval or runtime evidence and never publishes after a failed gate.
 
 ## Source, publication and release audits
 
