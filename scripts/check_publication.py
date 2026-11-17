@@ -773,9 +773,53 @@ def check_release(root, repo, version, approval):
     return audit
 
 
+def integration_state(root):
+    head = git(root, 'rev-parse', '--verify', 'HEAD').strip().decode('ascii')
+    if not re.fullmatch(r'[0-9a-f]{40,64}', head):
+        raise ValidationError('HEAD', 'invalid-head')
+    files = [{'path': p, 'sha256': hashlib.sha256(read_file(root, p)).hexdigest()}
+             for p in sorted(source_files(root))]
+    return {'head': head, 'sourceSha256': hashlib.sha256(json.dumps(files, sort_keys=True).encode()).hexdigest(),
+            'dirtyTree': bool(git(root, 'status', '--porcelain=v1', '-z', '--untracked-files=normal'))}
+
+
+def stage_integration(root, repo, version, output):
+    audit = Audit('private-integration-stage')
+    try:
+        state = integration_state(root)
+        audit.merge(check_source(root))
+        publication = check_publication(repo, version)
+        audit.merge(publication)
+        audit.inventory.update(('maven/' + p, value) for p, value in publication.inventory.items())
+        for relative in ('app-ui/source-provenance.json', 'README.md', 'app-ui/Module.md'):
+            data = read_file(root, relative)
+            Scanner(audit).scan(data, relative)
+            audit.record('source/' + relative, data)
+        manifest = {'unsigned': True, 'purpose': 'private-consumer-integration',
+                    'publicRedistributionApproved': False, 'runtimeValidationApproved': False,
+                    'signing': 'separate-release-owner-requirement', **state}
+
+        def final_check():
+            result = check_source(root)
+            if integration_state(root) != state:
+                result.add('source', 'stage-source-changed')
+            return result
+
+        return write_stage(root, repo, version, audit, output, manifest, final_check)
+    except ValidationError as error:
+        audit.catch(error)
+    return audit
+
+
 def stage_release(root, repo, version, approval, output):
     audit = check_release(root, repo, version, approval)
     audit.scope = 'unsigned-local-stage'
+    manifest = {'unsigned': True, 'signing': 'separate-release-owner-requirement'}
+    return write_stage(root, repo, version, audit, output, manifest,
+                       lambda: check_release_gates(root, version, approval))
+
+
+def write_stage(root, repo, version, audit, output, manifest, final_check):
     if not audit.ok:
         return audit
     try:
@@ -798,8 +842,8 @@ def stage_release(root, repo, version, approval, output):
                     raise ValidationError(name, 'stage-input-changed')
                 entries[name] = data
             entries['artifact-checksums.json'] = (json.dumps(
-                {'unsigned': True, 'signing': 'separate-release-owner-requirement',
-                 'version': version, 'artifacts': [{'path': p, **audit.inventory[p]} for p in sorted(audit.inventory)]},
+                {**manifest, 'version': version,
+                 'artifacts': [{'path': p, **audit.inventory[p]} for p in sorted(audit.inventory)]},
                 sort_keys=True, separators=(',', ':')) + '\n').encode('utf-8')
             if sum(len(d) for d in entries.values()) > MAX_EXPANDED:
                 raise ValidationError('stage', 'stage-limit')
@@ -808,9 +852,8 @@ def stage_release(root, repo, version, approval, output):
                 info.create_system = 3
                 info.external_attr = (stat.S_IFREG | 0o644) << 16
                 archive.writestr(info, data)
-        # Recheck authorization/tree after the audit, before any candidate exists.
-        final_gates = check_release_gates(root, version, approval)
-        audit.merge(final_gates)
+        # Recheck the applicable gates before any candidate exists.
+        audit.merge(final_check())
         if not audit.ok:
             return audit
         with destination.open('xb') as stream:
@@ -837,6 +880,11 @@ def parser():
     publication = sub.add_parser('publication', help='Audit only the four exact app.simt app-ui publications for VERSION_NAME.')
     publication.add_argument('--repo', required=True, help='Local Maven repository, normally build/maven-repository.')
     publication.add_argument('--version', required=True, help='Exact VERSION_NAME; stable x.y.z or x.y.z-SNAPSHOT.')
+    integration = sub.add_parser('stage-integration', help='Create an audited private-consumer ZIP before integration; never public release approval.')
+    integration.add_argument('--root', required=True, help='Source Git workspace; source state is fingerprinted and rechecked.')
+    integration.add_argument('--repo', required=True, help='Audited local Maven repository.')
+    integration.add_argument('--version', required=True, help='Exact stable or snapshot VERSION_NAME.')
+    integration.add_argument('--output', required=True, help='New private .zip inside the workspace; no signing/upload.')
     for name in ('release', 'stage'):
         command = sub.add_parser(name, help='Require owner rights/review, stable tag, clean tree, HEAD evidence, strict Cosmos and fresh artifacts.' +
                                  (' Create local unsigned ZIP only after all gates.' if name == 'stage' else ''),
@@ -859,6 +907,8 @@ def main(argv=None):
             audit = check_publication(args.repo, args.version)
         elif args.command == 'release':
             audit = check_release(args.root, args.repo, args.version, args.approval)
+        elif args.command == 'stage-integration':
+            audit = stage_integration(args.root, args.repo, args.version, args.output)
         else:
             audit = stage_release(args.root, args.repo, args.version, args.approval, args.output)
     except ValidationError as error:

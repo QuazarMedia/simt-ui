@@ -79,6 +79,26 @@ val releaseApproval = providers.gradleProperty("releaseApproval").map { file(it)
 val publicationRepository = layout.buildDirectory.dir("maven-repository").get().asFile.absolutePath
 val publicationVersion = project.version.toString()
 
+tasks.register<Exec>("stageIntegration") {
+    group = "verification"
+    dependsOn("localQuality")
+    workingDir(rootDir)
+    commandLine(
+        "python3",
+        "-B",
+        "scripts/check_publication.py",
+        "stage-integration",
+        "--root",
+        rootDir.absolutePath,
+        "--repo",
+        publicationRepository,
+        "--version",
+        publicationVersion,
+        "--output",
+        layout.buildDirectory.file("simt-ui-$publicationVersion-private-integration.zip").get().asFile.absolutePath,
+    )
+}
+
 listOf("releaseCheck" to "release", "stageRelease" to "stage").forEach { (taskName, mode) ->
     tasks.register<Exec>(taskName) {
         group = "verification"

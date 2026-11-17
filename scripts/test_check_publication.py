@@ -766,6 +766,111 @@ class ReleaseTests(unittest.TestCase):
                 self.assertFalse(audit.stage_release(self.root, self.fixture.repo, '1.2.3', self.approval, output).ok)
 
 
+class IntegrationStageTests(unittest.TestCase):
+    def setUp(self):
+        self.tmp = tempfile.TemporaryDirectory()
+        self.addCleanup(self.tmp.cleanup)
+        self.fixture = Fixture(self.tmp.name)
+        for relative in ('README.md', 'app-ui/Module.md'):
+            self.fixture.put(relative, 'Private integration documentation')
+        self.fixture.put('app-ui/source-provenance.json', encoded({'licenseStatus': 'Unconfirmed; owner review required'}))
+        self.state = {'head': HEAD, 'sourceSha256': 'b' * 64, 'dirtyTree': True}
+        self.real_state = audit.integration_state
+        state = patch.object(audit, 'integration_state', return_value=self.state)
+        state.start()
+        self.addCleanup(state.stop)
+        source = patch.object(audit, 'check_source', side_effect=lambda root: audit.Audit('source-safety'))
+        source.start()
+        self.addCleanup(source.stop)
+
+    def stage(self, name='integration.zip'):
+        output = self.fixture.root / 'build' / name
+        return audit.stage_integration(self.fixture.root, self.fixture.repo, self.fixture.version, output), output
+
+    def test_snapshot_before_approval_and_consumer_evidence_is_private_only(self):
+        result, output = self.stage()
+        self.assertTrue(result.ok, result.payload())
+        with zipfile.ZipFile(output) as stream:
+            manifest = json.loads(stream.read('artifact-checksums.json'))
+            self.assertEqual(manifest['purpose'], 'private-consumer-integration')
+            self.assertFalse(manifest['publicRedistributionApproved'])
+            self.assertFalse(manifest['runtimeValidationApproved'])
+            self.assertTrue(manifest['unsigned'])
+            self.assertEqual(manifest['head'], HEAD)
+            self.assertTrue(manifest['dirtyTree'])
+            self.assertFalse(any(p.startswith('source/cosmos-spec/') for p in stream.namelist()))
+            for entry in manifest['artifacts']:
+                data = stream.read(entry['path'])
+                self.assertEqual(digest(data), entry['sha256'])
+                self.assertEqual(len(data), entry['size'])
+
+    def test_repeated_inputs_are_deterministic(self):
+        first, one = self.stage('one.zip')
+        second, two = self.stage('two.zip')
+        self.assertTrue(first.ok and second.ok)
+        self.assertEqual(one.read_bytes(), two.read_bytes())
+
+    def test_bad_publication_blocks_before_output(self):
+        (self.fixture.repo / self.fixture.paths['app-ui-android', ('', 'aar')]).write_bytes(b'changed')
+        result, output = self.stage()
+        self.assertFalse(result.ok)
+        self.assertFalse(output.exists())
+
+    def test_source_safety_remains_required(self):
+        blocked = audit.Audit('source-safety')
+        blocked.add('source', 'credential')
+        with patch.object(audit, 'check_source', return_value=blocked):
+            result, output = self.stage()
+        self.assertFalse(result.ok)
+        self.assertFalse(output.exists())
+
+    def test_source_state_change_blocks_before_output(self):
+        with patch.object(audit, 'integration_state', side_effect=[self.state, {**self.state, 'sourceSha256': 'c' * 64}]):
+            result, output = self.stage()
+        self.assertIn(('source', 'stage-source-changed'), result.findings)
+        self.assertFalse(output.exists())
+
+    def test_artifact_change_after_audit_blocks_before_output(self):
+        original = audit.read_file
+        reads = 0
+        def changed(base, relative, *args):
+            nonlocal reads
+            data = original(base, relative, *args)
+            if str(relative) == self.fixture.paths['app-ui-android', ('', 'aar')]:
+                reads += 1
+                if reads > 1:
+                    return data + b'changed'
+            return data
+        with patch.object(audit, 'read_file', side_effect=changed):
+            result, output = self.stage()
+        self.assertFalse(result.ok)
+        self.assertIn('stage-input-changed', {c for _, c in result.findings})
+        self.assertFalse(output.exists())
+
+    def test_existing_output_is_never_replaced(self):
+        output = self.fixture.put('build/integration.zip', 'existing user data')
+        result, _ = self.stage()
+        self.assertFalse(result.ok)
+        self.assertEqual(output.read_text(), 'existing user data')
+
+    def test_output_cannot_escape_workspace_or_follow_symlink(self):
+        link = self.fixture.root / 'build/linked.zip'
+        link.symlink_to('other.zip')
+        for output in (link, self.fixture.root.parent / 'outside.zip'):
+            with self.subTest(output=output.name):
+                result = audit.stage_integration(self.fixture.root, self.fixture.repo, self.fixture.version, output)
+                self.assertFalse(result.ok)
+
+    def test_source_fingerprint_changes_without_git_status_change(self):
+        path = self.fixture.put('tracked.kt', 'first')
+        with patch.object(audit, 'source_files', return_value=['tracked.kt']), patch.object(audit, 'git', side_effect=[HEAD.encode(), b' M tracked.kt', HEAD.encode(), b' M tracked.kt']):
+            first = self.real_state(self.fixture.root)
+            path.write_text('second')
+            second = self.real_state(self.fixture.root)
+        self.assertNotEqual(first['sourceSha256'], second['sourceSha256'])
+        self.assertEqual(first['dirtyTree'], second['dirtyTree'])
+
+
 class CommandTests(unittest.TestCase):
     def test_force_and_invalid_arguments_are_redacted(self):
         out, err = io.StringIO(), io.StringIO()
