@@ -35,6 +35,22 @@
     {
       "sourcePath": "src/main/java/app/shared/ui/effects/ScrollEdgeEffect.kt",
       "sha256": "4bf823335e1d4403d8adf513bd72f72503788dfc136d25920c51cdd1674bf871"
+    },
+    {
+      "sourcePath": "src/main/java/app/shared/ui/effects/LongPressTooltipEffect.kt",
+      "sha256": "780a8f801bd1608b6d635fe991d0ed6f95d5003710a895a0bdb3d4a8c2dc1f43"
+    },
+    {
+      "sourcePath": "src/main/java/app/shared/ui/effects/CountdownEffect.kt",
+      "sha256": "a74b425396425661866be410273d8c9c607eebab177ddc6918e105863293df7b"
+    },
+    {
+      "sourcePath": "src/main/java/app/shared/ui/components/TopOverlayHeader.kt",
+      "sha256": "afab394aa716c807d87aaca0a46ce0edc9d951b2b605ed5304658ab92458e0c6"
+    },
+    {
+      "sourcePath": "src/main/java/app/shared/ui/utils/FullscreenInsets.kt",
+      "sha256": "8cc010126b59da49394a07a319b04b8dcf03f19d88cca9561354055bdc00b2af"
     }
   ]
 }
