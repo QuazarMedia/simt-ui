@@ -271,7 +271,7 @@ Implementation proceeds in validated, committed chunks. UI-01 is split into buil
 | UI-00 | simt-ui / rights owners | - | Approve export manifest, code/spec licenses, provenance, and public-data boundaries | Pending | Rights/export review required |
 | UI-01 | simt-ui | - | Independent KMP/resource/API compatibility spike plus two published-artifact consumer fixtures | In progress | Scaffold and first forms slice pass; remaining primitives and independent consumer runtime gates remain |
 | UI-01a | simt-ui | - | Standalone wrapper/catalog, KMP Android/iOS targets, resource wiring, and local publication | Complete | `ca05f60` — commands below passed |
-| UI-01b | simt-ui | UI-01a | Portable primitives/resources and behavioral tests | In progress | First forms slice: 8 host and 3 emulator tests pass; all-target compilation and four-locale packaging verified; remaining primitives follow separately |
+| UI-01b | simt-ui | UI-01a | Portable primitives/resources and behavioral tests | In progress | Forms plus list/scroll slices validated; tooltip/header/countdown/platform seams remain |
 | UI-01c | simt-ui | UI-01b | Independent ordinary Android and CMP published-artifact consumers | Pending | Variant selection, runtime resources, and Native framework linking required |
 | UI-02 | simt-ui | UI-00, UI-01 | Extract eight primitives, resource locales, platform seams, API baseline, and behavior tests | Pending | Clean standalone build and cross-platform UI tests required |
 | UI-03 | simt-ui / simt-space | UI-00 | Pin/export Cosmos specs with offline schema/checksum and authority verification | Pending | Licensed export and reproducibility evidence required |
@@ -350,6 +350,14 @@ The next independently valuable step is UI-01's local compatibility spike, along
 - The initial native artifacts embedded personal build paths in klib IR strings. Both iOS targets now pass the supported `-Xklib-relative-path-base` compiler option using the repository root; rebuilt latest publications contain no matching personal paths. A bounded credential/private-key/personal-path pattern check inspected 127 nested artifact entries and 12 source/config/provenance/plan files with no findings; this is not comprehensive release security clearance.
 - An independent read-only review approved the bounded forms slice with residual runtime/accessibility test breadth limitations; it verified the expanded-edge tap injects actual input without coordinate clamping.
 - iOS targets compile as klibs, but no iOS simulator runtime is installed and no framework linking/UI launch is claimed. Android API 28, IME composition, translated runtime selection/unsupported-locale fallback, large text/RTL, independent consumer fixtures, remaining primitives, API baselines, and comprehensive release artifact/security/license review remain separate gates. Root `check` skips Native tests with no test sources; its success is not Native UI evidence.
+
+### Implementation evidence: UI-01b list/scroll slice (2026-11-17)
+
+- Both `WindowedList` overloads and `ScrollEdgeEffect` preserve source signatures, keyed row identity, reverse-layout/RTL mapping, caller layout scopes, and alpha-mask rendering. Android preview code is excluded from common runtime; animation is an explicit implementation dependency.
+- `LocalUiMotionEnabled` is caller-owned effective motion/visibility policy. Disabling it cancels infinite arrow motion and renders edge/arrow visibility immediately; default behavior remains animated. Zero-width and inactive fades do not allocate an offscreen mask.
+- Five host tests cover empty/populated lists, shared scrolling state, remembered state following stable keys on reorder, reverse layout, and actual taps through decorative arrows at both edges.
+- Seven Android emulator render tests measure red content dissolving over a blue parent via `DstIn`, vertical forward/backward edges, horizontal LTR/RTL, reversed lists, disabled/zero fades, and frame-stable arrows with immediate visibility when motion is disabled. This is pixel/input evidence on Android, not iOS rendering evidence.
+- Original source hashes are added to the existing restricted provenance ledger and verify against upstream. The full regression run passes 13 host and 10 emulator tests, Android and both iOS compilation, formatting, local publications, metadata artifact hashes, and bounded credential/private-key/personal-path archive checks. An interrupted shared-daemon invocation was diagnosed and the final successful run used `--no-daemon --max-workers=2`; no checks were disabled.
 
 ## 10. External guidance consulted
 

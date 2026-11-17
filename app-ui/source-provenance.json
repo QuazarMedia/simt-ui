@@ -27,6 +27,14 @@
     {
       "sourcePath": "src/main/res/values-es/strings.xml",
       "sha256": "505742efb651b82fe2638404d38dd761a680f3879f69b146a690c0a0869697ef"
+    },
+    {
+      "sourcePath": "src/main/java/app/shared/ui/components/WindowedList.kt",
+      "sha256": "1d596c47d9a94a5df86bfdb65ecc119a67ea0fb51701dc8b8d0963fb7735c3a2"
+    },
+    {
+      "sourcePath": "src/main/java/app/shared/ui/effects/ScrollEdgeEffect.kt",
+      "sha256": "4bf823335e1d4403d8adf513bd72f72503788dfc136d25920c51cdd1674bf871"
     }
   ]
 }
