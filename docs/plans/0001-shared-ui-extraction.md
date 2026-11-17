@@ -471,6 +471,14 @@ The following records the checkpoint at `194dfe3`; later dated sections supersed
 - At this documentation assessment, `localQuality` passes 113 audit regressions, 52 Cosmos checks, Android/both Native ABI checks, generated documentation, fresh publications and a 576-entry source/history audit. The real `releaseCheck` reaches a clean 634-entry exact publication audit, then rejects 11 genuine authorization findings across stable SemVer, `CHANGELOG.md`, dirty source, five HEAD-tied evidence records, two provenance owner reviews and final owner approval (`scanned: 1253`).
 - Each implemented producer/prerequisite/consumer chunk is committed. No consumer branch, producer implementation commit, canonical Cosmos repair, artifact or tag is pushed by this follow-up without fresh authorization.
 
+### Local main reconciliation and stable release candidate (2026-11-17)
+
+- simt-app current main was clean but had advanced by two unrelated commits. A fresh reconciliation branch applied the Hilt prerequisite as `3d41e6964` and the UI adoption as `2fe9aa5cb`. The only conflict was in `PromptDialog` documentation: current main's suggestion-field behavior was retained and only the shared field reference moved to `app.simt.ui`. Staged-Maven and sibling-composite focused tests pass, along with debug app assembly, Wear Kotlin compilation and safe release Kotlin compilation. Local simt-app main is fast-forwarded to the reconciled commits; no push occurred.
+- Clean ECHO main was fast-forwarded to `5443527`. Its 23 Review host tests, Android debug assembly and both Native framework links pass in staged-Maven and sibling-composite modes. No push occurred.
+- Release preparation commit `023fc48` sets stable version `0.1.0`, adds the first changelog and points independent examples at the stable local publication. Full producer quality, stable Android host/locales/unsigned-R8 packaging, stable KMP host/metadata/framework links, producer device tests and both independent Android device suites pass on the available API 36 emulator.
+- No iOS simulator runtime is installed, and no physical Android API 28 device is attached. iOS runtime/resources/insets/accessibility/haptics, Android floor rendering/resources/haptics and Android Studio Preview-panel evidence remain external. A requested full cloud security scan was explicitly declined at its upload confirmation, so no code was uploaded and no final cloud security evidence is claimed.
+- The candidate remains deliberately untagged and unapproved for release. Final owner review must bind the exact final HEAD, provenance digests, artifact inventory and genuine evidence. Signing, upload, remote pushes and public release remain separate explicit actions.
+
 ## 10. External guidance consulted
 
 Official documentation was consulted on 2026-11-17. Re-check it when implementing because supported toolchains and Android-KMP APIs change.
