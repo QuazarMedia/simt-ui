@@ -41,7 +41,9 @@ examples/multiplatform-consumer/gradlew -p examples/multiplatform-consumer --no-
 
 Both examples exclusively resolve group `app.simt` from `../../build/maven-repository` by default. Override with `-PuiRepository=/absolute/path/to/repository` and `-PuiVersion=<actually-staged-version>`. They do not use `includeBuild`, Maven Local, project substitution, producer sources or manually copied library assets.
 
-An Android consumer declares `implementation("app.simt:app-ui:<actually-staged-version>")`; a KMP consumer puts the same dependency in `commonMain.dependencies`. Keep a host's existing Compose/BOM and plugin policy unless real resolution proves a change necessary. The examples reproduce Android host pins without upgrading either production application. A production catalog must not point to an imaginary release; published/composite host migrations remain gated and unapplied.
+An Android consumer declares `implementation("app.simt:app-ui:<actually-staged-version>")`; a KMP consumer puts the same dependency in `commonMain.dependencies`. Keep a host's existing Compose/BOM and plugin policy unless real resolution proves a change necessary. The examples reproduce Android host pins without upgrading either production application. Production-consumer adoption is committed on isolated local branches, using `0.1.0-SNAPSHOT` only through an explicit private Maven repository or sibling composite substitution; it is not merged to either main branch or evidence of a public release.
+
+The compatible producer stage is `simt-ui-0.1.0-SNAPSHOT-43c285c-integration.zip`, SHA-256 `9583a2bc51a6889edca328facd7a73f6930ddaf2e45edffd87633c29e9270b6c`. Its 72 manifest entries were independently rehashed. The simt-app adoption is commit `fb020912f` on `slice/ui05-shared-ui`, after prerequisite `f5b53e053`; the ECHO adoption is commit `5443527` on `slice/ui06-shared-ui`. Both staged-artifact and sibling-composite validation pass. These local commits remain subject to safe main-branch reconciliation and fresh authorization before any push.
 
 ## Android IDE previews
 
