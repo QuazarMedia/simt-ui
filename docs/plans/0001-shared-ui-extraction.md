@@ -450,6 +450,12 @@ The shared `:app-ui` implementation is locally viable without converting simt-ap
 - Actual `SharedUiPreviewsTest` results contain ten tests with zero failures/errors/skips. Editing fields, scrolling both axes/lists, selected/unselected/disabled header tools and the stable countdown are asserted. Debug assembly and exact four-locale debug/unsigned-minified-release packaging pass; archive inspection verifies preview/tooling classes are present in debug and absent from release.
 - Main review confirms source scope, all 113 audit regressions, formatting and source/history safety (530 entries, no findings). The independent synthetic fixture is installed/launched on API 36 and its settled screenshot is visually inspected; this is not an Android IDE Preview-panel rendering claim. Actual IDE interactive tooltip rendering, physical API 28 and iOS runtime/haptic evidence remain external checks. Original submodule, producer ABI, provenance/Cosmos and daemon-JVM properties are unchanged.
 
+### Observed sibling toolchain compatibility prerequisite (2026-11-17)
+
+- The real simt-app sibling invocation fails `AgpVersionCompatibilityRule`: producer AGP 9.3.1 and host AGP 9.5.1 cannot coexist in one composite. Staged-artifact mode passes five focused host checks and compiles all 17 feature Kotlin modules; full app assembly separately exposes an unchanged Hilt timing-parameter binding defect. Release R8's task graph includes a Crashlytics upload, so it is not executed.
+- Producer AGP is aligned to 9.5.1 with checksum-pinned Gradle 9.9.1 (`d8a18a7a841dd5df825d35a685fad6f2d7f12ac0c280e57b67c27b4a520ba228`). Host pins, Kotlin/Compose/library API, original submodule and policies are unchanged. Wrapper generation and full `localQuality :app-ui:connectedAndroidDeviceTest` pass: 113 audit regressions, 52 Cosmos tests, 28 host/13 emulator checks and unchanged Android/Native ABI comparisons. No ABI baseline is regenerated.
+- The same real sibling invocation now passes both `IconPickerPaletteTest` checks and all three new `SharedUiIntegrationTest` checks. Producer compatibility is a separately committed prerequisite before host adoption, not a version-rule bypass. Current source/provenance/Cosmos bytes and the unrelated daemon-JVM configuration remain protected.
+
 ## 10. External guidance consulted
 
 Official documentation was consulted on 2026-11-17. Re-check it when implementing because supported toolchains and Android-KMP APIs change.
