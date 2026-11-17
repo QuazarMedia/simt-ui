@@ -16,13 +16,13 @@ Start with exactly two production modules:
 | `:app-ui` | Theme-respecting Compose primitives; Android and iOS implementations only where needed | Maven Central KMP dependency; local composite substitution during development |
 | `:cosmos-spec` | Licensed, versioned Cosmos specification snapshots, machine-readable exports, provenance, and verification | Repository documentation and reproducible ZIP; not an application runtime dependency |
 
-This is an architectural go-ahead, **not a verified build-compatibility claim**. The extraction is small enough to justify KMP, but resource packaging, experimental Material APIs, Native linking, and the consumers' current toolchain ranges must pass slice UI-01 before source migration is committed.
+At investigation time this was an architectural go-ahead, **not a verified build-compatibility claim**. The later private extraction and independent published-artifact builds now validate Android resource packaging, common Material APIs and both Native framework links, as recorded below. Native runtime and the remaining producer gates still prevent production host migration.
 
 “Without big impact” means: no conversion of simt-app to KMP; no navigation, DI, domain, persistence, or permission changes; no wholesale `:core:ui` extraction; no forced visual redesign; no mass import rename; no manual copying of library assets into consuming applications. A broad toolchain migration or unresolved publication/resource issue fails this condition.
 
 If that gate fails, report the concrete blocker and obtain a decision before proceeding. The fallback is `:ui-android` plus `:cosmos-spec`, directly usable by simt-app and ECHO's `androidMain` only. Do not claim an Android AAR can be imported from ECHO's `commonMain` or used on iOS; do not maintain duplicate Android and common component implementations by default.
 
-## 2. What exists today
+## 2. Inspected source state before extraction
 
 ### 2.1 Extraction boundary and real dependency path
 
@@ -276,9 +276,9 @@ Implementation proceeds in validated, committed chunks. UI-01 is split into buil
 | UI-02 | simt-ui | UI-00, UI-01 | Extract eight primitives, resource locales, platform seams, API baseline, and behavior tests | Private implementation complete; public/runtime blocked | Eight primitives/resources/platform seams, 28 host / 13 emulator tests, explicit API and checked Android/both Native ABI baselines pass; iOS runtime, physical API 28 and rights remain external gates |
 | UI-03 | simt-ui / simt-space | UI-00 | Pin/export Cosmos specs with offline schema/checksum and authority verification | Private snapshot complete; public blocked | 30 byte-identical allowlisted sources/exports, 44 offline tests and deterministic ZIP pass; four preserved upstream schema defects and unconfirmed licenses block public conformance/distribution |
 | UI-04 | simt-ui | UI-02, UI-03 | API docs, owner-gated unsigned local aggregation tooling, artifact scan, and release validation workflow | Private tooling complete; actual release/signing blocked | 36 generated HTML pages, checked ABI, 80 audit tests, current/all-ref source and exact four-publication audits pass; actual staging refuses missing rights/runtime/approval and creates no ZIP |
-| UI-05 | simt-app | UI-04 | Replace core-ui API dependency, add sibling substitution, retire app-ui gitlink/config safely | Pending | Published/composite app builds and targeted UI regressions required |
-| UI-06 | simt-echo | UI-04 | Add common dependency/substitution and adopt one bounded generic primitive | Pending | Android plus device/simulator framework linking and UI evidence required |
-| UI-07 | simt-ui / owners | UI-05, UI-06 | Final public-source/artifact/license review and first Central release | Pending | Explicit publication approval required |
+| UI-05 | simt-app | UI-04 | Replace core-ui API dependency, add sibling substitution, retire app-ui gitlink/config safely | Blocked; not implemented | Actual producer staging refuses rights/runtime/owner/release gates; existing API dependency, submodule pin and host configuration preserved |
+| UI-06 | simt-echo | UI-04 | Add common dependency/substitution and adopt one bounded generic primitive | Blocked; not implemented | Same producer gates plus actual Android/iOS adoption evidence required; bounded candidate confirmed, no host dependency or UI changed |
+| UI-07 | simt-ui / owners | UI-05, UI-06 | Final public-source/artifact/license review and first Central release | Blocked; not published | Confirm licenses, strict Cosmos, runtime/security evidence, host migrations, stable release/tag and explicit owner approval first |
 
 ### UI-01: go/no-go compatibility spike
 
@@ -292,7 +292,7 @@ Go only if no host architectural migration or manual asset copying is needed and
 
 ### UI-02: behavior and library-quality gates
 
-Proposed test files (created with implementation, not present now): `WindowedListTest`, `ScrollEdgeEffectTest`, `ClearableTextFieldTest`, `CityCountryFieldsTest`, `LongPressTooltipTest`, `TopOverlayHeaderTest`, `CountdownEffectTest`, `FullscreenInsetsTest`, and resource locale/packaging tests. Match test runner/source set to behavior; pure tests cannot prove hit targets, GPU rendering, native keyboard behavior, or bundle packaging.
+Original proposed coverage areas: list/scroll, both forms, tooltip/header, countdown, fullscreen insets and resource locale/packaging tests. Implemented runner grouping and executed evidence are recorded below rather than prescribing one file per area. Match test runner/source set to behavior; pure tests cannot prove hit targets, GPU rendering, native keyboard behavior, or bundle packaging.
 
 | Area | Required coverage |
 |---|---|
@@ -404,6 +404,17 @@ The shared `:app-ui` implementation is locally viable without converting simt-ap
 - Actual source/history audit passes with 440 scanned entries before this evidence update. Exact metadata-selected publications pass with 614 source/nested content entries, 29 selected metadata/artifact files and their SHA-256 sidecars, matching checksums/sizes, generated docs/sources/resources, approved dependency families and permission-free AARs. Stale unselected snapshots and ignored debug frameworks are excluded. These are bounded local audits, not a cloud scan or comprehensive release clearance.
 - Root `check` includes audit tests and source/history review; `localQuality` adds formatting/docs/fresh publication verification. Actual Gradle `stageRelease` stops at `releaseCheck`, and standalone staging also refuses the current snapshot, unconfirmed provenance/rights, missing HEAD-tied runtime/integration/owner evidence, missing release documents and strict Cosmos failure. No candidate ZIP is created. No force/environment bypass, uploader, signing secrets, CI/permission changes or inferred licenses exist; signing is a separate owner requirement.
 - `README.md` documents reproduction commands, independent consumer setup, public contracts, the complete approval/evidence shape, artifact inventory and remaining obligations. Private-development implementation/tooling is locally complete; signing/publication and producer-gated host integration are not performed or claimed.
+
+### Completion assessment and blocked production migrations (2026-11-17)
+
+- Locally feasible private extraction is complete through `194dfe3`: standalone shared Android/iOS UI, all eight primitives and platform seams, four resource locales, independent filesystem-published Android/CMP fixtures, pinned inert Cosmos exports, checked ABI, generated documentation and owner-gated local validation tooling. No Android-only duplicate module or speculative future modules were added.
+- Post-commit `localQuality` passes 80 audit tests, 44 Cosmos tests, Android/both Native ABI checks, producer host checks, formatting and fresh four-target publications. Current/all-ref source audit scans 461 entries with no findings; publication audit scans 614 entries and validates 29 selected files plus SHA-256 sidecars. Counts describe this run, not permanent totals or comprehensive security clearance.
+- Clean-tree standalone staging returns failure without a candidate ZIP. Actual blockers remain separate code/spec rights and required release documents, five missing HEAD-tied evidence records, owner approval, stable SemVer, and strict Cosmos validation. The strict command reproduces exactly the four unchanged scoped `minItems` failures; neither schemas nor gates are bypassed.
+- `xcrun simctl list runtimes` reports no installed iOS runtime; the attached Android emulator is API 36. Existing API 28 checks are host-only. Supported-range iOS UI/resources/insets/IME/accessibility and physical Android floor/haptic evidence cannot be substituted with successful framework linking or Robolectric.
+- UI-05 is deliberately unimplemented: simt-app remains clean with `api(project(":app-ui"))`, its settings inclusion, `.gitmodules` entry and `970b6fe` submodule pin intact. No gitlink retirement, app build/visual validation, guessed stable dependency, or composite-only replacement is claimed.
+- UI-06 is deliberately unimplemented: ECHO remains clean without an `app.simt:app-ui` dependency. Direct inspection confirms `FilmStrip` at `shared/src/commonMain/kotlin/app/simt/echo/ui/screens/review/ReviewStoryUi.kt:166` and its actual horizontal scroller at lines 175–180; shared scroll overflow is a bounded future adoption candidate, not permission to replace product semantics/theme. ECHO's motion policy remains app-owned. No production Android/iOS adoption or runtime validation is claimed.
+- Resume only after the relevant producer rights/runtime/strict-schema/owner gates permit a reviewed stage or release. Validate each host separately with and without sibling substitution, commit each bounded host chunk, then perform final public review and separately approved signing/upload. Local private fixtures do not replace those production obligations.
+- The requested remote is configured; only the initial plan was pushed by this implementation session. Later implementation commits remain local unless externally synchronized. No additional push, public visibility change, remote artifact upload, unapproved license, credential, signing or CI permission configuration was performed.
 
 ## 10. External guidance consulted
 
