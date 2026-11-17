@@ -7,7 +7,7 @@ import app.shared.ui.internal.platform.fullScreenBottomWindowInsets
 import app.shared.ui.internal.platform.fullScreenTopWindowInsets
 
 @Composable
-fun Modifier.fullScreenTopInsets(): Modifier = windowInsetsPadding(fullScreenTopWindowInsets())
+public fun Modifier.fullScreenTopInsets(): Modifier = windowInsetsPadding(fullScreenTopWindowInsets())
 
 @Composable
-fun Modifier.fullScreenBottomInsets(): Modifier = windowInsetsPadding(fullScreenBottomWindowInsets())
+public fun Modifier.fullScreenBottomInsets(): Modifier = windowInsetsPadding(fullScreenBottomWindowInsets())

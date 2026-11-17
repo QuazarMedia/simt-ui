@@ -21,7 +21,7 @@ import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
 @Composable
-fun LongPressTooltipEffect(
+public fun LongPressTooltipEffect(
     tooltipText: String,
     onClick: () -> Unit = {},
     modifier: Modifier = Modifier,

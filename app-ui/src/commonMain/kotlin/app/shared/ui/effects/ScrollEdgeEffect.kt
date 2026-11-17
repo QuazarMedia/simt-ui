@@ -51,7 +51,7 @@ import androidx.compose.ui.unit.dp
 
 // Content has no BoxScope receiver to preserve callers' surrounding layout scopes.
 @Composable
-fun ScrollEdgeEffect(
+public fun ScrollEdgeEffect(
     state: ScrollableState,
     orientation: Orientation,
     modifier: Modifier = Modifier,
@@ -138,16 +138,16 @@ fun ScrollEdgeEffect(
     }
 }
 
-object ScrollEdgeEffectDefaults {
-    val HorizontalFadeSize = 48.dp
-    val VerticalFadeSize = 28.dp
-    val ArrowShift = 6.dp
-    val ArrowAnimationDurationMs = 1200
+public object ScrollEdgeEffectDefaults {
+    public val HorizontalFadeSize: Dp = 48.dp
+    public val VerticalFadeSize: Dp = 28.dp
+    public val ArrowShift: Dp = 6.dp
+    public val ArrowAnimationDurationMs: Int = 1200
 
-    fun fadeSize(orientation: Orientation): Dp = if (orientation == Orientation.Horizontal) HorizontalFadeSize else VerticalFadeSize
+    public fun fadeSize(orientation: Orientation): Dp = if (orientation == Orientation.Horizontal) HorizontalFadeSize else VerticalFadeSize
 
     @Composable
-    fun arrowTint(): Color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.85f)
+    public fun arrowTint(): Color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.85f)
 }
 
 private enum class ScrollEdgeSide { Start, End }

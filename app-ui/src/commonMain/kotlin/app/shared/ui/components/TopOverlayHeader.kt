@@ -60,7 +60,7 @@ import kotlinx.coroutines.delay
 import org.jetbrains.compose.resources.stringResource
 
 @Immutable
-data class TopOverlayToolToggle(
+public data class TopOverlayToolToggle(
     val isOn: Boolean,
     val iconOn: ImageVector,
     val iconOff: ImageVector? = null,
@@ -72,7 +72,7 @@ data class TopOverlayToolToggle(
 )
 
 @Composable
-fun TopOverlayHeader(
+public fun TopOverlayHeader(
     title: String,
     onClose: () -> Unit,
     modifier: Modifier = Modifier,

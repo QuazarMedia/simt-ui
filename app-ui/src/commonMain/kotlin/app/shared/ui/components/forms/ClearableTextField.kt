@@ -23,7 +23,7 @@ import app.shared.ui.resources.simt_ui_cd_clear
 import org.jetbrains.compose.resources.stringResource
 
 @Composable
-fun ClearableTextField(
+public fun ClearableTextField(
     value: String,
     onValueChange: (String) -> Unit,
     label: String,

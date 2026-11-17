@@ -1,9 +1,9 @@
 # SIMT UI: shared Compose library extraction
 
 - Investigation date: 2026-11-17.
-- Status: investigation complete; implementation started on 2026-11-17. UI-01 scaffold validated; compatibility spike remains in progress.
+- Status: private extraction, independent consumer builds, Cosmos snapshot, ABI/docs and local release tooling implemented; public redistribution and production migration remain rights/runtime/owner-gated.
 - Owner: `simt-ui`, with producer-first integration in `simt-app` and `simt-echo`.
-- Scope of this change: create this plan and its parent directories only. No source extraction, Git initialization, consumer changes, builds, commits, remote creation, or publication occurred.
+- Original investigation scope: this plan and its parent directories only. Later authorized private implementation and verification are recorded in the evidence sections; no remote artifact publication or production migration is claimed.
 
 ## 1. Recommendation and decision boundary
 
@@ -246,7 +246,7 @@ Evidence: [GNSS standalone settings and Central upload](../../../simt-gnss/setti
 
 ## 7. Open-source safety and licensing gates
 
-**No critical data was copied into this new directory. Publication is not security-cleared by this investigation.** The app-ui boundary has no obvious credential, network-client, logging, or permission-bearing source in the bounded review, but no comprehensive historical secret scan or artifact audit was run.
+**No critical data was identified by the bounded allowlisted-export review; this is not public security clearance.** Later current/all-ref source and exact publication pattern/content audits are recorded below. Pattern-based checks cannot guarantee the absence of every secret or legal restriction; owner review remains mandatory.
 
 No project-level code license was found in app-ui's inspected tracked inventory, nor a clear redistribution license for the Cosmos source/specification in the inspected simt-space files. A license declared in simt-app's existing publication POM is not proof that every submodule/document is covered. An npm dependency's license and a font OFL notice are not a code/spec license.
 
@@ -273,9 +273,9 @@ Implementation proceeds in validated, committed chunks. UI-01 is split into buil
 | UI-01a | simt-ui | - | Standalone wrapper/catalog, KMP Android/iOS targets, resource wiring, and local publication | Complete | `ca05f60` — commands below passed |
 | UI-01b | simt-ui | UI-01a | Portable primitives/resources and behavioral tests | Complete | All eight primitives and Android/iOS seams compile; 28 host and 13 emulator tests pass including the header transition regression |
 | UI-01c | simt-ui | UI-01b | Independent ordinary Android and CMP published-artifact consumers | Local builds complete; runtime gates pending | Android 18 host / 9 emulator tests, CMP 8 host / 8 emulator tests, unsigned R8 release, and both Native frameworks pass; no iOS UI or physical API 28 claim |
-| UI-02 | simt-ui | UI-00, UI-01 | Extract eight primitives, resource locales, platform seams, API baseline, and behavior tests | In progress | Eight primitives extracted privately; API baseline, independent consumers, Native runtime, and rights gates remain |
+| UI-02 | simt-ui | UI-00, UI-01 | Extract eight primitives, resource locales, platform seams, API baseline, and behavior tests | Private implementation complete; public/runtime blocked | Eight primitives/resources/platform seams, 28 host / 13 emulator tests, explicit API and checked Android/both Native ABI baselines pass; iOS runtime, physical API 28 and rights remain external gates |
 | UI-03 | simt-ui / simt-space | UI-00 | Pin/export Cosmos specs with offline schema/checksum and authority verification | Private snapshot complete; public blocked | 30 byte-identical allowlisted sources/exports, 44 offline tests and deterministic ZIP pass; four preserved upstream schema defects and unconfirmed licenses block public conformance/distribution |
-| UI-04 | simt-ui | UI-02, UI-03 | API docs, signed local aggregation rehearsal, artifact scan, and release validation workflow | Pending | Complete platform publications and safety checks required |
+| UI-04 | simt-ui | UI-02, UI-03 | API docs, owner-gated unsigned local aggregation tooling, artifact scan, and release validation workflow | Private tooling complete; actual release/signing blocked | 36 generated HTML pages, checked ABI, 80 audit tests, current/all-ref source and exact four-publication audits pass; actual staging refuses missing rights/runtime/approval and creates no ZIP |
 | UI-05 | simt-app | UI-04 | Replace core-ui API dependency, add sibling substitution, retire app-ui gitlink/config safely | Pending | Published/composite app builds and targeted UI regressions required |
 | UI-06 | simt-echo | UI-04 | Add common dependency/substitution and adopt one bounded generic primitive | Pending | Android plus device/simulator framework linking and UI evidence required |
 | UI-07 | simt-ui / owners | UI-05, UI-06 | Final public-source/artifact/license review and first Central release | Pending | Explicit publication approval required |
@@ -323,9 +323,9 @@ Completed: source/build-boundary inspection; eight-file portability assessment; 
 
 At the end of the original investigation, no build/test, source extraction, Git initialization, remote synchronization, or publication had run. Subsequent implementation evidence is recorded below. Independent Native framework linking now passes. iOS UI launch, cloud security scanning, comprehensive history/content secret scanning, legal clearance, production consumer migration, and remote artifact publication remain unexecuted. Existing dirty files in the source repositories were left untouched. Source paths and line links reflect the inspected local working trees, not guaranteed contents of future public revisions.
 
-Remaining release blockers: code/spec redistribution rights; actual AGP/KGP/Gradle/Xcode compatibility beyond documented ranges; Material tooltip common API; packaged CMP resources without manual copies; exact fullscreen/haptic semantics; other upstream consumer pins; final exported source/history/artifact audit.
+Remaining release blockers: confirmed code/spec rights and release documents; supported-range Native runtime validation, iOS resource/UI/IME/accessibility and physical API 28/haptic evidence; producer-gated production host migrations; stable version/tag and explicit HEAD-tied owner/security approval; strict upstream Cosmos conformance. Common Material APIs compile, packaged Android resources/R8 and Native frameworks pass, and bounded current/history/artifact audits now run, without implying comprehensive public clearance.
 
-The next independently valuable step is UI-01's local compatibility spike, alongside UI-00 rights/export approval. If both pass, proceed with the shared `:app-ui` design; an Android-only library is the contingency, not the default.
+The shared `:app-ui` implementation is locally viable without converting simt-app to KMP or forcing host toolchain/theme changes. Complete the external rights/runtime/release gates before production migration or public distribution; do not fall back to duplicated Android/common implementations merely because those external approvals are pending.
 
 ### Implementation evidence: UI-01a (2026-11-17)
 
@@ -394,6 +394,16 @@ The next independently valuable step is UI-01's local compatibility spike, along
 - The upstream union rule schema requires 36 sections, but its four scoped payloads contain 16/17. Both `npm --prefix cosmos-spec run check:canonical-schema` and `:cosmos-spec:checkCanonicalSchema` deliberately fail on these exact four errors. Private integrity accepts only the recorded unchanged defects, not arbitrary validation errors; instance-required properties remain enforced. Upstream schemas/bytes are neither repaired nor weakened, and successful private checks are not full conformance.
 - The local private ZIP contains 31 sorted files with fixed timestamps/modes. Repeated SHA-256: `1bc4ae351fbbcf5bae939a81cb0d34ccafd43a6b739e98ab36ef83850d826663`. Independent byte/hash/archive review and a bounded value-redacting credential/private-key/personal-path scan found no matches in the ZIP. It stays in ignored build output.
 - Frozen provenance records code/document licenses separately as unconfirmed and public redistribution as blocked. A private archive is not publication authorization or a legal clearance; owner review and upstream schema resolution remain release obligations.
+
+### Implementation evidence: UI-02/UI-04 API, documentation and local gates (2026-11-17)
+
+- KGP explicit API compilation adds only explicit visibility and existing constant/default types. Checked Android and combined `iosArm64`/`iosSimulatorArm64` ABI dumps are reviewed baselines; normal checks compare them and never refresh them silently. A read-only API/docs review found no contract or behavior change.
+- Dokka `2.3.0` generates 36 real HTML pages with the module's field/list/scroll/tooltip/header/countdown/platform contracts. All local href/src targets resolve; the module and package pages load in the browser. Pointer/visual interaction was unavailable because the browser viewport was hidden, so no visual browser-test claim is made. The deterministic documentation JAR is attached to all four publications; no placeholder documentation or private resource class is exported.
+- Full producer checks pass 28 host / 13 Android emulator tests, ABI, both Native compiles, formatting, fresh publications and Cosmos 44 offline checks. Refreshed independent consumers pass Android 18 host / 9 emulator checks, default R8 packaging/locales and CMP eight host / eight emulator checks plus both Native frameworks. Compilation/linking still does not prove iOS launch or physical API 28.
+- `python3 -B -m unittest discover -s scripts -p test_check_publication.py` passes 80 fixtures for source/all-ref history, redaction, metadata/target redirects, compound resources and Kotlin tooling attachments, malformed input, archive traversal/symlinks/bounds, Android permissions, exact owner approval, stale evidence, immutable inputs and deterministic unsigned staging. Review repaired a test whose XML limit hid the intended archive limit, a real root tooling-metadata classifier omitted by the initial checker, and history deduplication that could skip a renamed identical manifest. Synthetic approved fixtures do not approve the real repository.
+- Actual source/history audit passes with 440 scanned entries before this evidence update. Exact metadata-selected publications pass with 614 source/nested content entries, 29 selected metadata/artifact files and their SHA-256 sidecars, matching checksums/sizes, generated docs/sources/resources, approved dependency families and permission-free AARs. Stale unselected snapshots and ignored debug frameworks are excluded. These are bounded local audits, not a cloud scan or comprehensive release clearance.
+- Root `check` includes audit tests and source/history review; `localQuality` adds formatting/docs/fresh publication verification. Actual Gradle `stageRelease` stops at `releaseCheck`, and standalone staging also refuses the current snapshot, unconfirmed provenance/rights, missing HEAD-tied runtime/integration/owner evidence, missing release documents and strict Cosmos failure. No candidate ZIP is created. No force/environment bypass, uploader, signing secrets, CI/permission changes or inferred licenses exist; signing is a separate owner requirement.
+- `README.md` documents reproduction commands, independent consumer setup, public contracts, the complete approval/evidence shape, artifact inventory and remaining obligations. Private-development implementation/tooling is locally complete; signing/publication and producer-gated host integration are not performed or claimed.
 
 ## 10. External guidance consulted
 

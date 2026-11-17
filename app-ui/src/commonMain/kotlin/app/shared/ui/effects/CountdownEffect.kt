@@ -30,7 +30,7 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 @Composable
-fun CountdownEffect(
+public fun CountdownEffect(
     color: Color,
     modifier: Modifier = Modifier,
     startValue: Int = 3,

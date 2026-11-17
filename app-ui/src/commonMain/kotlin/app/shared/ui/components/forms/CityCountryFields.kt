@@ -15,7 +15,7 @@ import app.shared.ui.resources.simt_ui_enter_city_name
 import org.jetbrains.compose.resources.stringResource
 
 @Composable
-fun CityCountryFields(
+public fun CityCountryFields(
     city: String,
     onCityChange: (String) -> Unit,
     countryCode: String,
@@ -47,6 +47,6 @@ fun CityCountryFields(
     }
 }
 
-const val CITY_NAME_MAX_LENGTH = 30
+public const val CITY_NAME_MAX_LENGTH: Int = 30
 
-const val COUNTRY_CODE_LENGTH = 2
+public const val COUNTRY_CODE_LENGTH: Int = 2

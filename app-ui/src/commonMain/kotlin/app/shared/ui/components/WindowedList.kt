@@ -21,7 +21,7 @@ import app.shared.ui.effects.ScrollEdgeEffectDefaults
 
 /** A lazy vertical list with shared scroll state and overflow affordances. */
 @Composable
-fun WindowedList(
+public fun WindowedList(
     modifier: Modifier = Modifier,
     state: LazyListState = rememberLazyListState(),
     contentPadding: PaddingValues = PaddingValues(0.dp),
@@ -60,7 +60,7 @@ fun WindowedList(
 
 /** Typed rows with stable keys, reusable content types, and an optional centered placeholder. */
 @Composable
-fun <T> WindowedList(
+public fun <T> WindowedList(
     items: List<T>,
     key: (item: T) -> Any,
     modifier: Modifier = Modifier,

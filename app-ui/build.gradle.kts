@@ -1,14 +1,21 @@
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
+import org.jetbrains.kotlin.gradle.dsl.abi.ExperimentalAbiValidation
 
 plugins {
     alias(libs.plugins.kotlin.multiplatform)
     alias(libs.plugins.android.kmp.library)
     alias(libs.plugins.compose.multiplatform)
     alias(libs.plugins.compose.compiler)
+    alias(libs.plugins.dokka)
     `maven-publish`
 }
 
+@OptIn(ExperimentalAbiValidation::class)
 kotlin {
+    explicitApi()
+    abiValidation {
+        keepLocallyUnsupportedTargets.set(false)
+    }
     jvmToolchain(21)
     android {
         namespace = "app.shared.ui"
@@ -79,6 +86,21 @@ compose.resources {
     publicResClass = false
 }
 
+dokka {
+    dokkaSourceSets.configureEach {
+        includes.from("Module.md")
+    }
+}
+
+val apiDocumentationJar =
+    tasks.register<Jar>("apiDocumentationJar") {
+        dependsOn("dokkaGeneratePublicationHtml")
+        from(layout.buildDirectory.dir("dokka/html"))
+        archiveClassifier.set("javadoc")
+        isPreserveFileTimestamps = false
+        isReproducibleFileOrder = true
+    }
+
 publishing {
     repositories {
         maven {
@@ -87,6 +109,7 @@ publishing {
         }
     }
     publications.withType<MavenPublication>().configureEach {
+        artifact(apiDocumentationJar)
         pom {
             name = "SIMT UI"
             description = "Shared Android and iOS Compose UI primitives"

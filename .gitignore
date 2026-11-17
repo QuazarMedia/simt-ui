@@ -1,5 +1,7 @@
 .gradle/
 node_modules/
+__pycache__/
+*.pyc
 .kotlin/
 **/build/
 .idea/
