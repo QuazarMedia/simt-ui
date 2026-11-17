@@ -47,7 +47,7 @@ The compatible producer stage is `simt-ui-0.1.0-SNAPSHOT-43c285c-integration.zip
 
 ## Android IDE previews
 
-Open `examples/android-consumer` as an **independent project** in Android Studio with JDK 21 and SDK 37. Set `uiRepository=/absolute/path/to/extracted/maven` and `uiVersion=0.1.0-SNAPSHOT` in your local Gradle properties (or pass the equivalent `-P` options), using an actually staged artifact repository; do not substitute producer sources. Sync, select the debug variant, and open `src/debug/kotlin/app/simt/ui/preview/SharedUiPreviews.kt` in Design/Split. The Compose-enabled Android fixture hosts previews for all eight primitives and header tools; preview sources and tooling dependencies are debug-only, not producer library or release APK inputs.
+Open `examples/android-consumer` as an **independent project** in Android Studio with JDK 21 and SDK 37. Set `uiRepository=/absolute/path/to/extracted/maven` and `uiVersion=0.1.0` in your local Gradle properties (or pass the equivalent `-P` options), using an actually staged artifact repository; do not substitute producer sources. Sync, select the debug variant, and open `src/debug/kotlin/app/simt/ui/preview/SharedUiPreviews.kt` in Design/Split. The Compose-enabled Android fixture hosts previews for all eight primitives and header tools; preview sources and tooling dependencies are debug-only, not producer library or release APK inputs.
 
 Samples use synthetic values, a small Material theme, bounded viewports and disabled motion/haptics. Light/dark, French/RTL and large-text variants supplement the component samples. The tooltip's static image shows only its labeled anchor: use interactive preview and long press to reveal the popup. The countdown intentionally stays at 1. Insets use `showSystemUi=true`, but layoutlib may report zero insets; this is not proof of hidden-system-bar behavior. Host composition tests do not establish that the Android IDE Preview panel rendered, nor native/device runtime or haptic correctness.
 
@@ -65,7 +65,7 @@ The first command validates the exact licensed pin and 52 offline tests, and cre
 ```sh
 python3 -B -m unittest discover -s scripts -p test_check_publication.py
 python3 -B scripts/check_publication.py source --root .
-python3 -B scripts/check_publication.py publication --repo build/maven-repository --version 0.1.0-SNAPSHOT
+python3 -B scripts/check_publication.py publication --repo build/maven-repository --version 0.1.0
 ./gradlew --no-daemon --max-workers=2 localQuality
 ./gradlew --no-daemon --max-workers=2 stageIntegration
 ./gradlew --no-daemon --max-workers=2 releaseCheck

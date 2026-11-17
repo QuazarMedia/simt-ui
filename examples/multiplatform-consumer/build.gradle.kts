@@ -29,7 +29,7 @@ kotlin {
     }
     sourceSets {
         commonMain.dependencies {
-            implementation("app.simt:app-ui:${providers.gradleProperty("uiVersion").getOrElse("0.1.0-SNAPSHOT")}")
+            implementation("app.simt:app-ui:${providers.gradleProperty("uiVersion").getOrElse("0.1.0")}")
         }
         named("androidHostTest") {
             kotlin.srcDir("src/androidSmokeTest/kotlin")

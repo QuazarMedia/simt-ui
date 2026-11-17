@@ -48,7 +48,7 @@ kotlin {
 }
 
 dependencies {
-    implementation("app.simt:app-ui:${providers.gradleProperty("uiVersion").getOrElse("0.1.0-SNAPSHOT")}")
+    implementation("app.simt:app-ui:${providers.gradleProperty("uiVersion").getOrElse("0.1.0")}")
     implementation(platform("androidx.compose:compose-bom:2026.09.00"))
     implementation("androidx.activity:activity-compose:1.13.0")
     testImplementation("junit:junit:4.13.2")
