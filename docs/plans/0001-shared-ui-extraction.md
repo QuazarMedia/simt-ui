@@ -118,7 +118,7 @@ simt-ui/
     provenance.json
   examples/
     android-consumer/   # independent Android-only build consuming published coordinates
-    cmp-consumer/       # independent KMP build and iOS host, same coordinates
+    multiplatform-consumer/ # independent KMP build and iOS controller, same coordinates
   docs/plans/0001-shared-ui-extraction.md
 ```
 
@@ -269,10 +269,10 @@ Implementation proceeds in validated, committed chunks. UI-01 is split into buil
 | id | lane | depends | title | state | evidence |
 |---|---|---|---|---|---|
 | UI-00 | simt-ui / rights owners | - | Approve export manifest, code/spec licenses, provenance, and public-data boundaries | Pending | Rights/export review required |
-| UI-01 | simt-ui | - | Independent KMP/resource/API compatibility spike plus two published-artifact consumer fixtures | In progress | Scaffold and first forms slice pass; remaining primitives and independent consumer runtime gates remain |
+| UI-01 | simt-ui | - | Independent KMP/resource/API compatibility spike plus two published-artifact consumer fixtures | Runtime gates pending | All eight primitives compile; independent Android/CMP published builds and both Native frameworks link; iOS launch and physical API 28 remain unverified |
 | UI-01a | simt-ui | - | Standalone wrapper/catalog, KMP Android/iOS targets, resource wiring, and local publication | Complete | `ca05f60` — commands below passed |
-| UI-01b | simt-ui | UI-01a | Portable primitives/resources and behavioral tests | Complete | All eight primitives and Android/iOS seams compile; 27 host and 13 emulator tests pass |
-| UI-01c | simt-ui | UI-01b | Independent ordinary Android and CMP published-artifact consumers | Pending | Variant selection, runtime resources, and Native framework linking required |
+| UI-01b | simt-ui | UI-01a | Portable primitives/resources and behavioral tests | Complete | All eight primitives and Android/iOS seams compile; 28 host and 13 emulator tests pass including the header transition regression |
+| UI-01c | simt-ui | UI-01b | Independent ordinary Android and CMP published-artifact consumers | Local builds complete; runtime gates pending | Android 18 host / 9 emulator tests, CMP 8 host / 8 emulator tests, unsigned R8 release, and both Native frameworks pass; no iOS UI or physical API 28 claim |
 | UI-02 | simt-ui | UI-00, UI-01 | Extract eight primitives, resource locales, platform seams, API baseline, and behavior tests | In progress | Eight primitives extracted privately; API baseline, independent consumers, Native runtime, and rights gates remain |
 | UI-03 | simt-ui / simt-space | UI-00 | Pin/export Cosmos specs with offline schema/checksum and authority verification | Pending | Licensed export and reproducibility evidence required |
 | UI-04 | simt-ui | UI-02, UI-03 | API docs, signed local aggregation rehearsal, artifact scan, and release validation workflow | Pending | Complete platform publications and safety checks required |
@@ -321,7 +321,7 @@ Rollback uses a normal new change reverting consumer wiring to its previous depe
 
 Completed: source/build-boundary inspection; eight-file portability assessment; direct/transitive consumer discovery; GNSS publication/composite comparison; Cosmos authority/export assessment; bounded local safety/provenance review; official documentation review; proposed module/API/test/release design; creation of this plan.
 
-At the end of the original investigation, no build/test, source extraction, Git initialization, remote synchronization, or publication had run. Subsequent implementation evidence is recorded below. Native linking/UI launch, cloud security scanning, comprehensive history/content secret scanning, legal clearance, consumer migration, and remote artifact publication remain unexecuted. Existing dirty files in the source repositories were left untouched. Source paths and line links reflect the inspected local working trees, not guaranteed contents of future public revisions.
+At the end of the original investigation, no build/test, source extraction, Git initialization, remote synchronization, or publication had run. Subsequent implementation evidence is recorded below. Independent Native framework linking now passes. iOS UI launch, cloud security scanning, comprehensive history/content secret scanning, legal clearance, production consumer migration, and remote artifact publication remain unexecuted. Existing dirty files in the source repositories were left untouched. Source paths and line links reflect the inspected local working trees, not guaranteed contents of future public revisions.
 
 Remaining release blockers: code/spec redistribution rights; actual AGP/KGP/Gradle/Xcode compatibility beyond documented ranges; Material tooltip common API; packaged CMP resources without manual copies; exact fullscreen/haptic semantics; other upstream consumer pins; final exported source/history/artifact audit.
 
@@ -366,6 +366,25 @@ The next independently valuable step is UI-01's local compatibility spike, along
 - Header close defaults resolve the existing four-locale resource; a French host test verifies actual translated selection. Retained cards replace/remove/reenter correctly through exit; motion-disabled cards release immediately. Disabled labeled tools cannot invoke a wrapper callback; each tool has one click owner, selected semantics, and nonoverlapping 48 dp layout/touch targets. Glyphs remain 20 dp.
 - Fourteen additional host tests cover exact countdown/haptic order and timing, current policies/callbacks, no restart, IO thread and cancellation, tooltip tap/long-press/keyboard ownership, header slots/targets/translation/width, hidden bars/cutout unions, IME independence, correct inset sides, and nested consumption. Three additional device tests exercise tool edge taps/disabled long presses and opaque frame-stable reduced-motion countdown rendering.
 - Full regression passes 27 host and 13 emulator tests, Android/both iOS compilation, formatting, filesystem publications, matching metadata hashes, and bounded credential/private-key/personal-path archive checks. iOS intermediate metadata reports duplicate lifecycle/navigation/savedstate common-library-name warnings from transitive AndroidX/JetBrains artifacts; independent Native framework linking in UI-01c must investigate these before release compatibility is claimed. No iOS device/runtime test is claimed.
+
+### Implementation evidence: header transition regression (2026-11-17)
+
+- `93e1d95` keeps the card transition host composed while its content is absent. A clock/height regression reproduced skipped expansion on first entry and after a completed exit, then passed with the fix; retained content still releases and reentry cancels pending removal.
+- All seven focused header tests and both Native compiles pass. The subsequent full run passes 28 host and 13 emulator tests, complete root formatting, and refreshed filesystem publications.
+- The exact latest snapshot metadata selects 21 files across four publications; declared artifact SHA-256 hashes and sizes match. A bounded, value-redacting credential/private-key/personal-path scan inspected 409 source and nested publication entries with no findings. Maven's compound `kotlin_resources.zip` extension is resolved from metadata rather than guessed filenames. This is not comprehensive security or licensing clearance.
+
+### Implementation evidence: UI-01c independent consumers (2026-11-17)
+
+- Separate `examples/android-consumer` and `examples/multiplatform-consumer` builds resolve `app.simt` exclusively from the producer's filesystem Maven repository. No `includeBuild`, project substitution, Maven Local, host build logic, asset copying, or producer-source access is used. Both pin the real host toolchain (AGP `9.5.1`, Kotlin `2.4.21`, Gradle `9.9.1`); the ordinary Android fixture does not apply CMP and uses BOM `2026.09.00`.
+- Fresh dependency resolution against the publication containing `93e1d95` passes. Ordinary Android passes 18 NATIVE Robolectric checks across API 28/36 and nine Android 16 emulator checks. CMP passes eight host and eight emulator checks. Four locales, unsupported-locale English fallback, editing/truncation/clear/close, list selection, actual horizontal overflow/scrolling, tooltip click/long-press competition, and both default countdown ticks are exercised.
+- Android debug and unsigned minified release assemble with default R8 rules; `verifyPackagedLocales` decodes and asserts all four packaged clear/close translations in both APKs. Debug/test manifests request no permissions. Device commands ran sequentially on the shared emulator.
+- `compileIosMainKotlinMetadata`, `linkDebugFrameworkIosArm64`, and `linkDebugFrameworkIosSimulatorArm64` pass. Both generated binaries have static archive headers and export `MainViewController`. Ten duplicate common-library-name warnings occur in intermediate metadata; actual target linking succeeds without forced versions or exclusions. No supported-range, Native runtime, bundle launch, physical haptic, screen-reader, or iOS visual claim follows from this.
+- Independent source/wrapper review found no secrets, personal paths, network/logging behavior, permissions, or manual resources. Verified wrapper JAR/distribution checksums match Gradle `9.9.1`. Review exposed an unattached horizontal state and test-only policy coverage; the final fixture attaches a real horizontal scroller and adds default motion/haptic countdown execution with clock assertions. Insets are invoked, not geometrically measured here; producer tests cover Android geometry.
+- Reproduction commands from the producer root, after local publication (supply the local Android SDK, JDK 21 and per-command Xcode selection through environment):
+  - `examples/android-consumer/gradlew -p examples/android-consumer --refresh-dependencies testDebugUnitTest --tests app.simt.fixture.ConsumerHostTest verifyPackagedLocales connectedDebugAndroidTest -Pandroid.testInstrumentationRunnerArguments.class=app.simt.fixture.ConsumerDeviceTest --no-daemon --max-workers=2`
+  - `examples/multiplatform-consumer/gradlew -p examples/multiplatform-consumer --refresh-dependencies testAndroidHostTest --tests app.simt.fixture.ConsumerHostTest compileIosMainKotlinMetadata linkDebugFrameworkIosArm64 linkDebugFrameworkIosSimulatorArm64 --no-daemon --max-workers=2`
+  - `examples/multiplatform-consumer/gradlew -p examples/multiplatform-consumer connectedAndroidDeviceTest -Pandroid.testInstrumentationRunnerArguments.class=app.simt.fixture.ConsumerDeviceTest --no-daemon --max-workers=2`
+- An installed API 28 physical/emulated device and an installed iOS simulator runtime remain missing. API 28 evidence is host-only; Xcode `27.1` remains above the documented Kotlin compatibility table. Production hosts remain unchanged pending release/rights/runtime gates.
 
 ## 10. External guidance consulted
 
