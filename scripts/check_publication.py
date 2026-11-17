@@ -55,7 +55,15 @@ EVIDENCE_CHECKS = {
     'securityReview': ('security', 'privacy', 'accessibility'),
     'producerQuality': ('producer', 'abi', 'docs'),
 }
-RELEASE_DOCS = ('LICENSE', 'NOTICE', 'README.md', 'CHANGELOG.md', 'app-ui/Module.md')
+LICENSE_SHA256 = {
+    'LICENSE': 'c71d239df91726fc519c6eb72d318ec65820627232b2f796219e87dcf35d0ab4',
+    'LICENSE-DOCS': '9ba9550ad48438d0836ddab3da480b3b69ffa0aac7b7878b5a0039e7ab429411',
+}
+LEGAL_ENTRIES = frozenset((*LICENSE_SHA256, 'NOTICE', 'app-ui/source-provenance.json'))
+LEGAL_KEY = ('legal-notices', 'zip')
+POM_LICENSE = {'name': 'Apache License, Version 2.0',
+               'url': 'https://www.apache.org/licenses/LICENSE-2.0.txt', 'distribution': 'repo'}
+RELEASE_DOCS = ('LICENSE', 'LICENSE-DOCS', 'NOTICE', 'README.md', 'CHANGELOG.md', 'app-ui/Module.md')
 
 
 class ValidationError(Exception):
@@ -187,6 +195,60 @@ def xml_data(data, label):
         return root
     except (ET.ParseError, ValueError, RecursionError):
         raise ValidationError(label, 'malformed-xml') from None
+
+
+def confirmed_ui_rights(provenance):
+    if not isinstance(provenance, dict):
+        return False
+    owner = provenance.get('ownerReview')
+    return (provenance.get('licenseStatus') == 'confirmed' and
+            provenance.get('license') == 'Apache-2.0' and
+            provenance.get('publicRedistribution') == 'approved' and isinstance(owner, dict) and
+            owner.get('reviewer') == 'Said Elimam' and owner.get('rightsConfirmed') is True and
+            owner.get('date') == '2026-11-17')
+
+
+def validate_legal_document(relative, data, label):
+    """Legal grants do not authorize release; validate bytes and owner attribution."""
+    if len(data) > MAX_TEXT:
+        raise ValidationError(label, 'text-limit')
+    if relative in LICENSE_SHA256:
+        if hashlib.sha256(data).hexdigest() != LICENSE_SHA256[relative]:
+            raise ValidationError(label, 'license-text-sha256')
+    elif relative == 'NOTICE':
+        try:
+            text = ' '.join(data.decode('utf-8').split())
+        except UnicodeError:
+            raise ValidationError(label, 'owner-notice-invalid') from None
+        required = ('SIMT UI', 'Copyright Said Elimam', '2026-11-17',
+                    'Apache License, Version 2.0', 'LICENSE-DOCS',
+                    'Creative Commons Attribution 4.0', 'QuazarMedia/app-ui',
+                    'app-ui/source-provenance.json', 'SIMT Cosmos by Said Elimam',
+                    'https://simt.space/cosmos/design')
+        if not all(value in text for value in required):
+            raise ValidationError(label, 'owner-notice-invalid')
+    elif relative == 'app-ui/source-provenance.json':
+        provenance = json_data(data, label)
+        if not confirmed_ui_rights(provenance):
+            raise ValidationError(label, 'redistribution-rights-unconfirmed')
+        files = provenance.get('files')
+        commit = provenance.get('sourceCommit')
+        if (provenance.get('sourceRepository') != 'QuazarMedia/app-ui' or
+                not isinstance(commit, str) or not re.fullmatch(r'[0-9a-f]{40,64}', commit) or
+                not isinstance(files, list) or not files):
+            raise ValidationError(label, 'malformed-provenance')
+        seen = set()
+        for item in files:
+            if (not isinstance(item, dict) or not isinstance(item.get('sourcePath'), str) or
+                    not isinstance(item.get('sha256'), str) or not HEX.fullmatch(item['sha256'])):
+                raise ValidationError(label, 'malformed-provenance')
+            try:
+                validate_relative(item['sourcePath'])
+            except ValidationError:
+                raise ValidationError(label, 'malformed-provenance') from None
+            if item['sourcePath'] in seen:
+                raise ValidationError(label, 'malformed-provenance')
+            seen.add(item['sourcePath'])
 
 
 def forbidden(label):
@@ -386,7 +448,7 @@ def logical_name(artifact, version, key):
 
 def required_keys(artifact):
     primary = 'jar' if artifact == 'app-ui' else 'aar' if artifact == 'app-ui-android' else 'klib'
-    result = {('', 'pom'), ('', 'module'), ('', primary), ('sources', 'jar'), ('javadoc', 'jar')}
+    result = {('', 'pom'), ('', 'module'), ('', primary), ('sources', 'jar'), ('javadoc', 'jar'), LEGAL_KEY}
     if artifact == 'app-ui':
         result.add(('kotlin-tooling-metadata', 'json'))
     if artifact.startswith('app-ui-ios'):
@@ -403,6 +465,7 @@ class Publication:
         self.selected = {}
         self.modules = {}
         self.contents = {}
+        self.legal_contents = None
 
     def read(self, relative):
         if relative not in self.contents:
@@ -446,6 +509,19 @@ class Publication:
             self.selected[artifact] = {key: directory + logical_name(artifact, self.version, key) for key in keys}
         for relative in sorted(self.selected[artifact].values()):
             self.read(relative)
+        self.legal_notices(artifact)
+
+    def legal_notices(self, artifact):
+        label = self.selected[artifact][LEGAL_KEY]
+        data = self.read(label)  # Scanner already enforced archive/path/expansion bounds.
+        with zipfile.ZipFile(io.BytesIO(data)) as archive:
+            if set(archive.namelist()) != LEGAL_ENTRIES:
+                raise ValidationError(label, 'legal-notices-entries')
+            for relative in sorted(LEGAL_ENTRIES):
+                validate_legal_document(relative, archive.read(relative), label)
+        if self.legal_contents is not None and data != self.legal_contents:
+            raise ValidationError(label, 'legal-notices-mismatch')
+        self.legal_contents = data
 
     def file_key(self, artifact, url, label):
         safe_path(self.repo, url)
@@ -470,6 +546,11 @@ class Publication:
         if (pom.tag != 'project' or pom.findtext('groupId') != GROUP or
                 pom.findtext('artifactId') != artifact or pom.findtext('version') != self.version):
             raise ValidationError(label, 'pom-gav')
+        licenses = pom.findall('licenses')
+        if (len(licenses) != 1 or len(licenses[0]) != 1 or licenses[0][0].tag != 'license' or
+                len(licenses[0][0]) != len(POM_LICENSE) or
+                {child.tag: child.text for child in licenses[0][0]} != POM_LICENSE):
+            raise ValidationError(label, 'pom-license-metadata')
         if pom.find('parent') is not None or pom.find('repositories') is not None:
             raise ValidationError(label, 'private-dependency')
         for dependency in pom.findall('.//dependency'):
@@ -551,12 +632,12 @@ class Publication:
                     if algorithm in item and hashlib.new(algorithm, data).hexdigest() != item[algorithm]:
                         raise ValidationError(relative, 'checksum-or-size')
                 advertised.add(key)
-        must_advertise = required_keys(artifact) - {('', 'pom'), ('', 'module'), ('javadoc', 'jar'), ('kotlin-tooling-metadata', 'json')}
+        must_advertise = required_keys(artifact) - {('', 'pom'), ('', 'module'), ('javadoc', 'jar'), ('kotlin-tooling-metadata', 'json'), LEGAL_KEY}
         if not must_advertise.issubset(advertised) or not platform_seen:
             raise ValidationError(label, 'missing-platform-or-files')
         if artifact == 'app-ui' and linked != set(TARGETS[1:]):
             raise ValidationError(label, 'missing-target')
-        # Attached Maven javadoc artifacts need not have a Gradle metadata variant.
+        # Attached Maven javadoc and legal-notices artifacts need no Gradle variant.
         docs = self.selected[artifact][('javadoc', 'jar')]
         with zipfile.ZipFile(io.BytesIO(self.read(docs))) as archive:
             html = [i for i in archive.infolist() if i.filename.endswith('.html') and not i.is_dir()]
@@ -659,8 +740,7 @@ def check_release_gates(root, version, approval):
             data = read_file(root, relative, MAX_TEXT)
             provenance = json_data(data, relative)
             if kind == 'source':
-                confirmed = (provenance.get('licenseStatus') == 'confirmed' and
-                             provenance.get('publicRedistribution') == 'approved')
+                confirmed = confirmed_ui_rights(provenance)
                 digest_key = 'sourceSha256'
             else:
                 confirmed = (provenance.get('licenses', {}).get('code', {}).get('status') == 'confirmed' and
@@ -703,7 +783,7 @@ def check_release_gates(root, version, approval):
         except (AttributeError, TypeError):
             audit.add('evidence/' + kind, 'malformed-evidence')
     try:
-        # Integrity alone accepts known defects; only this strict command authorizes.
+        # Release requires a fresh strict canonical-schema pass, not an integrity claim.
         script = safe_path(root, 'cosmos-spec/scripts/check.js')
         read_file(root, 'cosmos-spec/scripts/check.js', MAX_TEXT)
         run_command(root, ['node', str(script), 'canonical-schema'])
@@ -743,6 +823,8 @@ def release_documents(root, audit):
                 if relative in expected and hashlib.sha256(data).hexdigest() != expected[relative]:
                     raise ValidationError(relative, 'spec-inventory-checksum')
                 scanner.scan(data, relative)
+                if relative in LEGAL_ENTRIES:
+                    validate_legal_document(relative, data, relative)
                 audit.record('source/' + relative, data)
             except ValidationError as error:
                 audit.catch(error)
@@ -791,9 +873,12 @@ def stage_integration(root, repo, version, output):
         publication = check_publication(repo, version)
         audit.merge(publication)
         audit.inventory.update(('maven/' + p, value) for p, value in publication.inventory.items())
-        for relative in ('app-ui/source-provenance.json', 'README.md', 'app-ui/Module.md'):
+        scanner = Scanner(audit)
+        for relative in sorted(LEGAL_ENTRIES | {'README.md', 'app-ui/Module.md'}):
             data = read_file(root, relative)
-            Scanner(audit).scan(data, relative)
+            scanner.scan(data, relative)
+            if relative in LEGAL_ENTRIES:
+                validate_legal_document(relative, data, relative)
             audit.record('source/' + relative, data)
         manifest = {'unsigned': True, 'purpose': 'private-consumer-integration',
                     'publicRedistributionApproved': False, 'runtimeValidationApproved': False,

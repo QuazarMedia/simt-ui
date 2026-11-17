@@ -8,12 +8,13 @@ import { validateSemantics } from './semantics.js';
 
 export const VERSION = '2.3.0';
 export const UPDATED = '2026-10-03';
-export const COMMIT = '637edcf633b4e7d6407b4f9a715dad359c41fce8';
-export const PROVENANCE_SHA256 = 'f9410dee5344bd3a101c66941dd4fb245c455d30fb659dab5e3732532ab8f86d';
+export const COMMIT = '86b36f9e9b13e2426d54207b60beb7323fbcd5d6';
+export const PROVENANCE_SHA256 = 'bbe191b138c75063776772eaa7ed81cffa039b3558b386247590bac6109f3c4e';
 export const BASE = 'https://simt.space/cosmos/design';
 export const SNAPSHOT = `snapshots/${VERSION}`;
 export const PARTS = ['mobile-app', 'web-page', 'web-app', 'watch-app'];
 export const SOURCE_NAMES = ['specification', 'tokens', 'motion', 'components', 'contrast', 'color', 'starfield'];
+export const LICENSE_NAMES = ['LICENSE', 'LICENSE-DOCS', 'NOTICE'];
 export const EXPORTS = [
   ...['manifest', 'specification', 'rules', 'tokens', 'contrast-pairs', 'motion', 'components'].map((name) => `${name}.json`),
   ...['specification', 'rules'].map((name) => `${name}.schema.json`),
@@ -22,6 +23,7 @@ export const EXPORTS = [
 ].sort();
 export const REVIEWED_PATHS = [
   ...SOURCE_NAMES.map((name) => `upstream/${VERSION}/cosmos/design/${name}.js`),
+  ...LICENSE_NAMES.map((name) => `upstream/${VERSION}/cosmos/design/${name}`),
   ...EXPORTS.map((name) => `${SNAPSHOT}/${name}`),
 ].sort();
 export const sha256 = (bytes) => createHash('sha256').update(bytes).digest('hex');
@@ -77,10 +79,16 @@ export function verifyPin(snapshot) {
   assert.equal(p.upstream.version, VERSION, 'Upstream version mismatch');
   assert.equal(p.upstream.updated, UPDATED, 'Upstream date mismatch');
   assert.equal(p.upstream.canonical, documents['manifest.json'].canonical, 'Canonical source mismatch');
-  assert.equal(p.distribution.scope, 'private-development-only');
-  assert.equal(p.distribution.publicRedistribution, 'blocked');
-  assert.equal(p.licenses.code.status, 'unconfirmed');
-  assert.equal(p.licenses.documents.status, 'unconfirmed');
+  assert.equal(p.distribution.scope, 'public-redistribution');
+  assert.equal(p.distribution.publicRedistribution, 'approved');
+  assert.equal(p.licenses.code.status, 'confirmed');
+  assert.equal(p.licenses.code.identifier, 'Apache-2.0');
+  assert.equal(p.licenses.documents.status, 'confirmed');
+  assert.equal(p.licenses.documents.identifier, 'CC-BY-4.0');
+  assert.equal(p.licenses.ownerReview.reviewer, 'Said Elimam');
+  assert.equal(p.licenses.ownerReview.date, '2026-11-17');
+  assert.equal(p.licenses.ownerReview.rightsConfirmed, true);
+  assert.deepEqual(p.knownSchemaDefects, [], 'No canonical schema defects are permitted');
   const authored = readFileSync(join(root, `upstream/${VERSION}/cosmos/design/specification.js`), 'utf8');
   // Read inert bytes only: specification.js imports the excluded site descriptor.
   assert.equal(authored.match(/export const release = \{\s*version: '([^']+)',\s*updated: '([^']+)'/)?.[1], VERSION);
@@ -123,24 +131,6 @@ export function canonicalSchemaErrors(documents) {
   return failures;
 }
 
-export function verifyKnownDefects(snapshot, failures) {
-  const expected = PARTS.map((part) => ({
-    file: `${SNAPSHOT}/${part}/rules.json`,
-    instancePath: '/sections',
-    schemaPath: '#/properties/sections/minItems',
-    keyword: 'minItems',
-    params: { limit: 36 },
-    message: 'must NOT have fewer than 36 items',
-    actualSections: part === 'mobile-app' || part === 'web-app' ? 17 : 16,
-  }));
-  const byFile = (a, b) => a.file.localeCompare(b.file);
-  assert.deepEqual(failures.toSorted(byFile), expected.toSorted(byFile), 'Private integrity permits ONLY the four exact known upstream scoped minItems defects; this is not full conformance');
-  for (const defect of snapshot.provenance.knownSchemaDefects) {
-    const observed = failures.find((entry) => entry.file === defect.file);
-    assert(observed && observed.actualSections === defect.actualSections && observed.params.limit === defect.limit, `Provenance defect mismatch: ${defect.file}`);
-  }
-}
-
 export function validateContent(documents) {
   return validateSemantics(documents, { version: VERSION, updated: UPDATED, base: BASE, parts: PARTS });
 }
@@ -149,7 +139,7 @@ export function checkSnapshot(root) {
   const snapshot = readInventory(root);
   verifyPin(snapshot);
   const failures = canonicalSchemaErrors(snapshot.documents);
-  verifyKnownDefects(snapshot, failures);
+  assert.deepEqual(failures, [], 'Strict canonical schema conformance required');
   const counts = validateContent(snapshot.documents);
   return { ...snapshot, failures, counts };
 }

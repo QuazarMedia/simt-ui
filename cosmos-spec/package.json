@@ -3,7 +3,7 @@
   "version": "2.3.0",
   "private": true,
   "type": "module",
-  "description": "Pinned private-development Cosmos snapshot; public redistribution blocked",
+  "description": "Pinned licensed Cosmos snapshot; code Apache-2.0, documents CC-BY-4.0; release approval separate",
   "scripts": {
     "check": "node scripts/check.js integrity && node --test tests/snapshot.test.js",
     "check:integrity": "node scripts/check.js integrity",

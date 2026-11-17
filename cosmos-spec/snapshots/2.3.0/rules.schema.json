@@ -11,9 +11,18 @@
     "status": { "const": "Normative specification" },
     "normativeLanguage": { "type": "object" },
     "ruleCount": { "type": "integer", "minimum": 1 },
+    "platform": {
+      "type": "object",
+      "required": ["id", "label"],
+      "properties": {
+        "id": {
+          "enum": ["web-page", "web-app", "mobile-app", "watch-app"]
+        },
+        "label": { "type": "string", "minLength": 1 }
+      }
+    },
     "sections": {
       "type": "array",
-      "minItems": 36,
       "items": {
         "type": "object",
         "required": ["id", "title", "platform", "url", "rules"],
@@ -56,6 +65,1318 @@
       }
     }
   },
+  "oneOf": [
+    {
+      "not": {
+        "required": ["platform"]
+      },
+      "properties": {
+        "sections": {
+          "type": "array",
+          "minItems": 36,
+          "maxItems": 36,
+          "allOf": [
+            {
+              "contains": {
+                "type": "object",
+                "required": ["id", "platform"],
+                "properties": {
+                  "id": { "const": "identity" },
+                  "platform": { "const": "common" }
+                }
+              },
+              "minContains": 1,
+              "maxContains": 1
+            },
+            {
+              "contains": {
+                "type": "object",
+                "required": ["id", "platform"],
+                "properties": {
+                  "id": { "const": "palette" },
+                  "platform": { "const": "common" }
+                }
+              },
+              "minContains": 1,
+              "maxContains": 1
+            },
+            {
+              "contains": {
+                "type": "object",
+                "required": ["id", "platform"],
+                "properties": {
+                  "id": { "const": "light" },
+                  "platform": { "const": "common" }
+                }
+              },
+              "minContains": 1,
+              "maxContains": 1
+            },
+            {
+              "contains": {
+                "type": "object",
+                "required": ["id", "platform"],
+                "properties": {
+                  "id": { "const": "atmosphere" },
+                  "platform": { "const": "common" }
+                }
+              },
+              "minContains": 1,
+              "maxContains": 1
+            },
+            {
+              "contains": {
+                "type": "object",
+                "required": ["id", "platform"],
+                "properties": {
+                  "id": { "const": "typography" },
+                  "platform": { "const": "common" }
+                }
+              },
+              "minContains": 1,
+              "maxContains": 1
+            },
+            {
+              "contains": {
+                "type": "object",
+                "required": ["id", "platform"],
+                "properties": {
+                  "id": { "const": "geometry" },
+                  "platform": { "const": "common" }
+                }
+              },
+              "minContains": 1,
+              "maxContains": 1
+            },
+            {
+              "contains": {
+                "type": "object",
+                "required": ["id", "platform"],
+                "properties": {
+                  "id": { "const": "components" },
+                  "platform": { "const": "common" }
+                }
+              },
+              "minContains": 1,
+              "maxContains": 1
+            },
+            {
+              "contains": {
+                "type": "object",
+                "required": ["id", "platform"],
+                "properties": {
+                  "id": { "const": "motion" },
+                  "platform": { "const": "common" }
+                }
+              },
+              "minContains": 1,
+              "maxContains": 1
+            },
+            {
+              "contains": {
+                "type": "object",
+                "required": ["id", "platform"],
+                "properties": {
+                  "id": { "const": "accessibility" },
+                  "platform": { "const": "common" }
+                }
+              },
+              "minContains": 1,
+              "maxContains": 1
+            },
+            {
+              "contains": {
+                "type": "object",
+                "required": ["id", "platform"],
+                "properties": {
+                  "id": { "const": "implementation" },
+                  "platform": { "const": "common" }
+                }
+              },
+              "minContains": 1,
+              "maxContains": 1
+            },
+            {
+              "contains": {
+                "type": "object",
+                "required": ["id", "platform"],
+                "properties": {
+                  "id": { "const": "composition" },
+                  "platform": { "const": "web-page" }
+                }
+              },
+              "minContains": 1,
+              "maxContains": 1
+            },
+            {
+              "contains": {
+                "type": "object",
+                "required": ["id", "platform"],
+                "properties": {
+                  "id": { "const": "layout" },
+                  "platform": { "const": "web-page" }
+                }
+              },
+              "minContains": 1,
+              "maxContains": 1
+            },
+            {
+              "contains": {
+                "type": "object",
+                "required": ["id", "platform"],
+                "properties": {
+                  "id": { "const": "atlas" },
+                  "platform": { "const": "web-page" }
+                }
+              },
+              "minContains": 1,
+              "maxContains": 1
+            },
+            {
+              "contains": {
+                "type": "object",
+                "required": ["id", "platform"],
+                "properties": {
+                  "id": { "const": "conversion" },
+                  "platform": { "const": "web-page" }
+                }
+              },
+              "minContains": 1,
+              "maxContains": 1
+            },
+            {
+              "contains": {
+                "type": "object",
+                "required": ["id", "platform"],
+                "properties": {
+                  "id": { "const": "delivery" },
+                  "platform": { "const": "web-page" }
+                }
+              },
+              "minContains": 1,
+              "maxContains": 1
+            },
+            {
+              "contains": {
+                "type": "object",
+                "required": ["id", "platform"],
+                "properties": {
+                  "id": { "const": "release" },
+                  "platform": { "const": "web-page" }
+                }
+              },
+              "minContains": 1,
+              "maxContains": 1
+            },
+            {
+              "contains": {
+                "type": "object",
+                "required": ["id", "platform"],
+                "properties": {
+                  "id": { "const": "shell" },
+                  "platform": { "const": "web-app" }
+                }
+              },
+              "minContains": 1,
+              "maxContains": 1
+            },
+            {
+              "contains": {
+                "type": "object",
+                "required": ["id", "platform"],
+                "properties": {
+                  "id": { "const": "discovery" },
+                  "platform": { "const": "web-app" }
+                }
+              },
+              "minContains": 1,
+              "maxContains": 1
+            },
+            {
+              "contains": {
+                "type": "object",
+                "required": ["id", "platform"],
+                "properties": {
+                  "id": { "const": "participation" },
+                  "platform": { "const": "web-app" }
+                }
+              },
+              "minContains": 1,
+              "maxContains": 1
+            },
+            {
+              "contains": {
+                "type": "object",
+                "required": ["id", "platform"],
+                "properties": {
+                  "id": { "const": "composer" },
+                  "platform": { "const": "web-app" }
+                }
+              },
+              "minContains": 1,
+              "maxContains": 1
+            },
+            {
+              "contains": {
+                "type": "object",
+                "required": ["id", "platform"],
+                "properties": {
+                  "id": { "const": "operations" },
+                  "platform": { "const": "web-app" }
+                }
+              },
+              "minContains": 1,
+              "maxContains": 1
+            },
+            {
+              "contains": {
+                "type": "object",
+                "required": ["id", "platform"],
+                "properties": {
+                  "id": { "const": "performance" },
+                  "platform": { "const": "web-app" }
+                }
+              },
+              "minContains": 1,
+              "maxContains": 1
+            },
+            {
+              "contains": {
+                "type": "object",
+                "required": ["id", "platform"],
+                "properties": {
+                  "id": { "const": "release" },
+                  "platform": { "const": "web-app" }
+                }
+              },
+              "minContains": 1,
+              "maxContains": 1
+            },
+            {
+              "contains": {
+                "type": "object",
+                "required": ["id", "platform"],
+                "properties": {
+                  "id": { "const": "anatomy" },
+                  "platform": { "const": "mobile-app" }
+                }
+              },
+              "minContains": 1,
+              "maxContains": 1
+            },
+            {
+              "contains": {
+                "type": "object",
+                "required": ["id", "platform"],
+                "properties": {
+                  "id": { "const": "instruments" },
+                  "platform": { "const": "mobile-app" }
+                }
+              },
+              "minContains": 1,
+              "maxContains": 1
+            },
+            {
+              "contains": {
+                "type": "object",
+                "required": ["id", "platform"],
+                "properties": {
+                  "id": { "const": "components" },
+                  "platform": { "const": "mobile-app" }
+                }
+              },
+              "minContains": 1,
+              "maxContains": 1
+            },
+            {
+              "contains": {
+                "type": "object",
+                "required": ["id", "platform"],
+                "properties": {
+                  "id": { "const": "adaptive" },
+                  "platform": { "const": "mobile-app" }
+                }
+              },
+              "minContains": 1,
+              "maxContains": 1
+            },
+            {
+              "contains": {
+                "type": "object",
+                "required": ["id", "platform"],
+                "properties": {
+                  "id": { "const": "sensors" },
+                  "platform": { "const": "mobile-app" }
+                }
+              },
+              "minContains": 1,
+              "maxContains": 1
+            },
+            {
+              "contains": {
+                "type": "object",
+                "required": ["id", "platform"],
+                "properties": {
+                  "id": { "const": "performance" },
+                  "platform": { "const": "mobile-app" }
+                }
+              },
+              "minContains": 1,
+              "maxContains": 1
+            },
+            {
+              "contains": {
+                "type": "object",
+                "required": ["id", "platform"],
+                "properties": {
+                  "id": { "const": "release" },
+                  "platform": { "const": "mobile-app" }
+                }
+              },
+              "minContains": 1,
+              "maxContains": 1
+            },
+            {
+              "contains": {
+                "type": "object",
+                "required": ["id", "platform"],
+                "properties": {
+                  "id": { "const": "glance" },
+                  "platform": { "const": "watch-app" }
+                }
+              },
+              "minContains": 1,
+              "maxContains": 1
+            },
+            {
+              "contains": {
+                "type": "object",
+                "required": ["id", "platform"],
+                "properties": {
+                  "id": { "const": "type-input" },
+                  "platform": { "const": "watch-app" }
+                }
+              },
+              "minContains": 1,
+              "maxContains": 1
+            },
+            {
+              "contains": {
+                "type": "object",
+                "required": ["id", "platform"],
+                "properties": {
+                  "id": { "const": "screens" },
+                  "platform": { "const": "watch-app" }
+                }
+              },
+              "minContains": 1,
+              "maxContains": 1
+            },
+            {
+              "contains": {
+                "type": "object",
+                "required": ["id", "platform"],
+                "properties": {
+                  "id": { "const": "ambient" },
+                  "platform": { "const": "watch-app" }
+                }
+              },
+              "minContains": 1,
+              "maxContains": 1
+            },
+            {
+              "contains": {
+                "type": "object",
+                "required": ["id", "platform"],
+                "properties": {
+                  "id": { "const": "performance" },
+                  "platform": { "const": "watch-app" }
+                }
+              },
+              "minContains": 1,
+              "maxContains": 1
+            },
+            {
+              "contains": {
+                "type": "object",
+                "required": ["id", "platform"],
+                "properties": {
+                  "id": { "const": "release" },
+                  "platform": { "const": "watch-app" }
+                }
+              },
+              "minContains": 1,
+              "maxContains": 1
+            }
+          ]
+        }
+      }
+    },
+    {
+      "required": ["platform"],
+      "properties": {
+        "platform": {
+          "type": "object",
+          "properties": {
+            "id": { "const": "web-page" }
+          }
+        },
+        "sections": {
+          "type": "array",
+          "minItems": 16,
+          "maxItems": 16,
+          "allOf": [
+            {
+              "contains": {
+                "type": "object",
+                "required": ["id", "platform"],
+                "properties": {
+                  "id": { "const": "identity" },
+                  "platform": { "const": "common" }
+                }
+              },
+              "minContains": 1,
+              "maxContains": 1
+            },
+            {
+              "contains": {
+                "type": "object",
+                "required": ["id", "platform"],
+                "properties": {
+                  "id": { "const": "palette" },
+                  "platform": { "const": "common" }
+                }
+              },
+              "minContains": 1,
+              "maxContains": 1
+            },
+            {
+              "contains": {
+                "type": "object",
+                "required": ["id", "platform"],
+                "properties": {
+                  "id": { "const": "light" },
+                  "platform": { "const": "common" }
+                }
+              },
+              "minContains": 1,
+              "maxContains": 1
+            },
+            {
+              "contains": {
+                "type": "object",
+                "required": ["id", "platform"],
+                "properties": {
+                  "id": { "const": "atmosphere" },
+                  "platform": { "const": "common" }
+                }
+              },
+              "minContains": 1,
+              "maxContains": 1
+            },
+            {
+              "contains": {
+                "type": "object",
+                "required": ["id", "platform"],
+                "properties": {
+                  "id": { "const": "typography" },
+                  "platform": { "const": "common" }
+                }
+              },
+              "minContains": 1,
+              "maxContains": 1
+            },
+            {
+              "contains": {
+                "type": "object",
+                "required": ["id", "platform"],
+                "properties": {
+                  "id": { "const": "geometry" },
+                  "platform": { "const": "common" }
+                }
+              },
+              "minContains": 1,
+              "maxContains": 1
+            },
+            {
+              "contains": {
+                "type": "object",
+                "required": ["id", "platform"],
+                "properties": {
+                  "id": { "const": "components" },
+                  "platform": { "const": "common" }
+                }
+              },
+              "minContains": 1,
+              "maxContains": 1
+            },
+            {
+              "contains": {
+                "type": "object",
+                "required": ["id", "platform"],
+                "properties": {
+                  "id": { "const": "motion" },
+                  "platform": { "const": "common" }
+                }
+              },
+              "minContains": 1,
+              "maxContains": 1
+            },
+            {
+              "contains": {
+                "type": "object",
+                "required": ["id", "platform"],
+                "properties": {
+                  "id": { "const": "accessibility" },
+                  "platform": { "const": "common" }
+                }
+              },
+              "minContains": 1,
+              "maxContains": 1
+            },
+            {
+              "contains": {
+                "type": "object",
+                "required": ["id", "platform"],
+                "properties": {
+                  "id": { "const": "implementation" },
+                  "platform": { "const": "common" }
+                }
+              },
+              "minContains": 1,
+              "maxContains": 1
+            },
+            {
+              "contains": {
+                "type": "object",
+                "required": ["id", "platform"],
+                "properties": {
+                  "id": { "const": "composition" },
+                  "platform": { "const": "web-page" }
+                }
+              },
+              "minContains": 1,
+              "maxContains": 1
+            },
+            {
+              "contains": {
+                "type": "object",
+                "required": ["id", "platform"],
+                "properties": {
+                  "id": { "const": "layout" },
+                  "platform": { "const": "web-page" }
+                }
+              },
+              "minContains": 1,
+              "maxContains": 1
+            },
+            {
+              "contains": {
+                "type": "object",
+                "required": ["id", "platform"],
+                "properties": {
+                  "id": { "const": "atlas" },
+                  "platform": { "const": "web-page" }
+                }
+              },
+              "minContains": 1,
+              "maxContains": 1
+            },
+            {
+              "contains": {
+                "type": "object",
+                "required": ["id", "platform"],
+                "properties": {
+                  "id": { "const": "conversion" },
+                  "platform": { "const": "web-page" }
+                }
+              },
+              "minContains": 1,
+              "maxContains": 1
+            },
+            {
+              "contains": {
+                "type": "object",
+                "required": ["id", "platform"],
+                "properties": {
+                  "id": { "const": "delivery" },
+                  "platform": { "const": "web-page" }
+                }
+              },
+              "minContains": 1,
+              "maxContains": 1
+            },
+            {
+              "contains": {
+                "type": "object",
+                "required": ["id", "platform"],
+                "properties": {
+                  "id": { "const": "release" },
+                  "platform": { "const": "web-page" }
+                }
+              },
+              "minContains": 1,
+              "maxContains": 1
+            }
+          ]
+        }
+      }
+    },
+    {
+      "required": ["platform"],
+      "properties": {
+        "platform": {
+          "type": "object",
+          "properties": {
+            "id": { "const": "web-app" }
+          }
+        },
+        "sections": {
+          "type": "array",
+          "minItems": 17,
+          "maxItems": 17,
+          "allOf": [
+            {
+              "contains": {
+                "type": "object",
+                "required": ["id", "platform"],
+                "properties": {
+                  "id": { "const": "identity" },
+                  "platform": { "const": "common" }
+                }
+              },
+              "minContains": 1,
+              "maxContains": 1
+            },
+            {
+              "contains": {
+                "type": "object",
+                "required": ["id", "platform"],
+                "properties": {
+                  "id": { "const": "palette" },
+                  "platform": { "const": "common" }
+                }
+              },
+              "minContains": 1,
+              "maxContains": 1
+            },
+            {
+              "contains": {
+                "type": "object",
+                "required": ["id", "platform"],
+                "properties": {
+                  "id": { "const": "light" },
+                  "platform": { "const": "common" }
+                }
+              },
+              "minContains": 1,
+              "maxContains": 1
+            },
+            {
+              "contains": {
+                "type": "object",
+                "required": ["id", "platform"],
+                "properties": {
+                  "id": { "const": "atmosphere" },
+                  "platform": { "const": "common" }
+                }
+              },
+              "minContains": 1,
+              "maxContains": 1
+            },
+            {
+              "contains": {
+                "type": "object",
+                "required": ["id", "platform"],
+                "properties": {
+                  "id": { "const": "typography" },
+                  "platform": { "const": "common" }
+                }
+              },
+              "minContains": 1,
+              "maxContains": 1
+            },
+            {
+              "contains": {
+                "type": "object",
+                "required": ["id", "platform"],
+                "properties": {
+                  "id": { "const": "geometry" },
+                  "platform": { "const": "common" }
+                }
+              },
+              "minContains": 1,
+              "maxContains": 1
+            },
+            {
+              "contains": {
+                "type": "object",
+                "required": ["id", "platform"],
+                "properties": {
+                  "id": { "const": "components" },
+                  "platform": { "const": "common" }
+                }
+              },
+              "minContains": 1,
+              "maxContains": 1
+            },
+            {
+              "contains": {
+                "type": "object",
+                "required": ["id", "platform"],
+                "properties": {
+                  "id": { "const": "motion" },
+                  "platform": { "const": "common" }
+                }
+              },
+              "minContains": 1,
+              "maxContains": 1
+            },
+            {
+              "contains": {
+                "type": "object",
+                "required": ["id", "platform"],
+                "properties": {
+                  "id": { "const": "accessibility" },
+                  "platform": { "const": "common" }
+                }
+              },
+              "minContains": 1,
+              "maxContains": 1
+            },
+            {
+              "contains": {
+                "type": "object",
+                "required": ["id", "platform"],
+                "properties": {
+                  "id": { "const": "implementation" },
+                  "platform": { "const": "common" }
+                }
+              },
+              "minContains": 1,
+              "maxContains": 1
+            },
+            {
+              "contains": {
+                "type": "object",
+                "required": ["id", "platform"],
+                "properties": {
+                  "id": { "const": "shell" },
+                  "platform": { "const": "web-app" }
+                }
+              },
+              "minContains": 1,
+              "maxContains": 1
+            },
+            {
+              "contains": {
+                "type": "object",
+                "required": ["id", "platform"],
+                "properties": {
+                  "id": { "const": "discovery" },
+                  "platform": { "const": "web-app" }
+                }
+              },
+              "minContains": 1,
+              "maxContains": 1
+            },
+            {
+              "contains": {
+                "type": "object",
+                "required": ["id", "platform"],
+                "properties": {
+                  "id": { "const": "participation" },
+                  "platform": { "const": "web-app" }
+                }
+              },
+              "minContains": 1,
+              "maxContains": 1
+            },
+            {
+              "contains": {
+                "type": "object",
+                "required": ["id", "platform"],
+                "properties": {
+                  "id": { "const": "composer" },
+                  "platform": { "const": "web-app" }
+                }
+              },
+              "minContains": 1,
+              "maxContains": 1
+            },
+            {
+              "contains": {
+                "type": "object",
+                "required": ["id", "platform"],
+                "properties": {
+                  "id": { "const": "operations" },
+                  "platform": { "const": "web-app" }
+                }
+              },
+              "minContains": 1,
+              "maxContains": 1
+            },
+            {
+              "contains": {
+                "type": "object",
+                "required": ["id", "platform"],
+                "properties": {
+                  "id": { "const": "performance" },
+                  "platform": { "const": "web-app" }
+                }
+              },
+              "minContains": 1,
+              "maxContains": 1
+            },
+            {
+              "contains": {
+                "type": "object",
+                "required": ["id", "platform"],
+                "properties": {
+                  "id": { "const": "release" },
+                  "platform": { "const": "web-app" }
+                }
+              },
+              "minContains": 1,
+              "maxContains": 1
+            }
+          ]
+        }
+      }
+    },
+    {
+      "required": ["platform"],
+      "properties": {
+        "platform": {
+          "type": "object",
+          "properties": {
+            "id": { "const": "mobile-app" }
+          }
+        },
+        "sections": {
+          "type": "array",
+          "minItems": 17,
+          "maxItems": 17,
+          "allOf": [
+            {
+              "contains": {
+                "type": "object",
+                "required": ["id", "platform"],
+                "properties": {
+                  "id": { "const": "identity" },
+                  "platform": { "const": "common" }
+                }
+              },
+              "minContains": 1,
+              "maxContains": 1
+            },
+            {
+              "contains": {
+                "type": "object",
+                "required": ["id", "platform"],
+                "properties": {
+                  "id": { "const": "palette" },
+                  "platform": { "const": "common" }
+                }
+              },
+              "minContains": 1,
+              "maxContains": 1
+            },
+            {
+              "contains": {
+                "type": "object",
+                "required": ["id", "platform"],
+                "properties": {
+                  "id": { "const": "light" },
+                  "platform": { "const": "common" }
+                }
+              },
+              "minContains": 1,
+              "maxContains": 1
+            },
+            {
+              "contains": {
+                "type": "object",
+                "required": ["id", "platform"],
+                "properties": {
+                  "id": { "const": "atmosphere" },
+                  "platform": { "const": "common" }
+                }
+              },
+              "minContains": 1,
+              "maxContains": 1
+            },
+            {
+              "contains": {
+                "type": "object",
+                "required": ["id", "platform"],
+                "properties": {
+                  "id": { "const": "typography" },
+                  "platform": { "const": "common" }
+                }
+              },
+              "minContains": 1,
+              "maxContains": 1
+            },
+            {
+              "contains": {
+                "type": "object",
+                "required": ["id", "platform"],
+                "properties": {
+                  "id": { "const": "geometry" },
+                  "platform": { "const": "common" }
+                }
+              },
+              "minContains": 1,
+              "maxContains": 1
+            },
+            {
+              "contains": {
+                "type": "object",
+                "required": ["id", "platform"],
+                "properties": {
+                  "id": { "const": "components" },
+                  "platform": { "const": "common" }
+                }
+              },
+              "minContains": 1,
+              "maxContains": 1
+            },
+            {
+              "contains": {
+                "type": "object",
+                "required": ["id", "platform"],
+                "properties": {
+                  "id": { "const": "motion" },
+                  "platform": { "const": "common" }
+                }
+              },
+              "minContains": 1,
+              "maxContains": 1
+            },
+            {
+              "contains": {
+                "type": "object",
+                "required": ["id", "platform"],
+                "properties": {
+                  "id": { "const": "accessibility" },
+                  "platform": { "const": "common" }
+                }
+              },
+              "minContains": 1,
+              "maxContains": 1
+            },
+            {
+              "contains": {
+                "type": "object",
+                "required": ["id", "platform"],
+                "properties": {
+                  "id": { "const": "implementation" },
+                  "platform": { "const": "common" }
+                }
+              },
+              "minContains": 1,
+              "maxContains": 1
+            },
+            {
+              "contains": {
+                "type": "object",
+                "required": ["id", "platform"],
+                "properties": {
+                  "id": { "const": "anatomy" },
+                  "platform": { "const": "mobile-app" }
+                }
+              },
+              "minContains": 1,
+              "maxContains": 1
+            },
+            {
+              "contains": {
+                "type": "object",
+                "required": ["id", "platform"],
+                "properties": {
+                  "id": { "const": "instruments" },
+                  "platform": { "const": "mobile-app" }
+                }
+              },
+              "minContains": 1,
+              "maxContains": 1
+            },
+            {
+              "contains": {
+                "type": "object",
+                "required": ["id", "platform"],
+                "properties": {
+                  "id": { "const": "components" },
+                  "platform": { "const": "mobile-app" }
+                }
+              },
+              "minContains": 1,
+              "maxContains": 1
+            },
+            {
+              "contains": {
+                "type": "object",
+                "required": ["id", "platform"],
+                "properties": {
+                  "id": { "const": "adaptive" },
+                  "platform": { "const": "mobile-app" }
+                }
+              },
+              "minContains": 1,
+              "maxContains": 1
+            },
+            {
+              "contains": {
+                "type": "object",
+                "required": ["id", "platform"],
+                "properties": {
+                  "id": { "const": "sensors" },
+                  "platform": { "const": "mobile-app" }
+                }
+              },
+              "minContains": 1,
+              "maxContains": 1
+            },
+            {
+              "contains": {
+                "type": "object",
+                "required": ["id", "platform"],
+                "properties": {
+                  "id": { "const": "performance" },
+                  "platform": { "const": "mobile-app" }
+                }
+              },
+              "minContains": 1,
+              "maxContains": 1
+            },
+            {
+              "contains": {
+                "type": "object",
+                "required": ["id", "platform"],
+                "properties": {
+                  "id": { "const": "release" },
+                  "platform": { "const": "mobile-app" }
+                }
+              },
+              "minContains": 1,
+              "maxContains": 1
+            }
+          ]
+        }
+      }
+    },
+    {
+      "required": ["platform"],
+      "properties": {
+        "platform": {
+          "type": "object",
+          "properties": {
+            "id": { "const": "watch-app" }
+          }
+        },
+        "sections": {
+          "type": "array",
+          "minItems": 16,
+          "maxItems": 16,
+          "allOf": [
+            {
+              "contains": {
+                "type": "object",
+                "required": ["id", "platform"],
+                "properties": {
+                  "id": { "const": "identity" },
+                  "platform": { "const": "common" }
+                }
+              },
+              "minContains": 1,
+              "maxContains": 1
+            },
+            {
+              "contains": {
+                "type": "object",
+                "required": ["id", "platform"],
+                "properties": {
+                  "id": { "const": "palette" },
+                  "platform": { "const": "common" }
+                }
+              },
+              "minContains": 1,
+              "maxContains": 1
+            },
+            {
+              "contains": {
+                "type": "object",
+                "required": ["id", "platform"],
+                "properties": {
+                  "id": { "const": "light" },
+                  "platform": { "const": "common" }
+                }
+              },
+              "minContains": 1,
+              "maxContains": 1
+            },
+            {
+              "contains": {
+                "type": "object",
+                "required": ["id", "platform"],
+                "properties": {
+                  "id": { "const": "atmosphere" },
+                  "platform": { "const": "common" }
+                }
+              },
+              "minContains": 1,
+              "maxContains": 1
+            },
+            {
+              "contains": {
+                "type": "object",
+                "required": ["id", "platform"],
+                "properties": {
+                  "id": { "const": "typography" },
+                  "platform": { "const": "common" }
+                }
+              },
+              "minContains": 1,
+              "maxContains": 1
+            },
+            {
+              "contains": {
+                "type": "object",
+                "required": ["id", "platform"],
+                "properties": {
+                  "id": { "const": "geometry" },
+                  "platform": { "const": "common" }
+                }
+              },
+              "minContains": 1,
+              "maxContains": 1
+            },
+            {
+              "contains": {
+                "type": "object",
+                "required": ["id", "platform"],
+                "properties": {
+                  "id": { "const": "components" },
+                  "platform": { "const": "common" }
+                }
+              },
+              "minContains": 1,
+              "maxContains": 1
+            },
+            {
+              "contains": {
+                "type": "object",
+                "required": ["id", "platform"],
+                "properties": {
+                  "id": { "const": "motion" },
+                  "platform": { "const": "common" }
+                }
+              },
+              "minContains": 1,
+              "maxContains": 1
+            },
+            {
+              "contains": {
+                "type": "object",
+                "required": ["id", "platform"],
+                "properties": {
+                  "id": { "const": "accessibility" },
+                  "platform": { "const": "common" }
+                }
+              },
+              "minContains": 1,
+              "maxContains": 1
+            },
+            {
+              "contains": {
+                "type": "object",
+                "required": ["id", "platform"],
+                "properties": {
+                  "id": { "const": "implementation" },
+                  "platform": { "const": "common" }
+                }
+              },
+              "minContains": 1,
+              "maxContains": 1
+            },
+            {
+              "contains": {
+                "type": "object",
+                "required": ["id", "platform"],
+                "properties": {
+                  "id": { "const": "glance" },
+                  "platform": { "const": "watch-app" }
+                }
+              },
+              "minContains": 1,
+              "maxContains": 1
+            },
+            {
+              "contains": {
+                "type": "object",
+                "required": ["id", "platform"],
+                "properties": {
+                  "id": { "const": "type-input" },
+                  "platform": { "const": "watch-app" }
+                }
+              },
+              "minContains": 1,
+              "maxContains": 1
+            },
+            {
+              "contains": {
+                "type": "object",
+                "required": ["id", "platform"],
+                "properties": {
+                  "id": { "const": "screens" },
+                  "platform": { "const": "watch-app" }
+                }
+              },
+              "minContains": 1,
+              "maxContains": 1
+            },
+            {
+              "contains": {
+                "type": "object",
+                "required": ["id", "platform"],
+                "properties": {
+                  "id": { "const": "ambient" },
+                  "platform": { "const": "watch-app" }
+                }
+              },
+              "minContains": 1,
+              "maxContains": 1
+            },
+            {
+              "contains": {
+                "type": "object",
+                "required": ["id", "platform"],
+                "properties": {
+                  "id": { "const": "performance" },
+                  "platform": { "const": "watch-app" }
+                }
+              },
+              "minContains": 1,
+              "maxContains": 1
+            },
+            {
+              "contains": {
+                "type": "object",
+                "required": ["id", "platform"],
+                "properties": {
+                  "id": { "const": "release" },
+                  "platform": { "const": "watch-app" }
+                }
+              },
+              "minContains": 1,
+              "maxContains": 1
+            }
+          ]
+        }
+      }
+    }
+  ],
   "$defs": {
     "ruleId": {
       "type": "string",

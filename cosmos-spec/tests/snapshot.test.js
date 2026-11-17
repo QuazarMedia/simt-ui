@@ -5,7 +5,7 @@ import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import test from 'node:test';
 import { createArchive } from '../scripts/check.js';
-import { canonicalSchemaErrors, checkSnapshot, EXPORTS, PARTS, readInventory, REVIEWED_PATHS, sha256, SNAPSHOT, validateContent, verifyKnownDefects, verifyPin } from '../scripts/snapshot.js';
+import { canonicalSchemaErrors, checkSnapshot, EXPORTS, PARTS, readInventory, REVIEWED_PATHS, sha256, SNAPSHOT, validateContent, verifyPin } from '../scripts/snapshot.js';
 import { curveSamples } from '../scripts/semantics.js';
 
 const root = dirname(dirname(fileURLToPath(import.meta.url)));
@@ -37,17 +37,21 @@ function mutate(temporary, name, change) {
   return snapshot;
 }
 
-test('intact pinned snapshot passes private integrity without full conformance', () => {
+test('intact licensed snapshot passes integrity and every canonical schema', () => {
   const snapshot = checkSnapshot(root);
   assert.deepEqual(snapshot.counts, { exports: 23, sources: 7, rules: 80, sections: 36, profiles: 4, contrastPairs: 212, motifs: 7, curves: 16, components: 17 });
   assert.equal(EXPORTS.length, 23);
-  assert.equal(REVIEWED_PATHS.length, 30);
-  assert.equal(snapshot.failures.length, 4);
+  assert.equal(REVIEWED_PATHS.length, 33);
+  assert.deepEqual(snapshot.failures, []);
   assert.equal(snapshot.provenance.authority.repository, 'simt-space');
   assert.match(snapshot.provenance.authority.iosAdapter, /No normative iOS adapter/);
-  assert.equal(snapshot.provenance.distribution.publicRedistribution, 'blocked');
-  assert.equal(snapshot.provenance.licenses.code.status, 'unconfirmed');
-  assert.equal(snapshot.provenance.licenses.documents.status, 'unconfirmed');
+  assert.equal(snapshot.provenance.distribution.publicRedistribution, 'approved');
+  assert.equal(snapshot.provenance.licenses.code.status, 'confirmed');
+  assert.equal(snapshot.provenance.licenses.code.identifier, 'Apache-2.0');
+  assert.equal(snapshot.provenance.licenses.documents.status, 'confirmed');
+  assert.equal(snapshot.provenance.licenses.documents.identifier, 'CC-BY-4.0');
+  assert.equal(snapshot.provenance.licenses.ownerReview.rightsConfirmed, true);
+  assert.match(snapshot.provenance.distribution.reason, /not authorization to publish/);
 });
 
 test('missing export is rejected', (t) => {
@@ -158,41 +162,66 @@ test('legal strictRequired lint exception does not relax instance required valid
   const snapshot = mutate(fixture(t), 'specification.json', (d) => { delete d.implementationStatus; });
   const failures = canonicalSchemaErrors(snapshot.documents);
   assert(failures.some((error) => error.keyword === 'required' && error.params.missingProperty === 'implementationStatus'));
-  assert.throws(() => verifyKnownDefects(snapshot, failures), /ONLY the four exact known/);
+  assert(failures.length > 0);
+  assert.throws(() => checkSnapshot(snapshot.root), /Frozen provenance changed/);
 });
 
 test('extra global schema defect is not accepted by private integrity', (t) => {
   const snapshot = mutate(fixture(t), 'rules.json', (d) => { d.version = 'invalid'; });
   const failures = canonicalSchemaErrors(snapshot.documents);
   assert(failures.some((error) => error.file === `${SNAPSHOT}/rules.json` && error.keyword === 'pattern'));
-  assert.throws(() => verifyKnownDefects(snapshot, failures), /ONLY the four exact known/);
+  assert(failures.length > 0);
+  assert.throws(() => checkSnapshot(snapshot.root), /Frozen provenance changed/);
 });
 
-test('known-defect gate rejects weakening or repairing canonical bytes', (t) => {
-  const snapshot = mutate(fixture(t), 'rules.schema.json', (d) => { d.properties.sections.minItems = 16; });
+test('schema cardinality cannot be weakened by refreshing local hashes', (t) => {
+  const snapshot = mutate(fixture(t), 'rules.schema.json', (d) => { d.oneOf[0].properties.sections.minItems = 16; });
   assert.deepEqual(canonicalSchemaErrors(snapshot.documents), []);
-  assert.throws(() => verifyKnownDefects(snapshot, []), /ONLY the four exact known/);
+  assert.throws(() => verifyPin(snapshot), /Frozen provenance changed/);
 });
 
-test('strict canonical gate reports exactly all four upstream scoped minItems errors', () => {
+test('strict canonical gate passes the committed upstream scope fix', () => {
   const snapshot = readInventory(root);
-  const failures = canonicalSchemaErrors(snapshot.documents);
-  assert.equal(failures.length, 4);
+  assert.deepEqual(canonicalSchemaErrors(snapshot.documents), []);
+  const scopes = snapshot.documents['rules.schema.json'].oneOf;
+  assert.equal(scopes[0].properties.sections.minItems, 36);
   for (const part of PARTS) {
-    const error = failures.find((entry) => entry.file === `${SNAPSHOT}/${part}/rules.json`);
-    assert(error);
-    assert.equal(error.keyword, 'minItems');
-    assert.equal(error.instancePath, '/sections');
-    assert.equal(error.schemaPath, '#/properties/sections/minItems');
-    assert.deepEqual(error.params, { limit: 36 });
-    assert.equal(error.actualSections, part === 'mobile-app' || part === 'web-app' ? 17 : 16);
+    const scope = scopes.find((entry) => entry.properties.platform?.properties.id.const === part);
+    assert.equal(scope.properties.sections.minItems, part === 'mobile-app' || part === 'web-app' ? 17 : 16);
   }
-  verifyKnownDefects(snapshot, failures);
   const command = spawnSync(process.execPath, [join(root, 'scripts/check.js'), 'canonical-schema'], { encoding: 'utf8' });
-  assert.equal(command.status, 1);
-  assert.match(command.stderr, /STRICT CANONICAL-SCHEMA FAILED/);
-  for (const part of PARTS) assert(command.stderr.includes(`${SNAPSHOT}/${part}/rules.json /sections:`));
+  assert.equal(command.status, 0, command.stderr);
+  assert.match(command.stdout, /Every declared canonical schema passed/);
 });
+
+for (const part of ['union', ...PARTS]) {
+  test(`${part} canonical scope rejects missing, duplicate, extra and foreign sections`, (t) => {
+    const name = part === 'union' ? 'rules.json' : `${part}/rules.json`;
+    const global = readInventory(root).documents['rules.json'];
+    const foreign = global.sections.find((section) => !['common', part].includes(section.platform));
+    for (const change of [
+      (d) => { d.sections.pop(); },
+      (d) => { d.sections.push(structuredClone(d.sections[0])); },
+      (d) => { d.sections[1] = structuredClone(d.sections[0]); },
+      (d) => { d.sections[0].platform = 'unknown-platform'; },
+      ...(part === 'union' ? [] : [(d) => { d.sections[d.sections.length - 1] = structuredClone(foreign); }]),
+    ]) {
+      const snapshot = mutate(fixture(t), name, change);
+      assert(canonicalSchemaErrors(snapshot.documents).some((error) => error.file === `${SNAPSHOT}/${name}`));
+    }
+  });
+}
+
+for (const name of ['LICENSE', 'LICENSE-DOCS', 'NOTICE']) {
+  test(`required upstream ${name} is byte-pinned and retained in the archive`, (t) => {
+    const temporary = fixture(t);
+    const path = join(temporary, 'upstream/2.3.0/cosmos/design', name);
+    const bytes = readFileSync(path);
+    assert(bytes.length > 500);
+    writeFileSync(path, `${bytes}\n`);
+    assert.throws(() => checkSnapshot(temporary), /SHA256 mismatch/);
+  });
+}
 
 test('Bezier recomputation uses supplied sample count/steps and exact endpoints', () => {
   assert.deepEqual(curveSamples([0, 0, 1, 1], 3, 64), [0, 0.5, 1]);
@@ -205,7 +234,7 @@ test('actual archive hashes repeat, with sorted reviewed paths and fixed metadat
   const first = createArchive(temporary);
   const firstBytes = readFileSync(first.archive);
   const second = createArchive(temporary);
-  assert.equal(first.entries, 31);
+  assert.equal(first.entries, 34);
   assert.equal(first.sha256, sha256(firstBytes));
   assert.equal(second.sha256, first.sha256);
   assert.deepEqual(readFileSync(second.archive), firstBytes);

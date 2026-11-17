@@ -6,7 +6,7 @@ plugins {
 val checkSnapshot =
     tasks.register<Exec>("checkSnapshot") {
         group = "verification"
-        description = "Verify the frozen private Cosmos snapshot, allowing only the four recorded upstream schema defects."
+        description = "Verify the frozen licensed Cosmos snapshot and every declared canonical schema."
         workingDir(projectDir)
         commandLine("npm", "run", "check:integrity")
     }
@@ -21,7 +21,7 @@ val snapshotTest =
 
 tasks.register<Exec>("checkCanonicalSchema") {
     group = "verification"
-    description = "Strict canonical schema gate: currently fails on all four upstream scoped sections.minItems defects."
+    description = "Validate the union and all scoped exports against their unchanged committed canonical schemas."
     workingDir(projectDir)
     commandLine("npm", "run", "check:canonical-schema")
 }
@@ -29,15 +29,14 @@ tasks.register<Exec>("checkCanonicalSchema") {
 val privateSnapshotZip =
     tasks.register<Exec>("privateSnapshotZip") {
         group = "distribution"
-        description = "Build a deterministic local private ZIP; public redistribution remains blocked."
+        description = "Build a deterministic local ZIP retaining licenses and attribution; no upload or release approval."
         dependsOn(checkSnapshot)
         workingDir(projectDir)
         commandLine("npm", "run", "archive:private")
     }
 
 tasks.named("check") {
-    // Do not aggregate the expected-failing strict gate into private development checks.
-    dependsOn(checkSnapshot, snapshotTest)
+    dependsOn(checkSnapshot, snapshotTest, "checkCanonicalSchema")
 }
 
 tasks.named("assemble") {

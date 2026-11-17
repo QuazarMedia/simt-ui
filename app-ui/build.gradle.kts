@@ -1,5 +1,8 @@
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import org.jetbrains.kotlin.gradle.dsl.abi.ExperimentalAbiValidation
+import java.time.LocalDateTime
+import java.util.zip.ZipEntry
+import java.util.zip.ZipOutputStream
 
 plugins {
     alias(libs.plugins.kotlin.multiplatform)
@@ -101,6 +104,28 @@ val apiDocumentationJar =
         isReproducibleFileOrder = true
     }
 
+val legalNoticeEntries = listOf("LICENSE", "LICENSE-DOCS", "NOTICE", "app-ui/source-provenance.json").sorted()
+val legalNoticesArchive = layout.buildDirectory.file("legal-notices/legal-notices.zip")
+val legalNoticesZip =
+    tasks.register("legalNoticesZip") {
+        inputs.files(legalNoticeEntries.map { rootProject.file(it) })
+            .withPathSensitivity(PathSensitivity.RELATIVE)
+        outputs.file(legalNoticesArchive)
+        doLast {
+            val output = legalNoticesArchive.get().asFile
+            output.parentFile.mkdirs()
+            ZipOutputStream(output.outputStream()).use { archive ->
+                legalNoticeEntries.forEach { relative ->
+                    val entry = ZipEntry(relative)
+                    entry.setTimeLocal(LocalDateTime.of(1980, 1, 1, 0, 0))
+                    archive.putNextEntry(entry)
+                    rootProject.file(relative).inputStream().use { it.copyTo(archive) }
+                    archive.closeEntry()
+                }
+            }
+        }
+    }
+
 publishing {
     repositories {
         maven {
@@ -110,10 +135,22 @@ publishing {
     }
     publications.withType<MavenPublication>().configureEach {
         artifact(apiDocumentationJar)
+        artifact(legalNoticesArchive) {
+            builtBy(legalNoticesZip)
+            classifier = "legal-notices"
+            extension = "zip"
+        }
         pom {
             name = "SIMT UI"
             description = "Shared Android and iOS Compose UI primitives"
             url = "https://github.com/QuazarMedia/simt-ui"
+            licenses {
+                license {
+                    name = "Apache License, Version 2.0"
+                    url = "https://www.apache.org/licenses/LICENSE-2.0.txt"
+                    distribution = "repo"
+                }
+            }
             scm {
                 connection = "scm:git:https://github.com/QuazarMedia/simt-ui.git"
                 url = "https://github.com/QuazarMedia/simt-ui"

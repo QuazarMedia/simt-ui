@@ -17,6 +17,12 @@ import check_publication as audit
 
 
 HEAD = 'a' * 40
+PROJECT_ROOT = Path(audit.__file__).resolve().parents[1]
+LEGAL_DOCUMENTS = {p: (PROJECT_ROOT / p).read_bytes() for p in
+                   ('LICENSE', 'LICENSE-DOCS', 'NOTICE', 'app-ui/source-provenance.json')}
+POM_LICENSE_XML = ('<licenses><license><name>Apache License, Version 2.0</name>'
+                   '<url>https://www.apache.org/licenses/LICENSE-2.0.txt</url>'
+                   '<distribution>repo</distribution></license></licenses>')
 
 
 def digest(data):
@@ -30,8 +36,12 @@ def encoded(value):
 def archive(entries, compression=zipfile.ZIP_STORED):
     result = io.BytesIO()
     with zipfile.ZipFile(result, 'w', compression=compression) as stream:
-        for name, data in entries.items():
-            stream.writestr(name, data)
+        for name, data in sorted(entries.items()):
+            info = zipfile.ZipInfo(name, date_time=(1980, 1, 1, 0, 0, 0))
+            info.create_system = 3
+            info.external_attr = (stat.S_IFREG | 0o644) << 16
+            info.compress_type = compression
+            stream.writestr(info, data)
     return result.getvalue()
 
 
@@ -47,6 +57,10 @@ class Fixture:
         self.actual = version.replace('SNAPSHOT', '20261117.123456-1')
         self.modules = {}
         self.paths = {}
+        self.legal_entries = dict(LEGAL_DOCUMENTS)
+        self.legal_zip = archive(self.legal_entries)
+        for relative, data in self.legal_entries.items():
+            self.put(relative, data)
         for target in audit.TARGETS:
             for key in audit.required_keys(target):
                 self.paths[target, key] = 'app/simt/' + target + '/' + version + '/' + audit.logical_name(target, self.actual, key)
@@ -60,6 +74,9 @@ class Fixture:
             variants = []
             for key in sorted(audit.required_keys(target) - {('', 'pom'), ('', 'module')}):
                 classifier, extension = key
+                if classifier == 'legal-notices':
+                    self.write(target, key, self.legal_zip)
+                    continue  # Required Maven attachment, deliberately no Gradle variant.
                 if classifier == 'sources':
                     data = archive({'commonMain/app/shared/ui/Example.kt': 'package app.shared.ui\nclass Example'})
                 elif classifier == 'javadoc':
@@ -86,7 +103,7 @@ class Fixture:
                 component = self.link('app-ui')
             self.modules[target] = {'formatVersion': '1.1', 'component': component, 'variants': variants}
             pom = ('<project><groupId>app.simt</groupId><artifactId>' + target + '</artifactId><version>' + version +
-                   '</version><dependencies><dependency><groupId>org.jetbrains.kotlin</groupId><artifactId>kotlin-stdlib</artifactId>'
+                   '</version>' + POM_LICENSE_XML + '<dependencies><dependency><groupId>org.jetbrains.kotlin</groupId><artifactId>kotlin-stdlib</artifactId>'
                    '<version>2.4.21</version></dependency></dependencies></project>').encode()
             self.write(target, ('', 'pom'), pom)
             if version.endswith('SNAPSHOT'):
@@ -170,6 +187,156 @@ class PublicationTests(unittest.TestCase):
         result = fixture.check()
         self.assertTrue(result.ok, result.payload())
         self.assertFalse(any('maven-metadata' in p for p in result.inventory))
+
+    def test_legal_zip_is_identical_and_mandatory_without_gradle_variants(self):
+        result = self.fixture.check()
+        self.assertTrue(result.ok, result.payload())
+        for target in audit.TARGETS:
+            self.assertIn(('legal-notices', 'zip'), audit.required_keys(target))
+            self.assertFalse(any('legal-notices' in v['name'] for v in self.fixture.modules[target]['variants']))
+            relative = self.fixture.paths[target, ('legal-notices', 'zip')]
+            self.assertEqual((self.fixture.repo / relative).read_bytes(), self.fixture.legal_zip)
+            self.assertIn(relative + '.sha256', result.inventory)
+        with zipfile.ZipFile(io.BytesIO(self.fixture.legal_zip)) as stream:
+            self.assertEqual(stream.namelist(), sorted(LEGAL_DOCUMENTS))
+            self.assertTrue(all(i.date_time == (1980, 1, 1, 0, 0, 0) for i in stream.infolist()))
+            self.assertEqual(digest(stream.read('LICENSE')), 'c71d239df91726fc519c6eb72d318ec65820627232b2f796219e87dcf35d0ab4')
+            self.assertEqual(digest(stream.read('LICENSE-DOCS')), '9ba9550ad48438d0836ddab3da480b3b69ffa0aac7b7878b5a0039e7ab429411')
+
+    def test_missing_legal_classifier_in_each_snapshot(self):
+        for target in audit.TARGETS:
+            with self.subTest(target=target):
+                self.fixture.metadata(target, lambda s: s.replace(
+                    '<snapshotVersion><classifier>legal-notices</classifier><extension>zip</extension><value>' + self.fixture.actual +
+                    '</value><updated>20261117123456</updated></snapshotVersion>', ''))
+                self.assertBlocked('snapshot-missing-classifier')
+                self.fixture.metadata(target)
+
+    def test_legal_classifier_requires_zip_extension(self):
+        self.fixture.metadata('app-ui', lambda s: s.replace(
+            '<classifier>legal-notices</classifier><extension>zip</extension>',
+            '<classifier>legal-notices</classifier><extension>jar</extension>'))
+        self.assertBlocked('snapshot-metadata')
+
+    def test_missing_legal_zip_in_each_stable_publication(self):
+        fixture = Fixture(Path(self.tmp.name) / 'stable', '1.2.3')
+        for target in audit.TARGETS:
+            with self.subTest(target=target):
+                path = fixture.repo / fixture.paths[target, ('legal-notices', 'zip')]
+                data = path.read_bytes()
+                path.unlink()
+                result = fixture.check()
+                self.assertFalse(result.ok)
+                self.assertIn('missing-or-unreadable', {c for _, c in result.findings})
+                path.write_bytes(data)
+
+    def test_legal_zip_exact_entries_required(self):
+        for missing in LEGAL_DOCUMENTS:
+            with self.subTest(missing=missing):
+                entries = dict(self.fixture.legal_entries)
+                del entries[missing]
+                self.fixture.write('app-ui', ('legal-notices', 'zip'), archive(entries))
+                self.assertBlocked('legal-notices-entries')
+        for extra in ('cosmos-spec/snapshots/payload.json', 'app-ui/', 'unrelated.txt'):
+            with self.subTest(extra=extra):
+                self.fixture.write('app-ui', ('legal-notices', 'zip'), archive({**self.fixture.legal_entries, extra: b'{}'}))
+                self.assertBlocked('legal-notices-entries')
+
+    def test_legal_zip_cannot_carry_credentials(self):
+        entries = {**self.fixture.legal_entries, 'credentials.json': encoded({'token': secret()})}
+        self.fixture.write('app-ui', ('legal-notices', 'zip'), archive(entries))
+        result = self.assertBlocked('forbidden-file')
+        self.assertNotIn(secret(), json.dumps(result.payload()))
+        self.assertIn('credential', {c for _, c in result.findings})
+
+    def test_wrong_full_license_bytes_even_with_fresh_sidecars(self):
+        for relative in ('LICENSE', 'LICENSE-DOCS'):
+            for content in (b'Apache-2.0 / CC-BY-4.0 placeholder', self.fixture.legal_entries[relative][:-1],
+                            self.fixture.legal_entries[relative] + b' ', self.fixture.legal_entries['NOTICE']):
+                with self.subTest(relative=relative, size=len(content)):
+                    entries = {**self.fixture.legal_entries, relative: content}
+                    self.fixture.write('app-ui', ('legal-notices', 'zip'), archive(entries))
+                    self.assertBlocked('license-text-sha256')
+
+    def test_owner_notice_must_be_meaningful(self):
+        for content in (b'', b'NOTICE', b'Copyright Said Elimam', b'\xff',
+                        self.fixture.legal_entries['NOTICE'].replace(b'Said Elimam', b'Unknown owner'),
+                        self.fixture.legal_entries['NOTICE'].replace(b'LICENSE-DOCS', b'OTHER')):
+            with self.subTest(size=len(content)):
+                self.fixture.write('app-ui', ('legal-notices', 'zip'), archive({**self.fixture.legal_entries, 'NOTICE': content}))
+                self.assertBlocked('owner-notice-invalid')
+
+    def test_false_ui_rights_in_legal_zip_block(self):
+        changes = [lambda p: p.update(licenseStatus='unconfirmed'), lambda p: p.update(license='CC-BY-4.0'),
+                   lambda p: p.update(publicRedistribution='blocked'), lambda p: p.pop('ownerReview'),
+                   lambda p: p['ownerReview'].update(reviewer='Other owner'),
+                   lambda p: p['ownerReview'].update(rightsConfirmed=False),
+                   lambda p: p['ownerReview'].update(rightsConfirmed=1),
+                   lambda p: p['ownerReview'].update(date='2026-11-16')]
+        for index, change in enumerate(changes):
+            with self.subTest(change=index):
+                provenance = json.loads(self.fixture.legal_entries['app-ui/source-provenance.json'])
+                change(provenance)
+                entries = {**self.fixture.legal_entries, 'app-ui/source-provenance.json': encoded(provenance)}
+                self.fixture.write('app-ui', ('legal-notices', 'zip'), archive(entries))
+                self.assertBlocked('redistribution-rights-unconfirmed')
+
+    def test_legal_provenance_requires_original_source_records(self):
+        for change in (lambda p: p.update(files=[]), lambda p: p.update(sourceCommit='invalid'),
+                       lambda p: p['files'][0].update(sha256='invalid'),
+                       lambda p: p['files'][0].update(sourcePath='../escape.kt')):
+            provenance = json.loads(self.fixture.legal_entries['app-ui/source-provenance.json'])
+            change(provenance)
+            self.fixture.write('app-ui', ('legal-notices', 'zip'), archive(
+                {**self.fixture.legal_entries, 'app-ui/source-provenance.json': encoded(provenance)}))
+            self.assertBlocked('malformed-provenance')
+
+    def test_all_targets_must_attach_the_same_legal_zip(self):
+        entries = {**self.fixture.legal_entries, 'NOTICE': self.fixture.legal_entries['NOTICE'] + b'\nAdditional attribution.\n'}
+        self.fixture.write('app-ui-iosarm64', ('legal-notices', 'zip'), archive(entries))
+        self.assertBlocked('legal-notices-mismatch')
+
+    def test_legal_zip_sidecar_cannot_be_stale(self):
+        path = self.fixture.repo / self.fixture.paths['app-ui', ('legal-notices', 'zip')]
+        path.write_bytes(self.fixture.legal_zip + b'changed')
+        self.assertBlocked('checksum-sidecar')
+
+    def test_optional_legal_gradle_variant_checks_its_checksum(self):
+        target = 'app-ui'
+        key = ('legal-notices', 'zip')
+        self.fixture.modules[target]['variants'].append({
+            'name': 'legal-notices', 'attributes': {'org.gradle.category': 'documentation'},
+            'files': [{'name': audit.logical_name(target, self.fixture.version, key),
+                       'url': audit.logical_name(target, self.fixture.version, key),
+                       'size': len(self.fixture.legal_zip), 'sha256': digest(self.fixture.legal_zip)}]})
+        self.fixture.save_module(target)
+        self.assertTrue(self.fixture.check().ok)
+        self.fixture.modules[target]['variants'][-1]['files'][0]['sha256'] = '0' * 64
+        self.fixture.save_module(target)
+        self.assertBlocked('checksum-or-size')
+
+    def test_pom_license_metadata_required_on_every_target(self):
+        for target in audit.TARGETS:
+            path = self.fixture.repo / self.fixture.paths[target, ('', 'pom')]
+            original = path.read_bytes()
+            with self.subTest(target=target):
+                self.fixture.write(target, ('', 'pom'), original.replace(POM_LICENSE_XML.encode(), b''))
+                self.assertBlocked('pom-license-metadata')
+                self.fixture.write(target, ('', 'pom'), original)
+
+    def test_wrong_or_duplicate_pom_license_metadata(self):
+        target = 'app-ui'
+        original = (self.fixture.repo / self.fixture.paths[target, ('', 'pom')]).read_bytes()
+        alternatives = [POM_LICENSE_XML.replace('Apache License, Version 2.0', 'CC-BY-4.0'),
+                        POM_LICENSE_XML.replace('https://www.apache.org/licenses/LICENSE-2.0.txt', 'https://invalid.example/license'),
+                        POM_LICENSE_XML.replace('<distribution>repo</distribution>', '<distribution>manual</distribution>'),
+                        POM_LICENSE_XML.replace('<distribution>repo</distribution>', ''),
+                        POM_LICENSE_XML + POM_LICENSE_XML,
+                        POM_LICENSE_XML.replace('</licenses>', '<license><name>Other</name></license></licenses>')]
+        for index, alternative in enumerate(alternatives):
+            with self.subTest(change=index):
+                self.fixture.write(target, ('', 'pom'), original.replace(POM_LICENSE_XML.encode(), alternative.encode()))
+                self.assertBlocked('pom-license-metadata')
 
     def test_stale_unselected_files_and_versions_ignored(self):
         self.fixture.put(self.fixture.repo.relative_to(self.fixture.root) / 'app/simt/app-ui/1.2.3-SNAPSHOT/app-ui-old.module', '{' + secret())
@@ -520,11 +687,12 @@ class ReleaseTests(unittest.TestCase):
         self.fixture = Fixture(self.tmp.name, '1.2.3')
         self.root = self.fixture.root
         for relative in audit.RELEASE_DOCS:
-            self.fixture.put(relative, 'Owner-confirmed release document')
+            if relative not in LEGAL_DOCUMENTS:
+                self.fixture.put(relative, 'Owner-confirmed release document')
         self.fixture.put('app-ui/api/app-ui.api', 'public class app/shared/ui/Example')
         self.fixture.put('cosmos-spec/scripts/check.js', '// fixed strict schema checker fixture')
         self.fixture.put('cosmos-spec/snapshots/specification.md', 'Approved specification')
-        source = {'licenseStatus': 'confirmed', 'publicRedistribution': 'approved'}
+        source = json.loads(LEGAL_DOCUMENTS['app-ui/source-provenance.json'])
         cosmos = {'licenses': {'code': {'status': 'confirmed'}, 'documents': {'status': 'confirmed'}},
                   'distribution': {'scope': 'public-redistribution', 'publicRedistribution': 'approved'},
                   'knownSchemaDefects': [], 'inventory': [{'path': 'snapshots/specification.md',
@@ -654,6 +822,36 @@ class ReleaseTests(unittest.TestCase):
         self.fixture.put('app-ui/source-provenance.json', encoded({'licenseStatus': 'Unconfirmed; owner review required'}))
         self.assertGate('redistribution-rights-unconfirmed')
 
+    def test_false_ui_rights_cannot_be_overruled_by_final_owner_approval(self):
+        original = json.loads((self.root / 'app-ui/source-provenance.json').read_bytes())
+        for change in (lambda p: p.update(license='CC-BY-4.0'),
+                       lambda p: p['ownerReview'].update(rightsConfirmed=False),
+                       lambda p: p['ownerReview'].update(reviewer='Other owner'),
+                       lambda p: p['ownerReview'].pop('date')):
+            source = copy.deepcopy(original)
+            change(source)
+            self.fixture.put('app-ui/source-provenance.json', encoded(source))
+            self.review['provenance']['sourceSha256'] = digest(encoded(source))
+            self.save()
+            self.assertGate('redistribution-rights-unconfirmed')
+
+    def test_release_documents_require_full_license_bytes_and_owner_notice(self):
+        for relative, content, category in (('LICENSE', b'Apache-2.0', 'license-text-sha256'),
+                                            ('LICENSE-DOCS', b'CC-BY-4.0', 'license-text-sha256'),
+                                            ('NOTICE', b'Copyright Said Elimam', 'owner-notice-invalid')):
+            with self.subTest(relative=relative):
+                self.fixture.put(relative, content)
+                result = audit.check_release(self.root, self.fixture.repo, '1.2.3', self.approval)
+                self.assertFalse(result.ok, result.payload())
+                self.assertIn((relative, category), result.findings)
+                self.fixture.put(relative, LEGAL_DOCUMENTS[relative])
+
+    def test_missing_document_license_blocks_release(self):
+        (self.root / 'LICENSE-DOCS').unlink()
+        result = audit.check_release(self.root, self.fixture.repo, '1.2.3', self.approval)
+        self.assertFalse(result.ok)
+        self.assertIn(('LICENSE-DOCS', 'missing-or-unreadable'), result.findings)
+
     def test_cosmos_document_rights_independently_unconfirmed(self):
         path = self.root / 'cosmos-spec/provenance.json'
         data = json.loads(path.read_bytes())
@@ -750,6 +948,10 @@ class ReleaseTests(unittest.TestCase):
             manifest = json.loads(stream.read('artifact-checksums.json'))
             self.assertTrue(manifest['unsigned'])
             self.assertEqual(manifest['artifacts'], self.review['artifacts'])
+            for relative in ('LICENSE', 'LICENSE-DOCS', 'NOTICE'):
+                self.assertEqual(stream.read('source/' + relative), LEGAL_DOCUMENTS[relative])
+            for target in audit.TARGETS:
+                self.assertEqual(stream.read('maven/' + self.fixture.paths[target, ('legal-notices', 'zip')]), self.fixture.legal_zip)
             self.assertFalse(any(name.endswith(('.asc', '.sig')) for name in stream.namelist()))
 
     def test_stage_does_not_replace_existing_output(self):
@@ -773,7 +975,7 @@ class IntegrationStageTests(unittest.TestCase):
         self.fixture = Fixture(self.tmp.name)
         for relative in ('README.md', 'app-ui/Module.md'):
             self.fixture.put(relative, 'Private integration documentation')
-        self.fixture.put('app-ui/source-provenance.json', encoded({'licenseStatus': 'Unconfirmed; owner review required'}))
+        # Legal rights are confirmed; final release/runtime approval still is not.
         self.state = {'head': HEAD, 'sourceSha256': 'b' * 64, 'dirtyTree': True}
         self.real_state = audit.integration_state
         state = patch.object(audit, 'integration_state', return_value=self.state)
@@ -799,6 +1001,11 @@ class IntegrationStageTests(unittest.TestCase):
             self.assertEqual(manifest['head'], HEAD)
             self.assertTrue(manifest['dirtyTree'])
             self.assertFalse(any(p.startswith('source/cosmos-spec/') for p in stream.namelist()))
+            for relative in ('LICENSE', 'LICENSE-DOCS', 'NOTICE'):
+                self.assertEqual(stream.read('source/' + relative), LEGAL_DOCUMENTS[relative])
+                self.assertIn('source/' + relative, {entry['path'] for entry in manifest['artifacts']})
+            for target in audit.TARGETS:
+                self.assertEqual(stream.read('maven/' + self.fixture.paths[target, ('legal-notices', 'zip')]), self.fixture.legal_zip)
             for entry in manifest['artifacts']:
                 data = stream.read(entry['path'])
                 self.assertEqual(digest(data), entry['sha256'])
@@ -809,6 +1016,56 @@ class IntegrationStageTests(unittest.TestCase):
         second, two = self.stage('two.zip')
         self.assertTrue(first.ok and second.ok)
         self.assertEqual(one.read_bytes(), two.read_bytes())
+
+    def test_missing_license_copies_block_private_stage(self):
+        for relative in ('LICENSE', 'LICENSE-DOCS', 'NOTICE'):
+            with self.subTest(relative=relative):
+                path = self.fixture.root / relative
+                data = path.read_bytes()
+                path.unlink()
+                result, output = self.stage()
+                self.assertFalse(result.ok)
+                self.assertIn((relative, 'missing-or-unreadable'), result.findings)
+                self.assertFalse(output.exists())
+                path.write_bytes(data)
+
+    def test_invalid_root_legal_documents_block_private_stage(self):
+        for relative, content, category in (('LICENSE', b'Apache-2.0', 'license-text-sha256'),
+                                            ('LICENSE-DOCS', b'CC-BY-4.0', 'license-text-sha256'),
+                                            ('NOTICE', b'Copyright Said Elimam', 'owner-notice-invalid')):
+            with self.subTest(relative=relative):
+                self.fixture.put(relative, content)
+                result, output = self.stage()
+                self.assertFalse(result.ok)
+                self.assertIn((relative, category), result.findings)
+                self.assertFalse(output.exists())
+                self.fixture.put(relative, LEGAL_DOCUMENTS[relative])
+
+    def test_false_ui_grant_blocks_stage_without_final_approval(self):
+        provenance = json.loads(LEGAL_DOCUMENTS['app-ui/source-provenance.json'])
+        provenance['ownerReview']['rightsConfirmed'] = False
+        self.fixture.put('app-ui/source-provenance.json', encoded(provenance))
+        result, output = self.stage()
+        self.assertFalse(result.ok)
+        self.assertIn(('app-ui/source-provenance.json', 'redistribution-rights-unconfirmed'), result.findings)
+        self.assertFalse(output.exists())
+
+    def test_license_copy_change_after_audit_blocks_before_output(self):
+        original = audit.read_file
+        reads = 0
+        def changed(base, relative, *args):
+            nonlocal reads
+            data = original(base, relative, *args)
+            if str(relative) == 'LICENSE-DOCS':
+                reads += 1
+                if reads > 1:
+                    return data + b'changed'
+            return data
+        with patch.object(audit, 'read_file', side_effect=changed):
+            result, output = self.stage()
+        self.assertFalse(result.ok)
+        self.assertIn('stage-input-changed', {c for _, c in result.findings})
+        self.assertFalse(output.exists())
 
     def test_bad_publication_blocks_before_output(self):
         (self.fixture.repo / self.fixture.paths['app-ui-android', ('', 'aar')]).write_bytes(b'changed')

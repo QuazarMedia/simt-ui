@@ -1,7 +1,15 @@
 {
   "sourceRepository": "QuazarMedia/app-ui",
   "sourceCommit": "970b6fe6b3d2081bd1c69523cafefa6aa1d096b3",
-  "licenseStatus": "Unconfirmed; public redistribution requires owner review",
+  "licenseStatus": "confirmed",
+  "license": "Apache-2.0",
+  "publicRedistribution": "approved",
+  "ownerReview": {
+    "reviewer": "Said Elimam",
+    "rightsConfirmed": true,
+    "date": "2026-11-17",
+    "statement": "Said Elimam controls the required UI source rights and approved Apache-2.0 licensing and public redistribution. This grant is not final release, signing or upload approval."
+  },
   "exportMode": "Allowlisted files only; no Git history or application configuration imported",
   "files": [
     {

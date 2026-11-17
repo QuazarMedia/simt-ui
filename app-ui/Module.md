@@ -1,6 +1,6 @@
 # Module app-ui
 
-Generic, caller-state-owned Compose primitives in `app.shared.ui` for Android API 28+ and Kotlin consumers targeting `iosArm64` or `iosSimulatorArm64`. Redistribution rights are unconfirmed; these are private-development artifacts, not a published stable release.
+Generic, caller-state-owned Compose primitives in `app.shared.ui` for Android API 28+ and Kotlin consumers targeting `iosArm64` or `iosSimulatorArm64`. Said Elimam confirmed the required UI rights and granted Apache-2.0 licensing and public redistribution on 2026-11-17. This license grant is not final public-release approval; these remain private-development artifacts, not a published stable release.
 
 Use the caller's Material3 theme. Labels, callbacks, state, window policy, reduced motion, visibility and host lifecycle remain application-owned. Resources are private and automatically packaged; callers do not reconstruct Android resource IDs or copy assets. English, French, Spanish and Arabic strings are preserved, with default English fallback for unsupported locales.
 
@@ -40,4 +40,4 @@ Android haptics preserve `CLOCK_TICK` for intermediate values and `LONG_PRESS` f
 
 The ordinary Android and CMP examples consume filesystem Maven publications without composite substitution or manual resources. Android host/emulator behavior, default R8 packaging, four locales, unsupported-locale fallback and both Native framework links have been exercised. API 28 remains host-only; iOS launch, bundled-resource runtime rendering, native IME/screen-reader behavior and physical haptics remain release obligations. No pure Swift/SwiftUI API is promised: Kotlin consumers can embed Compose through their existing framework/controller.
 
-Built-in Kotlin ABI checks compare the reviewed Android and Native baselines. Generated documentation and source artifacts accompany all four publications. Public distribution additionally requires confirmed code/document/spec rights, exact artifact/security review, stable version/tag and explicit owner approval. Successful local quality checks are not that approval.
+Built-in Kotlin ABI checks compare the reviewed Android and Native baselines. Generated documentation, source artifacts and a deterministic `legal-notices` ZIP accompany all four publications. The ZIP contains root `LICENSE` (Apache-2.0 code), `LICENSE-DOCS` (CC-BY-4.0 Cosmos documents), `NOTICE` and `app-ui/source-provenance.json`, with no Cosmos payload or credentials. Original provenance paths/hashes describe upstream bytes, not the current package layout. Public release additionally requires confirmed code/document/spec rights, exact artifact/security review, stable version/tag and explicit final owner approval. Successful local quality checks are not that approval.

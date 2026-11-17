@@ -5,7 +5,7 @@
     "url": "https://github.com/QuazarMedia/simt-space.git",
     "urlEvidence": "upstream Git origin URL at the pinned commit checkout",
     "canonical": "https://simt.space/cosmos/design",
-    "commit": "637edcf633b4e7d6407b4f9a715dad359c41fce8",
+    "commit": "86b36f9e9b13e2426d54207b60beb7323fbcd5d6",
     "version": "2.3.0",
     "updated": "2026-10-03",
     "trackedCleanVerifiedBeforeCopy": true
@@ -13,85 +13,57 @@
   "authority": {
     "repository": "simt-space",
     "statement": "Platform rules are additive to common; product safety, privacy and accessibility take precedence.",
-    "localRole": "Byte-identical private-development snapshot; not an authoritative fork. Authored JavaScript is inert, never imported or executed. Upstream references are preserved; excluded referenced resources are not bundled.",
+    "localRole": "Byte-identical licensed snapshot of a committed upstream revision; not an authoritative fork. Authored JavaScript is inert, never imported or executed by snapshot checks. Upstream references are preserved; excluded referenced resources are not bundled.",
     "iosAdapter": "No normative iOS adapter exists in this pinned source; none is supplied or inferred."
   },
   "licenses": {
     "code": {
-      "status": "unconfirmed",
-      "permission": "No license assigned or public redistribution permission asserted."
+      "status": "confirmed",
+      "identifier": "Apache-2.0",
+      "notice": "upstream/2.3.0/cosmos/design/LICENSE",
+      "scope": "Cosmos JavaScript implementation, export/schema generator and JSON schemas; normative text retains document attribution requirements."
     },
     "documents": {
-      "status": "unconfirmed",
-      "permission": "No license assigned or public redistribution permission asserted."
+      "status": "confirmed",
+      "identifier": "CC-BY-4.0",
+      "notice": "upstream/2.3.0/cosmos/design/LICENSE-DOCS",
+      "scope": "Cosmos specifications, normative rules, explanatory text and exported documentation/data."
+    },
+    "ownerReview": {
+      "reviewer": "Said Elimam",
+      "date": "2026-11-17",
+      "rightsConfirmed": true,
+      "evidence": "Owner explicitly confirmed control of the required UI/Cosmos code and document rights and selected Apache-2.0 plus CC BY 4.0 in this session. Upstream grant committed in 940cd5f639569fbb2aaa40c5e5929a525d3094bb.",
+      "attributionNotice": "upstream/2.3.0/cosmos/design/NOTICE"
     }
   },
   "distribution": {
-    "scope": "private-development-only",
-    "publicRedistribution": "blocked",
-    "reason": "Code and document licenses remain separately unconfirmed; scoped rule payloads also fail their declared canonical schema."
+    "scope": "public-redistribution",
+    "publicRedistribution": "approved",
+    "reason": "Owner grants license permission subject to the retained licenses, attribution and modification notices. This is not authorization to publish, sign or upload a release, nor runtime or consumer-integration approval."
   },
   "generator": {
     "package": "simt-space",
     "version": "2.3.0",
-    "commit": "637edcf633b4e7d6407b4f9a715dad359c41fce8",
+    "commit": "86b36f9e9b13e2426d54207b60beb7323fbcd5d6",
     "script": "scripts/build.js",
-    "sha256": "261efeb5b34bad73244c8bc0ab865a9a4199d0cdff0f9bf0e9dc2d69436f09fc",
-    "executedLocallyForExtraction": false,
+    "sha256": "2fc963c3e3906d8f94794339b21b98146ac8224481698f1d35fe9f3690dd990e",
+    "executedLocallyForExtraction": true,
     "checkEvidence": {
-      "command": "npm run check",
-      "reportedBy": "coordinator before extraction",
+      "command": "npm run build && npm run check",
+      "reportedBy": "Local run on the committed upstream licensing/schema worktree before refresh",
       "result": "passed",
       "generatedFiles": 75,
       "assets": 18,
       "rules": 80,
       "contrastPairs": 212,
       "profiles": 4,
-      "seoTests": 8
+      "tests": 21,
+      "seoTests": 8,
+      "cosmosLicenseAndSchemaTests": 13
     }
   },
-  "knownSchemaDefects": [
-    {
-      "file": "snapshots/2.3.0/mobile-app/rules.json",
-      "schema": "https://simt.space/cosmos/design/rules.schema.json",
-      "instancePath": "/sections",
-      "schemaPath": "#/properties/sections/minItems",
-      "keyword": "minItems",
-      "limit": 36,
-      "actualSections": 17,
-      "cause": "scripts/build.js:870-908 sets union minItems; 994-1005 emits common + platform scoped sections."
-    },
-    {
-      "file": "snapshots/2.3.0/web-page/rules.json",
-      "schema": "https://simt.space/cosmos/design/rules.schema.json",
-      "instancePath": "/sections",
-      "schemaPath": "#/properties/sections/minItems",
-      "keyword": "minItems",
-      "limit": 36,
-      "actualSections": 16,
-      "cause": "scripts/build.js:870-908 sets union minItems; 994-1005 emits common + platform scoped sections."
-    },
-    {
-      "file": "snapshots/2.3.0/web-app/rules.json",
-      "schema": "https://simt.space/cosmos/design/rules.schema.json",
-      "instancePath": "/sections",
-      "schemaPath": "#/properties/sections/minItems",
-      "keyword": "minItems",
-      "limit": 36,
-      "actualSections": 17,
-      "cause": "scripts/build.js:870-908 sets union minItems; 994-1005 emits common + platform scoped sections."
-    },
-    {
-      "file": "snapshots/2.3.0/watch-app/rules.json",
-      "schema": "https://simt.space/cosmos/design/rules.schema.json",
-      "instancePath": "/sections",
-      "schemaPath": "#/properties/sections/minItems",
-      "keyword": "minItems",
-      "limit": 36,
-      "actualSections": 16,
-      "cause": "scripts/build.js:870-908 sets union minItems; 994-1005 emits common + platform scoped sections."
-    }
-  ],
+  "knownSchemaDefects": [],
   "inventory": [
     {
       "path": "snapshots/2.3.0/common.md",
@@ -141,7 +113,7 @@
     {
       "path": "snapshots/2.3.0/rules.schema.json",
       "upstreamPath": "dist/cosmos/design/rules.schema.json",
-      "sha256": "6b5cc58b8d098becfcb51bfaea2e2f0d9e38f9d0994574109b8ea23edd84d661"
+      "sha256": "130a4efac24d53511dc581fb71ee9e619207d240bff5d3e27fc22a19bc38edc7"
     },
     {
       "path": "snapshots/2.3.0/specification.json",
@@ -207,6 +179,21 @@
       "path": "snapshots/2.3.0/web-page/tokens.json",
       "upstreamPath": "dist/cosmos/design/web-page/tokens.json",
       "sha256": "7c30823b05b84f132e141d00c3fe925bd55ce0e74e789a06676d1475ba833245"
+    },
+    {
+      "path": "upstream/2.3.0/cosmos/design/LICENSE",
+      "upstreamPath": "cosmos/design/LICENSE",
+      "sha256": "c71d239df91726fc519c6eb72d318ec65820627232b2f796219e87dcf35d0ab4"
+    },
+    {
+      "path": "upstream/2.3.0/cosmos/design/LICENSE-DOCS",
+      "upstreamPath": "cosmos/design/LICENSE-DOCS",
+      "sha256": "9ba9550ad48438d0836ddab3da480b3b69ffa0aac7b7878b5a0039e7ab429411"
+    },
+    {
+      "path": "upstream/2.3.0/cosmos/design/NOTICE",
+      "upstreamPath": "cosmos/design/NOTICE",
+      "sha256": "22cd370cf59fbced07f88bfd1ae02174786975d6125cfabb3ebbfe21cc89c6d0"
     },
     {
       "path": "upstream/2.3.0/cosmos/design/color.js",
