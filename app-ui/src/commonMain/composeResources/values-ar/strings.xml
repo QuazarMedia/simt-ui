@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="simt_ui_close">إغلاق</string>
+    <string name="simt_ui_cd_clear">مسح النص</string>
+    <string name="simt_ui_city_name">اسم المدينة</string>
+    <string name="simt_ui_enter_city_name">أدخل اسم المدينة</string>
+    <string name="simt_ui_country_code_label">رمز الدولة (حرفين)</string>
+    <string name="simt_ui_country_code_placeholder">مثال: SA, KW, AE</string>
+</resources>

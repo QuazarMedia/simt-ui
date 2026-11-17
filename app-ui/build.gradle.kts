@@ -22,8 +22,16 @@ kotlin {
         }
         compilerOptions { jvmTarget = JvmTarget.JVM_11 }
     }
-    iosArm64()
-    iosSimulatorArm64()
+    iosArm64 {
+        compilerOptions {
+            freeCompilerArgs.add("-Xklib-relative-path-base=${rootDir.absolutePath}")
+        }
+    }
+    iosSimulatorArm64 {
+        compilerOptions {
+            freeCompilerArgs.add("-Xklib-relative-path-base=${rootDir.absolutePath}")
+        }
+    }
 
     sourceSets {
         commonMain.dependencies {
@@ -39,7 +47,30 @@ kotlin {
             implementation(kotlin("test"))
             implementation(libs.kotlinx.coroutines.test)
         }
+        named("androidHostTest") {
+            dependencies {
+                implementation(libs.junit)
+                implementation(libs.robolectric)
+                implementation(libs.compose.ui.test.junit4)
+                implementation(libs.androidx.test.espresso.core)
+                implementation(libs.androidx.compose.ui.test.manifest)
+                implementation(libs.androidx.activity.compose)
+            }
+        }
+        named("androidDeviceTest") {
+            dependencies {
+                implementation(libs.androidx.test.runner)
+                implementation(libs.compose.ui.test.junit4)
+                implementation(libs.androidx.test.espresso.core)
+                implementation(libs.androidx.compose.ui.test.manifest)
+                implementation(libs.androidx.activity.compose)
+            }
+        }
     }
+}
+
+tasks.withType<Test>().configureEach {
+    jvmArgs("--add-exports=java.base/jdk.internal.access=ALL-UNNAMED")
 }
 
 compose.resources {

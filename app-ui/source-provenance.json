@@ -1,0 +1,32 @@
+{
+  "sourceRepository": "QuazarMedia/app-ui",
+  "sourceCommit": "970b6fe6b3d2081bd1c69523cafefa6aa1d096b3",
+  "licenseStatus": "Unconfirmed; public redistribution requires owner review",
+  "exportMode": "Allowlisted files only; no Git history or application configuration imported",
+  "files": [
+    {
+      "sourcePath": "src/main/java/app/shared/ui/components/forms/ClearableTextField.kt",
+      "sha256": "1a1d95359ca7574da587b28bf5219a54dd1dfb43bc250eb2357e00e901888c87"
+    },
+    {
+      "sourcePath": "src/main/java/app/shared/ui/components/forms/CityCountryFields.kt",
+      "sha256": "aa7cd6e0427b8bf586de4bf485998c580a117d8837030e903628f7b15bca6976"
+    },
+    {
+      "sourcePath": "src/main/res/values/strings.xml",
+      "sha256": "a035ef5849e5a2c639700d00575c03f499b71b6f36dec871dcc5002b3309b73a"
+    },
+    {
+      "sourcePath": "src/main/res/values-fr/strings.xml",
+      "sha256": "6e09768aa6f9c62322521966e4f32ef045160c5eade868ede890eb871b568ae9"
+    },
+    {
+      "sourcePath": "src/main/res/values-ar/strings.xml",
+      "sha256": "5729c40b8212371489ba81b0f88ef9df4568a9dcfd972386efed3bd820bcc78c"
+    },
+    {
+      "sourcePath": "src/main/res/values-es/strings.xml",
+      "sha256": "505742efb651b82fe2638404d38dd761a680f3879f69b146a690c0a0869697ef"
+    }
+  ]
+}

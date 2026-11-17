@@ -269,9 +269,9 @@ Implementation proceeds in validated, committed chunks. UI-01 is split into buil
 | id | lane | depends | title | state | evidence |
 |---|---|---|---|---|---|
 | UI-00 | simt-ui / rights owners | - | Approve export manifest, code/spec licenses, provenance, and public-data boundaries | Pending | Rights/export review required |
-| UI-01 | simt-ui | - | Independent KMP/resource/API compatibility spike plus two published-artifact consumer fixtures | In progress | UI-01a scaffold gates pass; component behavior and consumer runtime gates remain |
-| UI-01a | simt-ui | - | Standalone wrapper/catalog, KMP Android/iOS targets, resource wiring, and local publication | Validated | Commands below passed; commit identifies this chunk |
-| UI-01b | simt-ui | UI-01a | Portable primitives/resources and behavioral tests | Pending | Target compilation, locale packaging, and focused tests required |
+| UI-01 | simt-ui | - | Independent KMP/resource/API compatibility spike plus two published-artifact consumer fixtures | In progress | Scaffold and first forms slice pass; remaining primitives and independent consumer runtime gates remain |
+| UI-01a | simt-ui | - | Standalone wrapper/catalog, KMP Android/iOS targets, resource wiring, and local publication | Complete | `ca05f60` — commands below passed |
+| UI-01b | simt-ui | UI-01a | Portable primitives/resources and behavioral tests | In progress | First forms slice: 8 host and 3 emulator tests pass; all-target compilation and four-locale packaging verified; remaining primitives follow separately |
 | UI-01c | simt-ui | UI-01b | Independent ordinary Android and CMP published-artifact consumers | Pending | Variant selection, runtime resources, and Native framework linking required |
 | UI-02 | simt-ui | UI-00, UI-01 | Extract eight primitives, resource locales, platform seams, API baseline, and behavior tests | Pending | Clean standalone build and cross-platform UI tests required |
 | UI-03 | simt-ui / simt-space | UI-00 | Pin/export Cosmos specs with offline schema/checksum and authority verification | Pending | Licensed export and reproducibility evidence required |
@@ -321,7 +321,7 @@ Rollback uses a normal new change reverting consumer wiring to its previous depe
 
 Completed: source/build-boundary inspection; eight-file portability assessment; direct/transitive consumer discovery; GNSS publication/composite comparison; Cosmos authority/export assessment; bounded local safety/provenance review; official documentation review; proposed module/API/test/release design; creation of this plan.
 
-Not executed: KMP spike, Gradle dependency resolution/builds/tests, native linking or UI launch, cloud security scanning, comprehensive history/content secret scan, legal clearance, source movement, Git initialization, consumer migration, remote mutation, or publication. Existing dirty files in the source repositories were left untouched. Source paths and line links reflect the inspected local working trees, not guaranteed contents of future public revisions.
+At the end of the original investigation, no build/test, source extraction, Git initialization, remote synchronization, or publication had run. Subsequent implementation evidence is recorded below. Native linking/UI launch, cloud security scanning, comprehensive history/content secret scanning, legal clearance, consumer migration, and remote artifact publication remain unexecuted. Existing dirty files in the source repositories were left untouched. Source paths and line links reflect the inspected local working trees, not guaranteed contents of future public revisions.
 
 Remaining release blockers: code/spec redistribution rights; actual AGP/KGP/Gradle/Xcode compatibility beyond documented ranges; Material tooltip common API; packaged CMP resources without manual copies; exact fullscreen/haptic semantics; other upstream consumer pins; final exported source/history/artifact audit.
 
@@ -337,6 +337,19 @@ The next independently valuable step is UI-01's local compatibility spike, along
 - Locally generated root/Android/two iOS publications have metadata and matching artifact checksums. Output stays under ignored `build/maven-repository`; no Maven Local or remote artifact upload occurred.
 - This chunk contains build/configuration only; compilation covers generated resource scaffolding, not extracted components. No behavioral test exists or is claimed yet; the docs-only module has no snapshot to verify. Bounded source-pattern checks passed, not a comprehensive secret audit.
 - Root Spotless excludes generated wrapper properties after Gradle detected an implicit producer/formatter task dependency; wrapper generation and format checks now pass separately.
+
+### Implementation evidence: UI-01b first forms slice (2026-11-17)
+
+- Allowlisted `ClearableTextField` and `CityCountryFields` retain their existing packages/signatures and length, uppercase, and read-only clearing behavior. Compose resources replace Android resource IDs; `rememberUpdatedState` keeps the body-click callback current after recomposition.
+- Source provenance records the original repository revision and SHA-256 hashes for the two Kotlin files and four resource files. All six hashes match the source; all 24 translated values are preserved with `simt_ui_` names. No source history or application configuration was imported, and redistribution rights remain unconfirmed.
+- Eight Robolectric Android host tests pass: explicit/default/unlimited lengths, clear visibility and exactly-once callbacks, read-only keyboard rejection and clearing, callback replacement, city/country constraints, and default resource resolution. Native graphics and separated tap timing avoid an unintended double-tap magnifier gesture in the callback test.
+- Three Android 16 emulator tests pass: 48 dp clear touch bounds with a real tap near the expanded left edge followed by editing, packaged default strings with read-only clearing, and city/country input normalization. Touch bounds are checked rather than the smaller visible icon-button container; no production size change was necessary.
+- Test-only Espresso `3.7.0` replaces the older transitive input driver that cannot inject input on Android 16. This does not change library runtime or application dependencies. Host and device tests use the Compose JUnit v2 rule; host tests need the JVM export for Robolectric's Android input implementation.
+- Passed command: `./gradlew spotlessApply :app-ui:testAndroidHostTest --tests app.shared.ui.components.forms.FormsTest :app-ui:connectedAndroidDeviceTest :app-ui:compileKotlinIosArm64 :app-ui:compileKotlinIosSimulatorArm64 :app-ui:publishAllPublicationsToLocalValidationRepository check --console=plain`, using local Android SDK and per-command Xcode selection.
+- Latest root/Android/two iOS publication metadata references artifacts with matching SHA-256 checksums. The AAR and both native resource-publication ZIPs each contain all four locale payloads; the AAR requests no permissions. These are filesystem-only publications under ignored build output.
+- The initial native artifacts embedded personal build paths in klib IR strings. Both iOS targets now pass the supported `-Xklib-relative-path-base` compiler option using the repository root; rebuilt latest publications contain no matching personal paths. A bounded credential/private-key/personal-path pattern check inspected 127 nested artifact entries and 12 source/config/provenance/plan files with no findings; this is not comprehensive release security clearance.
+- An independent read-only review approved the bounded forms slice with residual runtime/accessibility test breadth limitations; it verified the expanded-edge tap injects actual input without coordinate clamping.
+- iOS targets compile as klibs, but no iOS simulator runtime is installed and no framework linking/UI launch is claimed. Android API 28, IME composition, translated runtime selection/unsupported-locale fallback, large text/RTL, independent consumer fixtures, remaining primitives, API baselines, and comprehensive release artifact/security/license review remain separate gates. Root `check` skips Native tests with no test sources; its success is not Native UI evidence.
 
 ## 10. External guidance consulted
 
