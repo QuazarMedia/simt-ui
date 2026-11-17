@@ -56,6 +56,8 @@ dependencies {
     testImplementation("androidx.compose.ui:ui-test-junit4:1.12.1")
     // Robolectric reads the resource APK manifest; keep the test activity out of release.
     debugImplementation("androidx.compose.ui:ui-test-manifest:1.12.1")
+    debugImplementation("androidx.compose.ui:ui-tooling-preview:1.12.1")
+    debugImplementation("androidx.compose.ui:ui-tooling:1.12.1")
     testImplementation("androidx.test.espresso:espresso-core:3.7.0")
     androidTestImplementation("junit:junit:4.13.2")
     androidTestImplementation("androidx.test:runner:1.7.0")

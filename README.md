@@ -43,6 +43,12 @@ Both examples exclusively resolve group `app.simt` from `../../build/maven-repos
 
 An Android consumer declares `implementation("app.simt:app-ui:<actually-staged-version>")`; a KMP consumer puts the same dependency in `commonMain.dependencies`. Keep a host's existing Compose/BOM and plugin policy unless real resolution proves a change necessary. The examples reproduce Android host pins without upgrading either production application. A production catalog must not point to an imaginary release; published/composite host migrations remain gated and unapplied.
 
+## Android IDE previews
+
+Open `examples/android-consumer` as an **independent project** in Android Studio with JDK 21 and SDK 37. Set `uiRepository=/absolute/path/to/extracted/maven` and `uiVersion=0.1.0-SNAPSHOT` in your local Gradle properties (or pass the equivalent `-P` options), using an actually staged artifact repository; do not substitute producer sources. Sync, select the debug variant, and open `src/debug/kotlin/app/simt/ui/preview/SharedUiPreviews.kt` in Design/Split. The Compose-enabled Android fixture hosts previews for all eight primitives and header tools; preview sources and tooling dependencies are debug-only, not producer library or release APK inputs.
+
+Samples use synthetic values, a small Material theme, bounded viewports and disabled motion/haptics. Light/dark, French/RTL and large-text variants supplement the component samples. The tooltip's static image shows only its labeled anchor: use interactive preview and long press to reveal the popup. The countdown intentionally stays at 1. Insets use `showSystemUi=true`, but layoutlib may report zero insets; this is not proof of hidden-system-bar behavior. Host composition tests do not establish that the Android IDE Preview panel rendered, nor native/device runtime or haptic correctness.
+
 ## Private specification checks
 
 ```sh
