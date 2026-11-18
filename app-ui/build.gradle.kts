@@ -96,36 +96,7 @@ dokka {
     }
 }
 
-val apiDocumentationJar =
-    tasks.register<Jar>("apiDocumentationJar") {
-        dependsOn("dokkaGeneratePublicationHtml")
-        from(layout.buildDirectory.dir("dokka/html"))
-        archiveClassifier.set("javadoc")
-        isPreserveFileTimestamps = false
-        isReproducibleFileOrder = true
-    }
-
 val legalNoticeEntries = listOf("LICENSE", "LICENSE-DOCS", "NOTICE", "app-ui/source-provenance.json").sorted()
-val legalNoticesArchive = layout.buildDirectory.file("legal-notices/legal-notices.zip")
-val legalNoticesZip =
-    tasks.register("legalNoticesZip") {
-        inputs.files(legalNoticeEntries.map { rootProject.file(it) })
-            .withPathSensitivity(PathSensitivity.RELATIVE)
-        outputs.file(legalNoticesArchive)
-        doLast {
-            val output = legalNoticesArchive.get().asFile
-            output.parentFile.mkdirs()
-            ZipOutputStream(output.outputStream()).use { archive ->
-                legalNoticeEntries.forEach { relative ->
-                    val entry = ZipEntry(relative)
-                    entry.setTimeLocal(LocalDateTime.of(1980, 1, 1, 0, 0))
-                    archive.putNextEntry(entry)
-                    rootProject.file(relative).inputStream().use { it.copyTo(archive) }
-                    archive.closeEntry()
-                }
-            }
-        }
-    }
 
 publishing {
     repositories {
@@ -135,6 +106,40 @@ publishing {
         }
     }
     publications.withType<MavenPublication>().configureEach {
+        // The signing plugin writes each .asc beside the file it signs, so a
+        // shared javadoc jar or legal-notices archive makes every publication's
+        // Sign task claim the same output paths.
+        val artifactsDirectory = layout.buildDirectory.dir("publication-artifacts/$name")
+        val apiDocumentationJar =
+            tasks.register<Jar>("${name}ApiDocumentationJar") {
+                dependsOn("dokkaGeneratePublicationHtml")
+                from(layout.buildDirectory.dir("dokka/html"))
+                archiveClassifier.set("javadoc")
+                destinationDirectory.set(artifactsDirectory)
+                isPreserveFileTimestamps = false
+                isReproducibleFileOrder = true
+            }
+        val legalNoticesArchive = artifactsDirectory.map { it.file("legal-notices.zip") }
+        val legalNoticesZip =
+            tasks.register("${name}LegalNoticesZip") {
+                inputs.files(legalNoticeEntries.map { rootProject.file(it) })
+                    .withPathSensitivity(PathSensitivity.RELATIVE)
+                outputs.file(legalNoticesArchive)
+                doLast {
+                    val output = legalNoticesArchive.get().asFile
+                    output.parentFile.mkdirs()
+                    ZipOutputStream(output.outputStream()).use { archive ->
+                        legalNoticeEntries.forEach { relative ->
+                            val entry = ZipEntry(relative)
+                            entry.setTimeLocal(LocalDateTime.of(1980, 1, 1, 0, 0))
+                            archive.putNextEntry(entry)
+                            rootProject.file(relative).inputStream().use { it.copyTo(archive) }
+                            archive.closeEntry()
+                        }
+                    }
+                }
+            }
+
         artifact(apiDocumentationJar)
         artifact(legalNoticesArchive) {
             builtBy(legalNoticesZip)
