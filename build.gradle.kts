@@ -85,6 +85,7 @@ tasks.register("localQuality") {
 
 val publicationRepository = layout.buildDirectory.dir("maven-repository").get().asFile.absolutePath
 val publicationVersion = project.version.toString()
+val releaseLibrary = "app-ui"
 
 tasks.register<Exec>("stageIntegration") {
     group = "verification"
@@ -124,6 +125,8 @@ listOf("releaseCheck" to "release", "stageRelease" to "stage").forEach { (taskNa
                     publicationRepository,
                     "--version",
                     publicationVersion,
+                    "--library",
+                    releaseLibrary,
                 )
             if (mode == "stage") {
                 arguments.addAll(listOf("--output", layout.buildDirectory.file("simt-ui-$publicationVersion-unsigned.zip").get().asFile.absolutePath))

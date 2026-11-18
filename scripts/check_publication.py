@@ -29,6 +29,7 @@ MAX_OBJECTS = 100000
 MAX_COMMAND = 64 * 1024 * 1024
 VERSION = re.compile(r'(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)(?:-SNAPSHOT)?\Z')
 STABLE = re.compile(r'(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)\Z')
+LIBRARY = re.compile(r'[a-z0-9]+(?:-[a-z0-9]+)*\Z')
 HEX = re.compile(r'[0-9a-f]{64}\Z')
 PATTERNS = {
     'private-key': re.compile(rb'-----BEGIN (?:RSA |EC |DSA |OPENSSH |ENCRYPTED )?PRIVATE KEY-----'),
@@ -686,21 +687,23 @@ def check_publication(repo, version):
     return audit
 
 
-def check_release_gates(root, version):
+def check_release_gates(root, version, library):
     """Early release blockers; not a substitute for check_release/stage."""
     audit = Audit('release-gates')
     head = None
     if not isinstance(version, str) or not STABLE.fullmatch(version):
         audit.add('version', 'stable-semver-required')
+    if not isinstance(library, str) or not LIBRARY.fullmatch(library):
+        audit.add('library', 'invalid-library-name')
     try:
         head = git(root, 'rev-parse', '--verify', 'HEAD').strip().decode('ascii')
         if not re.fullmatch(r'[0-9a-f]{40,64}', head):
             raise ValidationError('HEAD', 'invalid-head')
         if git(root, 'status', '--porcelain=v1', '-z', '--untracked-files=normal'):
             audit.add('source', 'dirty-tree')
-        if STABLE.fullmatch(version or ''):
+        if STABLE.fullmatch(version or '') and isinstance(library, str) and LIBRARY.fullmatch(library):
             try:
-                tagged = git(root, 'rev-parse', '--verify', 'refs/tags/v' + version + '^{commit}').strip().decode('ascii')
+                tagged = git(root, 'rev-parse', '--verify', 'refs/tags/' + library + '-v' + version + '^{commit}').strip().decode('ascii')
                 if tagged != head:
                     audit.add('HEAD', 'matching-version-tag-required')
             except ValidationError:
@@ -779,9 +782,9 @@ def release_documents(root, audit):
         audit.add('cosmos-spec/provenance.json', 'malformed-spec-inventory')
 
 
-def check_release(root, repo, version):
+def check_release(root, repo, version, library):
     audit = Audit('release-authorization')
-    audit.merge(check_release_gates(root, version))
+    audit.merge(check_release_gates(root, version, library))
     audit.merge(check_source(root))
     publication = check_publication(repo, version)
     audit.merge(publication)
@@ -831,12 +834,12 @@ def stage_integration(root, repo, version, output):
     return audit
 
 
-def stage_release(root, repo, version, output):
-    audit = check_release(root, repo, version)
+def stage_release(root, repo, version, library, output):
+    audit = check_release(root, repo, version, library)
     audit.scope = 'unsigned-local-stage'
     manifest = {'unsigned': True, 'signing': 'required-for-publication'}
     return write_stage(root, repo, version, audit, output, manifest,
-                       lambda: check_release_gates(root, version))
+                       lambda: check_release_gates(root, version, library))
 
 
 def write_stage(root, repo, version, audit, output, manifest, final_check):
@@ -910,7 +913,8 @@ def parser():
                                  (' Create local unsigned ZIP only after all gates.' if name == 'stage' else ''))
         command.add_argument('--root', required=True, help='Source Git workspace.')
         command.add_argument('--repo', required=True, help='Fresh local Maven repository.')
-        command.add_argument('--version', required=True, help='Stable exact VERSION_NAME x.y.z; tag must be vVERSION at HEAD.')
+        command.add_argument('--version', required=True, help='Stable exact VERSION_NAME x.y.z; tag must be LIBRARY-vVERSION at HEAD.')
+        command.add_argument('--library', required=True, help='Release unit slug; its LIBRARY-vVERSION tag must be at HEAD.')
         if name == 'stage':
             command.add_argument('--output', required=True, help='New .zip under an existing workspace directory; not uploaded or signed.')
     return result
@@ -924,11 +928,11 @@ def main(argv=None):
         elif args.command == 'publication':
             audit = check_publication(args.repo, args.version)
         elif args.command == 'release':
-            audit = check_release(args.root, args.repo, args.version)
+            audit = check_release(args.root, args.repo, args.version, args.library)
         elif args.command == 'stage-integration':
             audit = stage_integration(args.root, args.repo, args.version, args.output)
         else:
-            audit = stage_release(args.root, args.repo, args.version, args.output)
+            audit = stage_release(args.root, args.repo, args.version, args.library, args.output)
     except ValidationError as error:
         audit = Audit('validation')
         audit.catch(error)

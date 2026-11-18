@@ -770,8 +770,8 @@ class ReleaseTests(unittest.TestCase):
             return objects[rest[2]][1]
         self.fail('Unexpected fixed command')
 
-    def gates(self, version='1.2.3'):
-        return audit.check_release_gates(self.root, version)
+    def gates(self, version='1.2.3', library='app-ui'):
+        return audit.check_release_gates(self.root, version, library)
 
     def assertGate(self, category, **kwargs):
         result = self.gates(**kwargs)
@@ -780,9 +780,18 @@ class ReleaseTests(unittest.TestCase):
         return result
 
     def test_positive_release_with_fixed_mock_commands(self):
-        result = audit.check_release(self.root, self.fixture.repo, '1.2.3')
+        result = audit.check_release(self.root, self.fixture.repo, '1.2.3', 'app-ui')
         self.assertTrue(result.ok, result.payload())
         self.assertTrue(any(args[0] == 'node' for args in self.command_calls))
+
+    def test_release_tag_is_namespaced_per_library(self):
+        self.assertTrue(self.gates(library='app-ui').ok)
+        self.assertTrue(any('refs/tags/app-ui-v1.2.3^{commit}' in call for call in self.command_calls))
+
+    def test_invalid_library_slug(self):
+        for library in ('', 'App-UI', 'app_ui', '-app-ui', 'app-ui-', '../app-ui'):
+            with self.subTest(library=library):
+                self.assertGate('invalid-library-name', library=library)
 
     def test_snapshot_and_prerelease_not_stable(self):
         for version in ('1.2.3-SNAPSHOT', '1.2.3-rc.1', '01.2.3', 'v1.2.3'):
@@ -829,14 +838,14 @@ class ReleaseTests(unittest.TestCase):
                                             ('NOTICE', b'Copyright Said Elimam', 'owner-notice-invalid')):
             with self.subTest(relative=relative):
                 self.fixture.put(relative, content)
-                result = audit.check_release(self.root, self.fixture.repo, '1.2.3')
+                result = audit.check_release(self.root, self.fixture.repo, '1.2.3', 'app-ui')
                 self.assertFalse(result.ok, result.payload())
                 self.assertIn((relative, category), result.findings)
                 self.fixture.put(relative, LEGAL_DOCUMENTS[relative])
 
     def test_missing_document_license_blocks_release(self):
         (self.root / 'LICENSE-DOCS').unlink()
-        result = audit.check_release(self.root, self.fixture.repo, '1.2.3')
+        result = audit.check_release(self.root, self.fixture.repo, '1.2.3', 'app-ui')
         self.assertFalse(result.ok)
         self.assertIn(('LICENSE-DOCS', 'missing-or-unreadable'), result.findings)
 
@@ -873,17 +882,17 @@ class ReleaseTests(unittest.TestCase):
     def test_missing_release_document_and_abi_block(self):
         (self.root / 'NOTICE').unlink()
         self.tracked.remove('app-ui/api/app-ui.api')
-        result = audit.check_release(self.root, self.fixture.repo, '1.2.3')
+        result = audit.check_release(self.root, self.fixture.repo, '1.2.3', 'app-ui')
         self.assertFalse(result.ok)
         self.assertIn('missing-abi-baseline', {c for _, c in result.findings})
 
     def test_deterministic_sorted_fixed_time_unsigned_local_stage(self):
-        expected = audit.check_release(self.root, self.fixture.repo, '1.2.3')
+        expected = audit.check_release(self.root, self.fixture.repo, '1.2.3', 'app-ui')
         self.assertTrue(expected.ok, expected.payload())
         artifacts = [{'path': p, **expected.inventory[p]} for p in sorted(expected.inventory)]
         first, second = self.root / 'build/first.zip', self.root / 'build/second.zip'
         for path in (first, second):
-            result = audit.stage_release(self.root, self.fixture.repo, '1.2.3', path)
+            result = audit.stage_release(self.root, self.fixture.repo, '1.2.3', 'app-ui', path)
             self.assertTrue(result.ok, result.payload())
         self.assertEqual(first.read_bytes(), second.read_bytes())
         with zipfile.ZipFile(first) as stream:
@@ -900,7 +909,7 @@ class ReleaseTests(unittest.TestCase):
 
     def test_stage_does_not_replace_existing_output(self):
         output = self.fixture.put('existing.zip', 'existing user data')
-        result = audit.stage_release(self.root, self.fixture.repo, '1.2.3', output)
+        result = audit.stage_release(self.root, self.fixture.repo, '1.2.3', 'app-ui', output)
         self.assertFalse(result.ok)
         self.assertEqual(output.read_text(), 'existing user data')
 
@@ -909,7 +918,7 @@ class ReleaseTests(unittest.TestCase):
         link.symlink_to('outside.zip')
         for output in (link, self.root.parent / 'outside.zip'):
             with self.subTest(output=output.name):
-                self.assertFalse(audit.stage_release(self.root, self.fixture.repo, '1.2.3', output).ok)
+                self.assertFalse(audit.stage_release(self.root, self.fixture.repo, '1.2.3', 'app-ui', output).ok)
 
 
 class IntegrationStageTests(unittest.TestCase):

@@ -1,19 +1,62 @@
-name: publish
+name: release
 
 on:
   push:
-    tags: ['v*']
+    tags: ['*-v*']
 
 permissions:
   contents: read
 
 concurrency:
-  group: publish-${{ github.ref }}
+  group: release-${{ github.ref }}
   cancel-in-progress: false
 
 jobs:
-  publish:
-    name: publish to Maven Central
+  resolve:
+    name: resolve library tag
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    outputs:
+      library: ${{ steps.tag.outputs.library }}
+      version: ${{ steps.tag.outputs.version }}
+      target: ${{ steps.tag.outputs.target }}
+      package: ${{ steps.tag.outputs.package }}
+    steps:
+      - name: Parse <library>-v<version> tag
+        id: tag
+        env:
+          TAG: ${{ github.ref_name }}
+        run: |
+          set -euo pipefail
+          if [[ "$TAG" =~ ^([a-z0-9]+(-[a-z0-9]+)*)-v((0|[1-9][0-9]*)\.(0|[1-9][0-9]*)\.(0|[1-9][0-9]*))$ ]]; then
+            library="${BASH_REMATCH[1]}"
+            version="${BASH_REMATCH[3]}"
+          else
+            echo "::error::Release tags must look like <library>-vMAJOR.MINOR.PATCH (for example app-ui-v1.2.3)"
+            exit 1
+          fi
+          # Each release unit is registered here before it can be tagged.
+          case "$library" in
+            app-ui)
+              target="Maven Central"
+              package="app.simt:app-ui"
+              ;;
+            *)
+              echo "::error::Unknown release library '$library'; add its publish job before tagging."
+              exit 1
+              ;;
+          esac
+          {
+            echo "library=$library"
+            echo "version=$version"
+            echo "target=$target"
+            echo "package=$package"
+          } >> "$GITHUB_OUTPUT"
+
+  app_ui:
+    name: app-ui to Maven Central
+    needs: resolve
+    if: needs.resolve.outputs.library == 'app-ui'
     runs-on: macos-15
     timeout-minutes: 90
     environment: release
@@ -22,23 +65,16 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Resolve and validate version
-        id: version
+      - name: Verify declared version
         env:
-          TAG: ${{ github.ref_name }}
+          TAG_VERSION: ${{ needs.resolve.outputs.version }}
         run: |
           set -euo pipefail
-          version="${TAG#v}"
-          if [[ ! "$version" =~ ^(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)$ ]]; then
-            echo "::error::Release tags must use stable SemVer: vMAJOR.MINOR.PATCH"
-            exit 1
-          fi
           declared="$(awk -F= '$1 == "VERSION_NAME" { print $2 }' gradle.properties)"
-          if [ "$declared" != "$version" ]; then
-            echo "::error::Tag $TAG does not match VERSION_NAME=$declared"
+          if [ "$declared" != "$TAG_VERSION" ]; then
+            echo "::error::Tag version $TAG_VERSION does not match VERSION_NAME=$declared"
             exit 1
           fi
-          echo "value=$version" >> "$GITHUB_OUTPUT"
 
       - name: Check release secrets
         env:
@@ -88,7 +124,7 @@ jobs:
       - name: Verify release authorization
         run: >-
           ./gradlew --no-daemon --max-workers=2 releaseCheck
-          -PVERSION_NAME="${{ steps.version.outputs.value }}"
+          -PVERSION_NAME="${{ needs.resolve.outputs.version }}"
 
       - name: Publish to Maven Central
         env:
@@ -98,12 +134,13 @@ jobs:
           ORG_GRADLE_PROJECT_signingPassword: ${{ secrets.SIGNING_PASSWORD }}
         run: >-
           ./gradlew --no-daemon --max-workers=2 publishAggregationToCentralPortal
-          -PVERSION_NAME="${{ steps.version.outputs.value }}"
+          -PVERSION_NAME="${{ needs.resolve.outputs.version }}"
           --stacktrace
 
   release:
     name: create GitHub release
-    needs: publish
+    needs: [resolve, app_ui]
+    if: always() && needs.app_ui.result == 'success'
     runs-on: ubuntu-latest
     timeout-minutes: 10
     permissions:
@@ -115,20 +152,18 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
           TAG: ${{ github.ref_name }}
+          LIBRARY: ${{ needs.resolve.outputs.library }}
+          VERSION: ${{ needs.resolve.outputs.version }}
+          TARGET: ${{ needs.resolve.outputs.target }}
+          PACKAGE: ${{ needs.resolve.outputs.package }}
         run: |
           set -euo pipefail
-          version="${TAG#v}"
-          notes="$(awk -v v="$version" '
-            $0 ~ "^## " v "([[:space:]]|$)" { found = 1; next }
-            found && /^## / { exit }
-            found && NF == 0 && !started { next }
-            found { started = 1; print }
-          ' CHANGELOG.md)"
+          notes="$(awk -v lib="$LIBRARY" -v v="$VERSION" -f scripts/release-notes.awk CHANGELOG.md)"
           {
             if [ -n "$notes" ]; then
               printf '%s\n\n' "$notes"
             fi
-            printf 'Published to Maven Central as `app.simt:app-ui:%s`.\n' "$version"
+            printf 'Published to %s as %s %s.\n' "$TARGET" "$PACKAGE" "$VERSION"
           } > release-notes.md
           gh release create "$TAG" \
             --repo "$GITHUB_REPOSITORY" \
