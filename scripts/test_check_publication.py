@@ -674,6 +674,28 @@ class SourceTests(unittest.TestCase):
         result = audit.check_source(self.root)
         self.assertTrue(result.ok, result.payload())
 
+    def test_only_standalone_cosmos_wrangler_config_is_allowed(self):
+        self.put('cosmos-site/wrangler.jsonc', '{"name":"simt-cosmos"}')
+        self.put('wrangler.jsonc', '{"name":"root"}')
+        self.put('other/wrangler.jsonc', '{"name":"other"}')
+        result = audit.check_source(self.root)
+        self.assertNotIn(('cosmos-site/wrangler.jsonc', 'forbidden-file'), result.findings)
+        self.assertIn(('wrangler.jsonc', 'forbidden-file'), result.findings)
+        self.assertIn(('other/wrangler.jsonc', 'forbidden-file'), result.findings)
+
+    def test_allowed_wrangler_config_is_still_content_scanned(self):
+        self.put('cosmos-site/wrangler.jsonc', '{"token":"' + secret() + '"}')
+        result = audit.check_source(self.root)
+        self.assertIn(('cosmos-site/wrangler.jsonc', 'credential'), result.findings)
+        self.assertNotIn(('cosmos-site/wrangler.jsonc', 'forbidden-file'), result.findings)
+
+    def test_exact_wrangler_allowance_applies_to_history(self):
+        self.put('cosmos-site/wrangler.jsonc', '{"name":"simt-cosmos"}')
+        self.git('add', 'cosmos-site/wrangler.jsonc')
+        self.git('commit', '-qm', 'worker config')
+        result = audit.check_source(self.root)
+        self.assertTrue(result.ok, result.payload())
+
     def test_worktree_symlink_is_rejected(self):
         (self.root / 'link').symlink_to('safe.txt')
         result = audit.check_source(self.root)

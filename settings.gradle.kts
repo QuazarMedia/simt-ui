@@ -32,4 +32,4 @@ dependencyResolutionManagement {
 }
 
 rootProject.name = "simt-ui"
-include(":app-ui", ":cosmos-spec")
+include(":app-ui", ":cosmos-spec", ":cosmos-site")

@@ -19,9 +19,11 @@ The original source paths and hashes are recorded in app-ui/source-provenance.js
 
 Cosmos is copied from QuazarMedia/simt-space; the exact upstream commit, unchanged
 source/export hashes and licensing scope are recorded in cosmos-spec/provenance.json.
-Attribution: SIMT Cosmos by Said Elimam, canonical source
-https://simt.space/cosmos/design, licensed CC BY 4.0. Retain this notice, license
-references and source attribution, and identify subsequent modifications.
+Attribution for the frozen snapshot: SIMT Cosmos by Said Elimam, historical
+source https://simt.space/cosmos/design, licensed CC BY 4.0. Retain this notice,
+license references and source attribution, and identify subsequent modifications.
+The independently generated public Cosmos site is canonical at
+https://cosmos.simt.app.
 
 Third-party code, fonts and dependencies retain their own licenses and notices.
 No third-party font or unrelated site/product assets are included in the Cosmos

@@ -1,0 +1,26 @@
+{
+  "name": "simt-cosmos",
+  "version": "2.3.0",
+  "private": true,
+  "type": "module",
+  "description": "Standalone static publication of the SIMT Cosmos Design System at https://cosmos.simt.app",
+  "scripts": {
+    "build": "node scripts/build.js && node scripts/build-assets.js",
+    "check": "node scripts/build.js --check && node scripts/build-assets.js --check && node scripts/verify.js --built && node --test scripts/seo.test.js scripts/cosmos-licenses.test.js scripts/cosmos-schema.test.js",
+    "test:cosmos": "node --test scripts/cosmos-licenses.test.js scripts/cosmos-schema.test.js",
+    "test:seo": "node --test scripts/seo.test.js",
+    "verify": "node scripts/verify.js --built",
+    "dev": "wrangler dev",
+    "deploy": "npm run build && wrangler deploy"
+  },
+  "devDependencies": {
+    "ajv": "8.20.0",
+    "ajv-formats": "3.0.1",
+    "less": "^4.2.0",
+    "wrangler": "^4.155.0"
+  },
+  "packageManager": "npm@10.9.3",
+  "engines": {
+    "node": ">=22.20.0"
+  }
+}

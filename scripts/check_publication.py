@@ -245,6 +245,10 @@ def validate_legal_document(relative, data, label):
 
 
 def forbidden(label):
+    # This single operational file declares the public static Worker. Keep every
+    # other Wrangler configuration forbidden, including nested/archive copies.
+    if label.lower() in ('cosmos-site/wrangler.jsonc', 'history/cosmos-site/wrangler.jsonc'):
+        return False
     parts = PurePosixPath(label).parts
     for part in parts:
         name = part.lower()

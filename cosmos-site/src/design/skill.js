@@ -15,7 +15,7 @@ import { motionMotifs } from './motion.js';
 import { componentRegistry } from './components.js';
 // Published-document budgets live with the product that publishes them, not in
 // the token file: they bound this repository's output, not an interface.
-import { budgets } from '../../products/cosmos/design/product.js';
+import { budgets } from '../site/product.js';
 
 /**
  * The Cosmos design skill: a short, opinionated brief for an agent that is
@@ -29,7 +29,7 @@ import { budgets } from '../../products/cosmos/design/product.js';
  * The prose below is authored, but every rule title, requirement, acceptance
  * criterion and number is interpolated from the same source that renders the
  * HTML and the JSON, so the brief cannot drift from the specification it
- * summarizes. verify-cosmos-design asserts that every rule ID cited here exists
+ * summarizes. scripts/verify.js asserts that every rule ID cited here exists
  * and that the file stays inside its byte budget.
  */
 

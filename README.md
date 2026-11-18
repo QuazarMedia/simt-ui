@@ -1,6 +1,6 @@
 # SIMT UI
 
-Shared Compose primitives for Android and Kotlin Multiplatform iOS consumers, plus an independently versioned Cosmos specification snapshot.
+Shared Compose primitives for Android and Kotlin Multiplatform iOS consumers, an independently versioned Cosmos specification snapshot, and the standalone Cosmos static site.
 
 Version `0.1.0` is approved for a tag-triggered public release. Said Elimam has confirmed the rights and licensed UI/Cosmos code under Apache-2.0 and Cosmos specifications/documentation under CC BY 4.0; retain [LICENSE](LICENSE), [LICENSE-DOCS](LICENSE-DOCS) and [NOTICE](NOTICE). See [the extraction plan](docs/plans/0001-shared-ui-extraction.md) and the separate provenance ledgers in [app-ui](app-ui/source-provenance.json) and [cosmos-spec](cosmos-spec/provenance.json).
 
@@ -8,6 +8,7 @@ Version `0.1.0` is approved for a tag-triggered public release. Said Elimam has 
 
 - `app-ui`: eight generic UI primitives in `app.simt.ui`, private Compose resources, and narrow Android/iOS inset, width, dispatcher and haptic implementations. Targets: Android API 28+, `iosArm64`, `iosSimulatorArm64`. No application framework, service configuration, analytics, persistence, requested permission or runtime network client.
 - `cosmos-spec`: inert, byte-pinned Cosmos 2.3.0 sources and exports from simt-space. No dependency from the runtime library. The pin includes upstream licensing and the canonical union/platform scope fix; all declared schemas must pass.
+- `cosmos-site`: independently generated Cosmos 2.3.0 static publication for `https://cosmos.simt.app`. It owns the canonical site authority, root routes, discovery documents, static assets and Cloudflare Worker configuration; it does not replace or rewrite the frozen `cosmos-spec` provenance snapshot.
 - `examples/android-consumer`: separate ordinary Android Compose build, with no CMP plugin, using published filesystem Maven artifacts.
 - `examples/multiplatform-consumer`: separate CMP build using the same published root coordinate and linking both Apple frameworks.
 
@@ -15,16 +16,17 @@ No theme, navigation, route, branding, host build convention or application conf
 
 ## Build locally
 
-Use JDK 21, Android SDK 37 and the checked-in wrapper. Set `ANDROID_HOME` to the local SDK instead of committing `local.properties`. Native compilation/linking requires a supported Xcode installation; select it per command through `DEVELOPER_DIR`, not a global settings change. Node 22.20+ and Python 3 are required for the specification and audit tools.
+Use JDK 21, Android SDK 37 and the checked-in wrapper. Set `ANDROID_HOME` to the local SDK instead of committing `local.properties`. Native compilation/linking requires a supported Xcode installation; select it per command through `DEVELOPER_DIR`, not a global settings change. Node 22.20+ and Python 3 are required for the specification, static site and audit tools.
 
 ```sh
 npm --prefix cosmos-spec ci --ignore-scripts --no-audit --no-fund
+npm --prefix cosmos-site ci --ignore-scripts --no-audit --no-fund
 ./gradlew --no-daemon --max-workers=2 check spotlessCheck
 ./gradlew --no-daemon --max-workers=2 :app-ui:dokkaGeneratePublicationHtml
 ./gradlew --no-daemon --max-workers=2 :app-ui:publishAllPublicationsToLocalValidationRepository
 ```
 
-The npm bootstrap is explicit and may download locked dependencies. Subsequent specification checks resolve schemas offline and never install dependencies or run the upstream generator. Gradle/dependency bootstrap may use the configured public repositories; this is separate from offline library runtime behavior.
+The npm bootstrap is explicit and may download locked dependencies. Subsequent specification and site checks never install dependencies; the frozen snapshot resolves schemas offline, while the site deterministically regenerates its ignored `dist` tree before verification. Gradle/dependency bootstrap may use the configured public repositories; this is separate from offline library runtime behavior.
 
 Local Maven publications live in ignored `build/maven-repository`. All four publications carry metadata, sources and generated HTML documentation; native targets also carry resource ZIPs. Local tasks do not upload unless `publishAggregationToCentralPortal` is explicitly invoked with release credentials. ABI dumps in `app-ui/api` are reviewed source-controlled baselines: `:app-ui:checkKotlinAbi` checks them, while `:app-ui:updateKotlinAbi` is an explicit maintainer action, never an automatic repair during verification.
 
@@ -58,7 +60,19 @@ Samples use synthetic values, a small Material theme, bounded viewports and disa
 npm --prefix cosmos-spec run check:canonical-schema
 ```
 
-The first command validates the exact licensed pin and 52 offline tests, and creates a deterministic local ZIP retaining the three upstream license/notice files. The strict second command passes: the committed upstream schema requires exactly 36 union sections and the correct 17/16 common-plus-platform sets, rejecting missing, duplicate, extra and foreign sections. All 33 reviewed files are byte-identical to upstream commit `86b36f9e9b13e2426d54207b60beb7323fbcd5d6`; no local canonical bytes are weakened or repaired. Cosmos remains authoritative upstream; this snapshot does not introduce a normative iOS adapter.
+The first command validates the exact licensed pin and 52 offline tests, and creates a deterministic local ZIP retaining the three upstream license/notice files. The strict second command passes: the committed upstream schema requires exactly 36 union sections and the correct 17/16 common-plus-platform sets, rejecting missing, duplicate, extra and foreign sections. All 33 reviewed files are byte-identical to the historical source commit `86b36f9e9b13e2426d54207b60beb7323fbcd5d6`; no pinned bytes are weakened or repaired. This snapshot preserves provenance but is not the current publication authority and does not introduce a normative iOS adapter.
+
+## Standalone Cosmos site
+
+`cosmos-site` publishes the same normative Cosmos version `2.3.0` at the root of `https://cosmos.simt.app`. Its generator owns canonical HTML, scoped and union exports, schemas, Markdown, discovery files, a true 404 page and self-hosted assets. `wrangler.jsonc` configures a static-assets-only Worker with explicit clean-route rewrites, `html_handling: "none"`, and no `workers.dev` route.
+
+```sh
+npm --prefix cosmos-site run build
+npm --prefix cosmos-site run check
+./gradlew --no-daemon --max-workers=2 :cosmos-site:check
+```
+
+The Gradle task uses already installed locked npm dependencies and never installs them. `dist` is generated and ignored. Deployment remains a separate, explicitly authorized operation; verification does not upload or alter either Cloudflare or `simt-space`.
 
 ## Release automation
 

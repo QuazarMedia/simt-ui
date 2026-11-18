@@ -181,7 +181,7 @@ export const six = (n) => Number(n.toFixed(6));
 
 // Published so a native port can prove parity without reading this file: the
 // fixture's count, accepted stars and first three stars are what the
-// reference produces, and verify-cosmos-design regenerates them.
+// reference produces, and scripts/verify.js regenerates them.
 export function starfieldTokens() {
   const f = starfieldFixture;
   const sky = generateStars(f.surfaceId, f.width, f.height, f.kind);

@@ -1,4 +1,4 @@
-import { space, subContextPath } from '../../products/space.js';
+import { authority } from '../site/authority.js';
 import { colors, gradients, platformAdapters, tokens } from './tokens.js';
 import { oklch } from './color.js';
 import { durationFor, easingKeysFor, EASING_PURPOSES, motionMotifs } from './motion.js';
@@ -9,14 +9,8 @@ const rule = (id, title, requirement, acceptance, level = 'must') => ({ id, titl
 const section = (id, title, summary, rules = [], table = null) => ({ id, title, summary, rules, table });
 const table = (caption, columns, rows) => ({ caption, columns, rows });
 
-/**
- * Where this release publishes, as a site-relative path. The sources under
- * cosmos/design/ are generated into the product that owns them, so a link one of
- * them writes has to answer at that product's base; resolving the path once from
- * the space's declared sub-contexts is what keeps the two from being two
- * answers.
- */
-export const releasePath = subContextPath('design');
+/** The release is published directly at the standalone origin root. */
+export const releasePath = '';
 
 // The geometry and easing tables are generated from platformAdapters so the
 // published rules and the machine-readable token file cannot disagree (C09, C30).
@@ -242,8 +236,8 @@ export const release = {
   version: '2.3.0',
   updated: '2026-10-03',
   status: 'Normative specification',
-  owner: 'SIMT product design and platform maintainers',
-  base: `${space.origin}${releasePath}`,
+  owner: 'SIMT UI product design and platform maintainers',
+  base: authority.origin,
   scope: 'Shared foundations plus four platform parts: web page, web app, mobile app and watch app.',
   implementationStatus:
     'The web product and the mobile product are built on this specification. Conformance is recorded rule by rule in a release record; examples use illustrative data.',
