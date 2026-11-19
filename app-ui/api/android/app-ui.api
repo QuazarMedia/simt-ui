@@ -481,6 +481,10 @@ public final class app/simt/ui/effects/UiMotionKt {
 	public static final fun getLocalUiMotionEnabled ()Landroidx/compose/runtime/ProvidableCompositionLocal;
 }
 
+public final class app/simt/ui/features/onboarding/OnboardingOverlayKt {
+	public static final fun OnboardingOverlay (ZLandroidx/compose/ui/geometry/Rect;Lkotlin/jvm/functions/Function0;Ljava/lang/String;Ljava/lang/String;ZZZLandroidx/compose/ui/Modifier;Landroidx/compose/runtime/Composer;II)V
+}
+
 public final class app/simt/ui/features/update/ComposableSingletons$UpdateAvailableDialogKt {
 	public static final field INSTANCE Lapp/simt/ui/features/update/ComposableSingletons$UpdateAvailableDialogKt;
 	public fun <init> ()V

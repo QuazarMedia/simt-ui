@@ -34,6 +34,12 @@ The header fills its bounded parent, except Android landscape retains the origin
 
 `UpdateChecker` is the platform-neutral check contract: `checkForUpdate()` returns `UpdateCheckResult.Available` / `Unavailable` and never throws. `PlayCoreUpdateChecker` (androidMain) implements it with Google Play in-app updates and owns all play-core wiring, so host apps never touch play-core types directly. Show the dialog when the check returns `Available`, and call `startUpdateFlow` from its update action.
 
+## Onboarding feature
+
+`app.simt.ui.features.onboarding` (androidMain) is the onboarding spotlight: `OnboardingOverlay` dims the screen with a scrim, punches a circular or rounded-rect cutout around a highlighted region given in window coordinates, and shows an animated arrow plus an uppercase title and a description. Tapping anywhere invokes `onDismiss`; the overlay never removes itself.
+
+The scrim cutout composites through the native canvas layer (`saveLayer` + `BlendMode.Clear`), which is why the feature lives in `androidMain`. The `enabled` flag (default true) gates rendering: applications with a "show tips" preference pass it in, so the library depends on no host settings types. Copy (title, description) arrives as plain strings — callers resolve their own resources. The text block sits above the highlight when the highlight is in the bottom half of the overlay and below it otherwise.
+
 ## Countdown and platform policies
 
 `CountdownEffect` runs once per composition lifetime: changing configuration alone does not restart it. Use composition identity (for example `key`) to deliberately restart. It shows the positive start value down to one, waiting `tickMs` after each value; completion uses the latest `onFinished`. `onStart` is launched on the platform IO dispatcher as structured child work. It must not directly mutate platform UI and it is cancelled when the countdown leaves composition. Completion does not implicitly remove the composable; the caller controls the next screen or visibility.
@@ -90,7 +96,7 @@ The animated header background is a caller slot (`headerBackground` on the gate 
 
 ### Placement
 
-The `dialogs`, `sheets`, `loader`, `permissions` and `toasts` packages live in `androidMain` because they use Android/JVM-only APIs (`java.time` pickers, `LocalConfiguration`, `DialogProperties.decorFitsSystemWindows`, haptics, `DialogWindowProvider` window flags), and the `GlobalBlockingLoaderHost` effect is `androidMain` for the same dialog-window reason; the remaining components are in `commonMain`. The consumers of this extraction batch are Android-only (simt-app). `@Preview` functions from the source files were not carried over — simt-ui has no preview-tooling dependency.
+The `dialogs`, `sheets`, `loader`, `permissions` and `toasts` packages live in `androidMain` because they use Android/JVM-only APIs (`java.time` pickers, `LocalConfiguration`, `DialogProperties.decorFitsSystemWindows`, haptics, `DialogWindowProvider` window flags), the `GlobalBlockingLoaderHost` effect is `androidMain` for the same dialog-window reason, and `features.onboarding` is `androidMain` for its native-canvas scrim compositing; the remaining components are in `commonMain`. The consumers of this extraction batch are Android-only (simt-app). `@Preview` functions from the source files were not carried over — simt-ui has no preview-tooling dependency.
 
 ## Compatibility evidence and limits
 
