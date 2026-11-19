@@ -597,6 +597,15 @@ public final class app/simt/ui/features/onboarding/OnboardingOverlayKt {
 	public static final fun OnboardingOverlay (ZLandroidx/compose/ui/geometry/Rect;Lkotlin/jvm/functions/Function0;Ljava/lang/String;Ljava/lang/String;ZZZLandroidx/compose/ui/Modifier;Landroidx/compose/runtime/Composer;II)V
 }
 
+public final class app/simt/ui/features/qr/QRScannerOverlayKt {
+	public static final fun QRScannerOverlay (ZLandroidx/compose/runtime/Composer;I)V
+}
+
+public final class app/simt/ui/features/qr/QrCodeFullscreenOverlayKt {
+	public static final fun QrCodeFullscreenOverlay (Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Lkotlin/jvm/functions/Function0;Ljava/lang/String;Lkotlin/jvm/functions/Function1;Ljava/lang/String;Lkotlin/jvm/functions/Function1;Landroidx/compose/runtime/Composer;II)V
+	public static final fun rememberSimtQrCodePainter (Ljava/lang/String;Landroidx/compose/runtime/Composer;I)Landroidx/compose/ui/graphics/painter/Painter;
+}
+
 public final class app/simt/ui/features/update/ComposableSingletons$UpdateAvailableDialogKt {
 	public static final field INSTANCE Lapp/simt/ui/features/update/ComposableSingletons$UpdateAvailableDialogKt;
 	public fun <init> ()V

@@ -52,6 +52,12 @@ The scrim cutout composites through the native canvas layer (`saveLayer` + `Blen
 
 The `webClientId` parameter is the decoupling point: the application resolves the OAuth web client id itself — typically the `default_web_client_id` string the google-services plugin injects at build time — and passes it in, so the library reads no host resources. A blank or `placeholder` client id is rejected synchronously with a configuration error. The credential and googleid artifacts are `implementation`-scoped, so hosts never see `CredentialManager` types.
 
+## QR feature
+
+`app.simt.ui.features.qr` (androidMain, for the androidMain modal foundation and Android `LocalConfiguration`) is the QR render + scan surface: `QrCodeFullscreenOverlay(qrContent, label, contentDescription, onDismiss, downloadLabel, onDownload, shareLabel, onShare)` is the full-screen presentation (dark backdrop, white card, scale/fade entrance, optional download/share buttons) and `QRScannerOverlay(isScanned)` is the animated camera-scan mask — dark cutout, pulsing corner brackets, sweeping scan line, prompt label — drawn over whatever camera preview the host provides. The scan overlay is a pure drawing layer: it takes no camera handle, so the application composes it above its own scanner surface.
+
+Both surfaces share `rememberSimtQrCodePainter`, the SIMT QR shape (rounded frame, circular balls, rounded dark pixels) backed by qrose, which is `implementation`-scoped — the public API exposes only Compose `Painter` and `String` types. `QRScannerOverlay`'s prompt text comes from the library's `simt_ui_qr_scanner_prompt` resource.
+
 ## Countdown and platform policies
 
 `CountdownEffect` runs once per composition lifetime: changing configuration alone does not restart it. Use composition identity (for example `key`) to deliberately restart. It shows the positive start value down to one, waiting `tickMs` after each value; completion uses the latest `onFinished`. `onStart` is launched on the platform IO dispatcher as structured child work. It must not directly mutate platform UI and it is cancelled when the countdown leaves composition. Completion does not implicitly remove the composable; the caller controls the next screen or visibility.
@@ -108,7 +114,7 @@ The animated header background is a caller slot (`headerBackground` on the gate 
 
 ### Placement
 
-The `dialogs`, `sheets`, `loader`, `permissions` and `toasts` packages live in `androidMain` because they use Android/JVM-only APIs (`java.time` pickers, `LocalConfiguration`, `DialogProperties.decorFitsSystemWindows`, haptics, `DialogWindowProvider` window flags), the `GlobalBlockingLoaderHost` effect is `androidMain` for the same dialog-window reason, `features.onboarding` is `androidMain` for its native-canvas scrim compositing, `features.notifications` is `androidMain` because it is pure Android platform work (`NotificationCompat`, channels, vibrator), and `features.auth` is `androidMain` because it builds on Android Credential Manager and Google ID; the remaining components are in `commonMain`. The consumers of this extraction batch are Android-only (simt-app). `@Preview` functions from the source files were not carried over — simt-ui has no preview-tooling dependency.
+The `dialogs`, `sheets`, `loader`, `permissions` and `toasts` packages live in `androidMain` because they use Android/JVM-only APIs (`java.time` pickers, `LocalConfiguration`, `DialogProperties.decorFitsSystemWindows`, haptics, `DialogWindowProvider` window flags), the `GlobalBlockingLoaderHost` effect is `androidMain` for the same dialog-window reason, `features.onboarding` is `androidMain` for its native-canvas scrim compositing, `features.notifications` is `androidMain` because it is pure Android platform work (`NotificationCompat`, channels, vibrator), `features.auth` is `androidMain` because it builds on Android Credential Manager and Google ID, and `features.qr` is `androidMain` because its full-screen presentation builds on the androidMain modal foundation and Android `LocalConfiguration`; the remaining components are in `commonMain`. The consumers of this extraction batch are Android-only (simt-app). `@Preview` functions from the source files were not carried over — simt-ui has no preview-tooling dependency.
 
 ## Compatibility evidence and limits
 

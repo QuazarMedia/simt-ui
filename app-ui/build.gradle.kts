@@ -97,6 +97,9 @@ kotlin {
                 implementation(libs.androidx.credentials)
                 implementation(libs.androidx.credentials.play.services.auth)
                 implementation(libs.googleid)
+                // QR rendering backing features.qr; the painter API is Compose-only, so
+                // the public surface stays free of qrose types.
+                implementation(libs.qrose)
             }
         }
     }

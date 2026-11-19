@@ -40,4 +40,5 @@
     <string name="simt_ui_open_app_settings">Abrir ajustes de la app</string>
     <string name="simt_ui_blocking_loader_background_processing_warning">Mantén la app en primer plano. No salgas de la app ni apagues la pantalla.</string>
     <string name="simt_ui_google_sign_in_failed">Error al iniciar sesión. Inténtalo de nuevo.</string>
+    <string name="simt_ui_qr_scanner_prompt">Apunta la cámara a un código QR</string>
 </resources>
