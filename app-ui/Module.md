@@ -46,6 +46,12 @@ The scrim cutout composites through the native canvas layer (`saveLayer` + `Blen
 
 `NotificationActionBuilder` supplies the two reusable action factories: `bulkServiceAction` (tap delivers an intent back into a foreground service via `PendingIntent.getService`) and `broadcastAction` (one-shot actions delivered to a `BroadcastReceiver`), both immutable `PendingIntent`s with caller-chosen request codes. Applications keep their channel ids, icon resources and intent-action constants; the library ships no app-specific notification content.
 
+## Auth feature
+
+`app.simt.ui.features.auth` (androidMain) is the Google sign-in flow: `rememberGoogleSignInLauncher(webClientId, onIdToken, onError, onStart = {})` returns a `GoogleSignInLauncher` whose `launch()` runs the whole Credential Manager dance — a saved-account request (`GetGoogleIdOption`) with fallback to Google's full web sign-in (`GetSignInWithGoogleOption`) — and hands the resulting ID token to `onIdToken`, or a ready-to-display message to `onError`. `isSigningIn` tracks the in-flight attempt for button/progress UI, and `launch()` is a no-op while an attempt is running.
+
+The `webClientId` parameter is the decoupling point: the application resolves the OAuth web client id itself — typically the `default_web_client_id` string the google-services plugin injects at build time — and passes it in, so the library reads no host resources. A blank or `placeholder` client id is rejected synchronously with a configuration error. The credential and googleid artifacts are `implementation`-scoped, so hosts never see `CredentialManager` types.
+
 ## Countdown and platform policies
 
 `CountdownEffect` runs once per composition lifetime: changing configuration alone does not restart it. Use composition identity (for example `key`) to deliberately restart. It shows the positive start value down to one, waiting `tickMs` after each value; completion uses the latest `onFinished`. `onStart` is launched on the platform IO dispatcher as structured child work. It must not directly mutate platform UI and it is cancelled when the countdown leaves composition. Completion does not implicitly remove the composable; the caller controls the next screen or visibility.
@@ -102,7 +108,7 @@ The animated header background is a caller slot (`headerBackground` on the gate 
 
 ### Placement
 
-The `dialogs`, `sheets`, `loader`, `permissions` and `toasts` packages live in `androidMain` because they use Android/JVM-only APIs (`java.time` pickers, `LocalConfiguration`, `DialogProperties.decorFitsSystemWindows`, haptics, `DialogWindowProvider` window flags), the `GlobalBlockingLoaderHost` effect is `androidMain` for the same dialog-window reason, `features.onboarding` is `androidMain` for its native-canvas scrim compositing, and `features.notifications` is `androidMain` because it is pure Android platform work (`NotificationCompat`, channels, vibrator); the remaining components are in `commonMain`. The consumers of this extraction batch are Android-only (simt-app). `@Preview` functions from the source files were not carried over — simt-ui has no preview-tooling dependency.
+The `dialogs`, `sheets`, `loader`, `permissions` and `toasts` packages live in `androidMain` because they use Android/JVM-only APIs (`java.time` pickers, `LocalConfiguration`, `DialogProperties.decorFitsSystemWindows`, haptics, `DialogWindowProvider` window flags), the `GlobalBlockingLoaderHost` effect is `androidMain` for the same dialog-window reason, `features.onboarding` is `androidMain` for its native-canvas scrim compositing, `features.notifications` is `androidMain` because it is pure Android platform work (`NotificationCompat`, channels, vibrator), and `features.auth` is `androidMain` because it builds on Android Credential Manager and Google ID; the remaining components are in `commonMain`. The consumers of this extraction batch are Android-only (simt-app). `@Preview` functions from the source files were not carried over — simt-ui has no preview-tooling dependency.
 
 ## Compatibility evidence and limits
 

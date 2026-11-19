@@ -67,6 +67,7 @@ kotlin {
                 implementation(libs.androidx.test.espresso.core)
                 implementation(libs.androidx.compose.ui.test.manifest)
                 implementation(libs.androidx.activity.compose)
+                implementation(libs.kotlinx.coroutines.test)
             }
         }
         named("androidDeviceTest") {
@@ -91,6 +92,11 @@ kotlin {
                 // collectAsStateWithLifecycle for the global toast host; internal to the
                 // host composable, never part of the public API.
                 implementation(libs.androidx.lifecycle.runtime.compose)
+                // Credential Manager + Google ID backing the sign-in feature; kept out of
+                // the public ABI surface - the launcher exposes only String callbacks.
+                implementation(libs.androidx.credentials)
+                implementation(libs.androidx.credentials.play.services.auth)
+                implementation(libs.googleid)
             }
         }
     }

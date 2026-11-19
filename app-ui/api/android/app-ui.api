@@ -481,6 +481,16 @@ public final class app/simt/ui/effects/UiMotionKt {
 	public static final fun getLocalUiMotionEnabled ()Landroidx/compose/runtime/ProvidableCompositionLocal;
 }
 
+public final class app/simt/ui/features/auth/GoogleSignInLauncher {
+	public static final field $stable I
+	public final fun isSigningIn ()Z
+	public final fun launch ()V
+}
+
+public final class app/simt/ui/features/auth/GoogleSignInLauncherKt {
+	public static final fun rememberGoogleSignInLauncher (Ljava/lang/String;Lkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function0;Landroidx/compose/runtime/Composer;II)Lapp/simt/ui/features/auth/GoogleSignInLauncher;
+}
+
 public final class app/simt/ui/features/notifications/NotificationActionBuilder {
 	public static final field $stable I
 	public static final field INSTANCE Lapp/simt/ui/features/notifications/NotificationActionBuilder;
