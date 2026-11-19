@@ -404,6 +404,54 @@ class FormsTest {
     }
 
     @Test
+    fun outOfRangeTypedValueSnapsToTheNearestBoundOnBlur() {
+        val value = mutableStateOf(100)
+        val changes = mutableListOf<Int>()
+        compose.setContent {
+            MaterialTheme {
+                NumberStepperField(
+                    label = "Synthetic stepper",
+                    value = value.value,
+                    onValueChange = {
+                        changes.add(it)
+                        value.value = it
+                    },
+                    range = 50..200,
+                    debounceMs = 0,
+                    tapToEdit = true,
+                    modifier = Modifier.padding(4.dp).testTag("stepper"),
+                )
+            }
+        }
+        compose.waitForIdle()
+
+        // Tap to focus, empty the field with three backspaces, and type a
+        // value below the minimum: the raw text stays visible while focused.
+        compose.onNodeWithTag("stepper").performTouchInput {
+            click(Offset(width * 0.5f, height * 0.5f))
+        }
+        compose.onNodeWithTag("stepper").performKeyInput {
+            pressKey(Key.Backspace)
+            pressKey(Key.Backspace)
+            pressKey(Key.Backspace)
+            pressKey(Key.Two)
+            pressKey(Key.Zero)
+        }
+        compose.onNodeWithText("20").assertExists()
+        // Commit the edit with the IME action; on focus loss the text snaps
+        // to the nearest bound (the minimum, 50) and the coerced value
+        // propagates to the parent.
+        compose.onNodeWithTag("stepper").performImeAction()
+        compose.onNodeWithText("50").assertExists()
+        compose.runOnIdle {
+            assertEquals(50, value.value)
+            // Every intermediate keystroke that parses ("10" -> 50, "1" -> 50,
+            // "2" -> 50, "20" -> 50) coerces into the range as it is typed.
+            assertEquals(listOf(50, 50, 50, 50), changes)
+        }
+    }
+
+    @Test
     fun unfinishedEditRevertsToTheLastValidValueOnBlur() {
         val value = mutableStateOf(10)
         val changes = mutableListOf<Int>()
