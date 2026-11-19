@@ -1,5 +1,11 @@
 # Changelog
 
+## app-ui Unreleased
+
+### Added
+
+- `UpdateAvailableDialog` under `app.simt.ui.components.dialogs`: a self-contained update prompt with an animated header banner, a dynamic `appName` input, and cancel/update actions; English, French, Spanish and Arabic strings.
+
 ## app-ui 0.1.0 — 2026-11-17
 
 ### Added

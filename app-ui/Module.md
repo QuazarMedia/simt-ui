@@ -26,6 +26,10 @@ Use the caller's Material3 theme. Labels, callbacks, state, window policy, reduc
 
 The header fills its bounded parent, except Android landscape retains the original half-width policy. iOS uses the full bounded width, not physical screen size. Top insets are applied by default; pass `applyTopInsets = false` when the host already owns them to avoid duplicate padding. The header is not a global safe-area or keyboard policy.
 
+## Dialogs
+
+`UpdateAvailableDialog` is a self-contained update prompt: an animated gradient header banner with a pulsing update icon, the app name and current version, and a cancel/update action row. `appName` is interpolated into the title and description, so a single dialog adapts to whichever application launches it. The banner honors `LocalUiMotionEnabled`: with motion disabled it renders a static gradient with the centred icon instead of the particle and ring animation. Dismissal is caller-owned — `onDismiss` fires for the cancel button, the back press and outside clicks alike, and the dialog does not remove itself. Colours come from the caller's Material3 theme.
+
 ## Countdown and platform policies
 
 `CountdownEffect` runs once per composition lifetime: changing configuration alone does not restart it. Use composition identity (for example `key`) to deliberately restart. It shows the positive start value down to one, waiting `tickMs` after each value; completion uses the latest `onFinished`. `onStart` is launched on the platform IO dispatcher as structured child work. It must not directly mutate platform UI and it is cancelled when the countdown leaves composition. Completion does not implicitly remove the composable; the caller controls the next screen or visibility.

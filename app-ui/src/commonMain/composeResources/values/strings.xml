@@ -6,4 +6,9 @@
     <string name="simt_ui_enter_city_name">Enter city name</string>
     <string name="simt_ui_country_code_label">Country Code (2 letters)</string>
     <string name="simt_ui_country_code_placeholder">e.g. US, FR, SA</string>
+    <string name="simt_ui_update_available_title_fmt">%1$s update available</string>
+    <string name="simt_ui_update_available_version_fmt">Current version: %1$s</string>
+    <string name="simt_ui_update_available_description_fmt">A new version of %1$s is available with improvements and fixes. Update now for the best experience.</string>
+    <string name="simt_ui_update_available_update">Update</string>
+    <string name="simt_ui_update_available_cancel">Cancel</string>
 </resources>

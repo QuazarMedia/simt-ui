@@ -6,4 +6,9 @@
     <string name="simt_ui_enter_city_name">Entrez le nom de la ville</string>
     <string name="simt_ui_country_code_label">Code pays (2 lettres)</string>
     <string name="simt_ui_country_code_placeholder">ex. FR, US, CA</string>
+    <string name="simt_ui_update_available_title_fmt">Mise à jour de %1$s disponible</string>
+    <string name="simt_ui_update_available_version_fmt">Version actuelle : %1$s</string>
+    <string name="simt_ui_update_available_description_fmt">Une nouvelle version de %1$s est disponible avec des améliorations et des correctifs. Mettez à jour pour une meilleure expérience.</string>
+    <string name="simt_ui_update_available_update">Mettre à jour</string>
+    <string name="simt_ui_update_available_cancel">Annuler</string>
 </resources>

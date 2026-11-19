@@ -6,4 +6,9 @@
     <string name="simt_ui_enter_city_name">أدخل اسم المدينة</string>
     <string name="simt_ui_country_code_label">رمز الدولة (حرفين)</string>
     <string name="simt_ui_country_code_placeholder">مثال: SA, KW, AE</string>
+    <string name="simt_ui_update_available_title_fmt">تحديث %1$s متاح</string>
+    <string name="simt_ui_update_available_version_fmt">الإصدار الحالي: %1$s</string>
+    <string name="simt_ui_update_available_description_fmt">يتوفر إصدار جديد من %1$s مع تحسينات وإصلاحات. حدّث الآن للحصول على أفضل تجربة.</string>
+    <string name="simt_ui_update_available_update">تحديث</string>
+    <string name="simt_ui_update_available_cancel">إلغاء</string>
 </resources>

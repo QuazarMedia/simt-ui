@@ -34,6 +34,17 @@ public final class app/simt/ui/components/WindowedListKt {
 	public static final fun WindowedList-KFd677o (Ljava/util/List;Lkotlin/jvm/functions/Function1;Landroidx/compose/ui/Modifier;Landroidx/compose/foundation/lazy/LazyListState;Landroidx/compose/foundation/layout/PaddingValues;Landroidx/compose/foundation/layout/Arrangement$Vertical;Landroidx/compose/ui/Alignment$Horizontal;Lkotlin/jvm/functions/Function1;ZFZJLkotlin/jvm/functions/Function2;Lkotlin/jvm/functions/Function4;Landroidx/compose/runtime/Composer;III)V
 }
 
+public final class app/simt/ui/components/dialogs/ComposableSingletons$UpdateAvailableDialogKt {
+	public static final field INSTANCE Lapp/simt/ui/components/dialogs/ComposableSingletons$UpdateAvailableDialogKt;
+	public fun <init> ()V
+	public final fun getLambda$-1653602827$app_simt_app_ui ()Lkotlin/jvm/functions/Function3;
+	public final fun getLambda$1562352183$app_simt_app_ui ()Lkotlin/jvm/functions/Function3;
+}
+
+public final class app/simt/ui/components/dialogs/UpdateAvailableDialogKt {
+	public static final fun UpdateAvailableDialog (Ljava/lang/String;Ljava/lang/String;Lkotlin/jvm/functions/Function0;Lkotlin/jvm/functions/Function0;Landroidx/compose/ui/Modifier;Landroidx/compose/runtime/Composer;II)V
+}
+
 public final class app/simt/ui/components/forms/CityCountryFieldsKt {
 	public static final field CITY_NAME_MAX_LENGTH I
 	public static final field COUNTRY_CODE_LENGTH I
