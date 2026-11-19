@@ -366,7 +366,7 @@ public final class app/simt/ui/components/toasts/GlobalToastHostKt {
 }
 
 public final class app/simt/ui/components/toasts/LocalToastControllerKt {
-	public static final fun getLocalToastController ()Landroidx/compose/runtime/CompositionLocal;
+	public static final fun getLocalToastController ()Landroidx/compose/runtime/ProvidableCompositionLocal;
 }
 
 public abstract interface class app/simt/ui/components/toasts/ToastController {

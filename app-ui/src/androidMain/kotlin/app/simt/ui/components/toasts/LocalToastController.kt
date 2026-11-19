@@ -1,7 +1,7 @@
 package app.simt.ui.components.toasts
 
-import androidx.compose.runtime.CompositionLocal
 import androidx.compose.runtime.Immutable
+import androidx.compose.runtime.ProvidableCompositionLocal
 import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.graphics.vector.ImageVector
 import kotlinx.coroutines.flow.StateFlow
@@ -67,8 +67,8 @@ public interface ToastController {
     public fun clear()
 }
 
-/** CompositionLocal for providing [ToastController] throughout the Compose tree. */
-public val LocalToastController: CompositionLocal<ToastController?> =
+/** [ProvidableCompositionLocal] for providing [ToastController] throughout the Compose tree. */
+public val LocalToastController: ProvidableCompositionLocal<ToastController?> =
     staticCompositionLocalOf {
         null
     }
