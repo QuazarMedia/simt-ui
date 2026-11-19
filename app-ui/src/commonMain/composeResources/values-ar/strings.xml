@@ -38,4 +38,5 @@
     <string name="simt_ui_grant_permission">منح الإذن</string>
     <string name="simt_ui_permission_request_blocked_hint">طلب الإذن محظور بواسطة النظام. يمكنك تفعيله من أذونات التطبيق في إعدادات النظام.</string>
     <string name="simt_ui_open_app_settings">فتح إعدادات التطبيق</string>
+    <string name="simt_ui_blocking_loader_background_processing_warning">حافظ على التطبيق في المقدمة. لا تغادر التطبيق ولا تُطفئ الشاشة.</string>
 </resources>

@@ -38,4 +38,5 @@
     <string name="simt_ui_grant_permission">Accorder l'autorisation</string>
     <string name="simt_ui_permission_request_blocked_hint">La demande d’autorisation est bloquée par le système. Vous pouvez l’activer dans les autorisations de l’application, dans les paramètres système.</string>
     <string name="simt_ui_open_app_settings">Ouvrir les paramètres de l’application</string>
+    <string name="simt_ui_blocking_loader_background_processing_warning">Gardez l’application au premier plan. Ne quittez pas l’application et n’éteignez pas l’écran.</string>
 </resources>

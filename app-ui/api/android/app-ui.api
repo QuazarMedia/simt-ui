@@ -410,6 +410,12 @@ public final class app/simt/ui/components/toasts/ToastUiState {
 	public fun toString ()Ljava/lang/String;
 }
 
+public final class app/simt/ui/effects/ComposableSingletons$GlobalBlockingLoaderKt {
+	public static final field INSTANCE Lapp/simt/ui/effects/ComposableSingletons$GlobalBlockingLoaderKt;
+	public fun <init> ()V
+	public final fun getLambda$708186685$app_simt_app_ui ()Lkotlin/jvm/functions/Function2;
+}
+
 public final class app/simt/ui/effects/CosmosTier : java/lang/Enum {
 	public static final field FULL Lapp/simt/ui/effects/CosmosTier;
 	public static final field REDUCED Lapp/simt/ui/effects/CosmosTier;
@@ -424,6 +430,10 @@ public final class app/simt/ui/effects/CosmosTier : java/lang/Enum {
 
 public final class app/simt/ui/effects/CountdownEffectKt {
 	public static final fun CountdownEffect-Pe2sBwQ (JLandroidx/compose/ui/Modifier;IJLkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function0;Ljava/lang/String;JJFIILandroidx/compose/runtime/Composer;III)V
+}
+
+public final class app/simt/ui/effects/GlobalBlockingLoaderKt {
+	public static final fun GlobalBlockingLoaderHost (Lapp/simt/ui/components/loader/BlockingLoaderController;Landroidx/compose/ui/Modifier;Landroidx/compose/runtime/Composer;II)V
 }
 
 public final class app/simt/ui/effects/LongPressTooltipEffectKt {

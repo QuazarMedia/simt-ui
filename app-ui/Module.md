@@ -70,6 +70,8 @@ Layer-2 presets built on it: `ConfirmDialog` (confirm/cancel callbacks, destruct
 
 `SimtMotion` is the central Cosmos motion spec (FAST 150 ms / MEDIUM 300 ms, enter/exit/transform easings, `enterSpec`/`exitSpec`). `CosmosTier` (`FULL` / `REDUCED` / `STATIC`) with `LocalCosmosTier` (default `FULL`) lets shared UI degrade ambient animation on lower-performance devices; app roots should provide the tier from their device performance level.
 
+`GlobalBlockingLoaderHost` (androidMain) renders the `components.loader` contract above everything — including open dialogs — in its own full-screen `Dialog` window: dimmed click-absorbing backdrop, indeterminate or linear progress, optional message chip, an optional interrupt button wired to `controller.requestInterrupt()`, and an optional background-processing warning `InformationBanner`. While visible it keeps the screen on (view flag + window flag, both restored on dispose). The `findActivity` context walk is module-internal; the generic warning copy ships as `simt_ui_blocking_loader_background_processing_warning` in the four locales.
+
 ### Permissions (`app.simt.ui.components.permissions`, androidMain)
 
 `PermissionGate` is the single gate for permission- and hardware-gated features: an animated header (icon medallion over a caller-supplied background), a title with optional experimental tag, a device-compatibility row of `FeatureRequirement` items, and a body that adapts to the situation — requirements unmet (primary action hidden, `requirementsNotMetText` shown), blocked ("Don't ask again" → open-app-settings action), or ready (optional closable `InformationBanner` explanation plus the primary action, which fires a virtual-key haptic before invoking `onGetStarted`).
@@ -88,7 +90,7 @@ The animated header background is a caller slot (`headerBackground` on the gate 
 
 ### Placement
 
-The `dialogs`, `sheets`, `loader`, `permissions` and `toasts` packages live in `androidMain` because they use Android/JVM-only APIs (`java.time` pickers, `LocalConfiguration`, `DialogProperties.decorFitsSystemWindows`, haptics, `DialogWindowProvider` window flags); the remaining components are in `commonMain`. The consumers of this extraction batch are Android-only (simt-app). `@Preview` functions from the source files were not carried over — simt-ui has no preview-tooling dependency.
+The `dialogs`, `sheets`, `loader`, `permissions` and `toasts` packages live in `androidMain` because they use Android/JVM-only APIs (`java.time` pickers, `LocalConfiguration`, `DialogProperties.decorFitsSystemWindows`, haptics, `DialogWindowProvider` window flags), and the `GlobalBlockingLoaderHost` effect is `androidMain` for the same dialog-window reason; the remaining components are in `commonMain`. The consumers of this extraction batch are Android-only (simt-app). `@Preview` functions from the source files were not carried over — simt-ui has no preview-tooling dependency.
 
 ## Compatibility evidence and limits
 

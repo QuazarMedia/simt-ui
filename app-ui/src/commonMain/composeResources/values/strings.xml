@@ -38,4 +38,5 @@
     <string name="simt_ui_grant_permission">Grant Permission</string>
     <string name="simt_ui_permission_request_blocked_hint">Permission request is blocked by the system. You can enable it from the app permissions in system settings.</string>
     <string name="simt_ui_open_app_settings">Open app settings</string>
+    <string name="simt_ui_blocking_loader_background_processing_warning">Keep the app in foreground. Do not leave the app or switch the screen off.</string>
 </resources>
