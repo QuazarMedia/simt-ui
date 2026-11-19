@@ -47,19 +47,22 @@ private const val DEBOUNCE_MS = 500L
 private val StepperHintInnerSpacing = 8.dp
 
 /**
- * An integer value with long-press-repeating +/- stepper buttons and, when [range] is
- * given, tappable min/max edge hints.
+ * An integer value with long-press-repeating +/- stepper buttons and, when [min]/[max]
+ * are given, tappable edge hints.
  *
- * @param range Inclusive bounds the value is coerced into. When `null` (the default) the
- *   value is unbounded: no edge hints are shown, typed values are not coerced, and the
- *   stepper buttons are always enabled.
+ * @param min Lower bound the value is coerced up to. When `null` (the default) there is
+ *   no lower bound: no minimum edge hint, typed values are not coerced upward, and the
+ *   decrement button is always enabled.
+ * @param max Upper bound the value is coerced down to. When `null` (the default) there
+ *   is no upper bound: no maximum edge hint, typed values are not coerced downward, and
+ *   the increment button is always enabled.
  * @param debounceMs Delay before [onValueChange] fires after rapid stepping.
  *   The displayed value updates instantly; the callback is debounced so callers
  *   (e.g. repository writes) are not invoked on every intermediate step.
  *   Set to 0 to disable debouncing.
  * @param tapToEdit When `true`, the value can also be set by tapping it: the field takes
  *   focus, opens a numbers-only keyboard with a Done action, and typed digits are parsed,
- *   coerced into [range] when one is given, and propagated through the same [debounceMs]
+ *   coerced towards [min]/[max] when given, and propagated through the same [debounceMs]
  *   debounce as the stepper buttons. An unfinished edit (e.g. an emptied field) reverts to
  *   the last valid value when the field loses focus. When `false` (the default) the field
  *   is read-only and behaves exactly as a plain stepper.
@@ -69,7 +72,8 @@ public fun NumberStepperField(
     label: String,
     value: Int,
     onValueChange: (Int) -> Unit,
-    range: IntRange? = null,
+    min: Int? = null,
+    max: Int? = null,
     modifier: Modifier = Modifier,
     suffix: String = "",
     step: Int = 1,
@@ -78,14 +82,19 @@ public fun NumberStepperField(
     debounceMs: Long = DEBOUNCE_MS,
     tapToEdit: Boolean = false,
 ) {
-    val min = range?.first
-    val max = range?.last
     val focusManager = LocalFocusManager.current
+
+    fun coerce(v: Int): Int {
+        var result = v
+        if (min != null) result = result.coerceAtLeast(min)
+        if (max != null) result = result.coerceAtMost(max)
+        return result
+    }
 
     // Local display value for instant UI feedback; syncs from the parent value
     // whenever the parent-supplied value changes externally.
-    var displayValue by remember { mutableStateOf(if (range == null) value else value.coerceIn(range)) }
-    LaunchedEffect(value) { displayValue = if (range == null) value else value.coerceIn(range) }
+    var displayValue by remember { mutableStateOf(coerce(value)) }
+    LaunchedEffect(value) { displayValue = coerce(value) }
 
     val canDecrement = min == null || displayValue > min
     val canIncrement = max == null || displayValue < max
@@ -103,7 +112,7 @@ public fun NumberStepperField(
     }
 
     fun applyStep(next: Int) {
-        val coerced = range?.let { next.coerceIn(it) } ?: next
+        val coerced = coerce(next)
         displayValue = coerced
         pendingValue = coerced
     }
@@ -134,14 +143,14 @@ public fun NumberStepperField(
         enabled = enabled,
         label = { Text(label) },
         prefix =
-            if (range != null) {
+            if (min != null) {
                 {
                     RangeHintText(
-                        text = "${range.first} ≤",
+                        text = "$min ≤",
                         modifier = Modifier.padding(end = StepperHintInnerSpacing),
                         onClick =
-                            if (enabled && displayValue != range.first) {
-                                { applyStep(range.first) }
+                            if (enabled && displayValue != min) {
+                                { applyStep(min) }
                             } else {
                                 null
                             },
@@ -151,14 +160,14 @@ public fun NumberStepperField(
                 null
             },
         suffix =
-            if (range != null) {
+            if (max != null) {
                 {
                     RangeHintText(
-                        text = "≤ ${range.last}$suffix",
+                        text = "≤ $max$suffix",
                         modifier = Modifier.padding(start = StepperHintInnerSpacing),
                         onClick =
-                            if (enabled && displayValue != range.last) {
-                                { applyStep(range.last) }
+                            if (enabled && displayValue != max) {
+                                { applyStep(max) }
                             } else {
                                 null
                             },

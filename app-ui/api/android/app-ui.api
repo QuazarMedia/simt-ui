@@ -183,8 +183,8 @@ public final class app/simt/ui/components/forms/ClearableTextFieldKt {
 public final class app/simt/ui/components/forms/ComposableSingletons$NumberStepperFieldKt {
 	public static final field INSTANCE Lapp/simt/ui/components/forms/ComposableSingletons$NumberStepperFieldKt;
 	public fun <init> ()V
-	public final fun getLambda$-114828213$app_simt_app_ui ()Lkotlin/jvm/functions/Function2;
-	public final fun getLambda$-963804990$app_simt_app_ui ()Lkotlin/jvm/functions/Function2;
+	public final fun getLambda$-176912372$app_simt_app_ui ()Lkotlin/jvm/functions/Function2;
+	public final fun getLambda$-842262685$app_simt_app_ui ()Lkotlin/jvm/functions/Function2;
 }
 
 public final class app/simt/ui/components/forms/DataFieldKt {
@@ -192,7 +192,7 @@ public final class app/simt/ui/components/forms/DataFieldKt {
 }
 
 public final class app/simt/ui/components/forms/NumberStepperFieldKt {
-	public static final fun NumberStepperField (Ljava/lang/String;ILkotlin/jvm/functions/Function1;Lkotlin/ranges/IntRange;Landroidx/compose/ui/Modifier;Ljava/lang/String;ILkotlin/jvm/functions/Function2;ZJZLandroidx/compose/runtime/Composer;III)V
+	public static final fun NumberStepperField (Ljava/lang/String;ILkotlin/jvm/functions/Function1;Ljava/lang/Integer;Ljava/lang/Integer;Landroidx/compose/ui/Modifier;Ljava/lang/String;ILkotlin/jvm/functions/Function2;ZJZLandroidx/compose/runtime/Composer;III)V
 }
 
 public abstract interface class app/simt/ui/components/loader/BlockingLoaderController {

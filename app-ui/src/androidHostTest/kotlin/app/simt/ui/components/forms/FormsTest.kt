@@ -338,7 +338,8 @@ class FormsTest {
                         changes.add(it)
                         value.value = it
                     },
-                    range = 5..20,
+                    min = 5,
+                    max = 20,
                     debounceMs = 0,
                 )
             }
@@ -369,7 +370,8 @@ class FormsTest {
                         changes.add(it)
                         value.value = it
                     },
-                    range = 5..20,
+                    min = 5,
+                    max = 20,
                     debounceMs = 0,
                     tapToEdit = true,
                     modifier = Modifier.padding(4.dp).testTag("stepper"),
@@ -416,7 +418,8 @@ class FormsTest {
                         changes.add(it)
                         value.value = it
                     },
-                    range = 50..200,
+                    min = 50,
+                    max = 200,
                     debounceMs = 0,
                     tapToEdit = true,
                     modifier = Modifier.padding(4.dp).testTag("stepper"),
@@ -509,6 +512,62 @@ class FormsTest {
     }
 
     @Test
+    fun oneSidedMinCoercesTypedValuesUpwardWithoutAnUpperHint() {
+        val value = mutableStateOf(100)
+        val changes = mutableListOf<Int>()
+        compose.setContent {
+            MaterialTheme {
+                NumberStepperField(
+                    label = "Synthetic stepper",
+                    value = value.value,
+                    onValueChange = {
+                        changes.add(it)
+                        value.value = it
+                    },
+                    min = 50,
+                    tapToEdit = true,
+                    debounceMs = 0,
+                    modifier = Modifier.padding(4.dp).testTag("stepper"),
+                )
+            }
+        }
+        compose.waitForIdle()
+
+        // Only the minimum hint is rendered; there is no maximum edge hint.
+        compose.onNodeWithText("50 ≤").assertExists()
+        compose.onNodeWithText("≤ 100").assertDoesNotExist()
+
+        // Tap into the value region (right of the minimum hint) so the caret lands at
+        // the end of the text; empty it, then type a value below the minimum. It
+        // coerces upward as it is typed.
+        compose.onNodeWithTag("stepper").performTouchInput {
+            click(Offset(width * 0.7f, height * 0.5f))
+        }
+        compose.onNodeWithTag("stepper").performKeyInput {
+            pressKey(Key.Backspace)
+            pressKey(Key.Backspace)
+            pressKey(Key.Backspace)
+            pressKey(Key.Two)
+            pressKey(Key.Zero)
+        }
+        compose.onNodeWithTag("stepper").performImeAction()
+        compose.onNodeWithText("50").assertExists()
+        compose.runOnIdle {
+            assertEquals(50, value.value)
+            // Every intermediate keystroke that parses ("10" -> 50, "1" -> 50,
+            // "2" -> 50, "20" -> 50) coerces up to the minimum as it is typed.
+            assertEquals(listOf(50, 50, 50, 50), changes)
+        }
+
+        // Without an upper bound the increment button stays enabled at any value.
+        compose.onNodeWithContentDescription("Add").performTouchInput { click() }
+        compose.onNodeWithText("51").assertExists()
+        compose.runOnIdle {
+            assertEquals(51, value.value)
+        }
+    }
+
+    @Test
     fun unfinishedEditRevertsToTheLastValidValueOnBlur() {
         val value = mutableStateOf(10)
         val changes = mutableListOf<Int>()
@@ -521,7 +580,8 @@ class FormsTest {
                         changes.add(it)
                         value.value = it
                     },
-                    range = 5..20,
+                    min = 5,
+                    max = 20,
                     debounceMs = 0,
                     tapToEdit = true,
                     modifier = Modifier.padding(4.dp),
