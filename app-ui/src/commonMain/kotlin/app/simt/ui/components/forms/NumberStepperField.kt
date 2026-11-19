@@ -39,6 +39,7 @@ import app.simt.ui.resources.simt_ui_stepper_decrement
 import app.simt.ui.resources.simt_ui_stepper_increment
 import kotlinx.coroutines.delay
 import org.jetbrains.compose.resources.stringResource
+import kotlin.time.Duration.Companion.milliseconds
 
 private const val DEBOUNCE_MS = 500L
 
@@ -46,26 +47,29 @@ private const val DEBOUNCE_MS = 500L
 private val StepperHintInnerSpacing = 8.dp
 
 /**
- * A range-bound integer value with long-press-repeating +/- stepper buttons and tappable
- * min/max edge hints.
+ * An integer value with long-press-repeating +/- stepper buttons and, when [range] is
+ * given, tappable min/max edge hints.
  *
+ * @param range Inclusive bounds the value is coerced into. When `null` (the default) the
+ *   value is unbounded: no edge hints are shown, typed values are not coerced, and the
+ *   stepper buttons are always enabled.
  * @param debounceMs Delay before [onValueChange] fires after rapid stepping.
  *   The displayed value updates instantly; the callback is debounced so callers
  *   (e.g. repository writes) are not invoked on every intermediate step.
  *   Set to 0 to disable debouncing.
  * @param tapToEdit When `true`, the value can also be set by tapping it: the field takes
  *   focus, opens a numbers-only keyboard with a Done action, and typed digits are parsed,
- *   coerced into [range], and propagated through the same [debounceMs] debounce as the
- *   stepper buttons. An unfinished edit (e.g. an emptied field) reverts to the last valid
- *   value when the field loses focus. When `false` (the default) the field is read-only
- *   and behaves exactly as a plain stepper.
+ *   coerced into [range] when one is given, and propagated through the same [debounceMs]
+ *   debounce as the stepper buttons. An unfinished edit (e.g. an emptied field) reverts to
+ *   the last valid value when the field loses focus. When `false` (the default) the field
+ *   is read-only and behaves exactly as a plain stepper.
  */
 @Composable
 public fun NumberStepperField(
     label: String,
     value: Int,
     onValueChange: (Int) -> Unit,
-    range: IntRange,
+    range: IntRange? = null,
     modifier: Modifier = Modifier,
     suffix: String = "",
     step: Int = 1,
@@ -74,17 +78,17 @@ public fun NumberStepperField(
     debounceMs: Long = DEBOUNCE_MS,
     tapToEdit: Boolean = false,
 ) {
-    val min = range.first
-    val max = range.last
+    val min = range?.first
+    val max = range?.last
     val focusManager = LocalFocusManager.current
 
     // Local display value for instant UI feedback; syncs from the parent value
     // whenever the parent-supplied value changes externally.
-    var displayValue by remember { mutableStateOf(value.coerceIn(min, max)) }
-    LaunchedEffect(value) { displayValue = value.coerceIn(min, max) }
+    var displayValue by remember { mutableStateOf(if (range == null) value else value.coerceIn(range)) }
+    LaunchedEffect(value) { displayValue = if (range == null) value else value.coerceIn(range) }
 
-    val canDecrement = displayValue > min
-    val canIncrement = displayValue < max
+    val canDecrement = min == null || displayValue > min
+    val canIncrement = max == null || displayValue < max
 
     val latestOnValueChange by rememberUpdatedState(onValueChange)
 
@@ -93,14 +97,15 @@ public fun NumberStepperField(
     var pendingValue by remember { mutableStateOf<Int?>(null) }
     LaunchedEffect(pendingValue) {
         val pending = pendingValue ?: return@LaunchedEffect
-        if (debounceMs > 0) delay(debounceMs)
+        if (debounceMs > 0) delay(debounceMs.milliseconds)
         latestOnValueChange(pending)
         pendingValue = null
     }
 
     fun applyStep(next: Int) {
-        displayValue = next
-        pendingValue = next
+        val coerced = range?.let { next.coerceIn(it) } ?: next
+        displayValue = coerced
+        pendingValue = coerced
     }
 
     // Tap-to-edit: the raw text while the field is focused. On every focus change the text
@@ -114,9 +119,10 @@ public fun NumberStepperField(
         onValueChange = { newText ->
             if (!tapToEdit) return@OutlinedTextField
             editText = newText
-            // Parse, coerce, and ride the same debounce as the stepper buttons; an
-            // unparseable edit keeps the last valid value on screen.
-            newText.trim().toIntOrNull()?.let { applyStep(it.coerceIn(min, max)) }
+            // Parse and ride the same debounce as the stepper buttons (coercion into
+            // [range] happens in applyStep); an unparseable edit keeps the last valid
+            // value on screen.
+            newText.trim().toIntOrNull()?.let { applyStep(it) }
         },
         readOnly = !tapToEdit,
         keyboardOptions =
@@ -127,30 +133,40 @@ public fun NumberStepperField(
             },
         enabled = enabled,
         label = { Text(label) },
-        prefix = {
-            RangeHintText(
-                text = "$min ≤",
-                modifier = Modifier.padding(end = StepperHintInnerSpacing),
-                onClick =
-                    if (enabled && displayValue != min) {
-                        { applyStep(min) }
-                    } else {
-                        null
-                    },
-            )
-        },
-        suffix = {
-            RangeHintText(
-                text = "≤ $max$suffix",
-                modifier = Modifier.padding(start = StepperHintInnerSpacing),
-                onClick =
-                    if (enabled && displayValue != max) {
-                        { applyStep(max) }
-                    } else {
-                        null
-                    },
-            )
-        },
+        prefix =
+            if (range != null) {
+                {
+                    RangeHintText(
+                        text = "${range.first} ≤",
+                        modifier = Modifier.padding(end = StepperHintInnerSpacing),
+                        onClick =
+                            if (enabled && displayValue != range.first) {
+                                { applyStep(range.first) }
+                            } else {
+                                null
+                            },
+                    )
+                }
+            } else {
+                null
+            },
+        suffix =
+            if (range != null) {
+                {
+                    RangeHintText(
+                        text = "≤ ${range.last}$suffix",
+                        modifier = Modifier.padding(start = StepperHintInnerSpacing),
+                        onClick =
+                            if (enabled && displayValue != range.last) {
+                                { applyStep(range.last) }
+                            } else {
+                                null
+                            },
+                    )
+                }
+            } else {
+                null
+            },
         textStyle = MaterialTheme.typography.titleLarge.copy(textAlign = TextAlign.Center),
         singleLine = true,
         keyboardActions =
@@ -187,11 +203,8 @@ public fun NumberStepperField(
                                 tint = MaterialTheme.colorScheme.onSurfaceVariant,
                             )
                         },
-                        onStep = {
-                            val next = (displayValue + step).coerceAtMost(max)
-                            applyStep(next)
-                        },
-                        canStepNow = { displayValue < max },
+                        onStep = { applyStep(displayValue + step) },
+                        canStepNow = { max == null || displayValue < max },
                     )
 
                     StepperIconButton(
@@ -203,11 +216,8 @@ public fun NumberStepperField(
                                 tint = MaterialTheme.colorScheme.onSurfaceVariant,
                             )
                         },
-                        onStep = {
-                            val next = (displayValue - step).coerceAtLeast(min)
-                            applyStep(next)
-                        },
-                        canStepNow = { displayValue > min },
+                        onStep = { applyStep(displayValue - step) },
+                        canStepNow = { min == null || displayValue > min },
                     )
                 }
             }
@@ -234,12 +244,12 @@ private fun StepperIconButton(
         didRepeat = false
 
         // Initial delay before repeating.
-        delay(350)
+        delay(350.milliseconds)
 
         while (enabled && canStepNow()) {
             didRepeat = true
             onStep()
-            delay(80)
+            delay(80.milliseconds)
         }
     }
 

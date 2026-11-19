@@ -452,6 +452,63 @@ class FormsTest {
     }
 
     @Test
+    fun unboundedStepperHasNoEdgeHintsAndPassesTypedValuesThroughUncoerced() {
+        val value = mutableStateOf(1000)
+        val changes = mutableListOf<Int>()
+        compose.setContent {
+            MaterialTheme {
+                NumberStepperField(
+                    label = "Synthetic stepper",
+                    value = value.value,
+                    onValueChange = {
+                        changes.add(it)
+                        value.value = it
+                    },
+                    tapToEdit = true,
+                    debounceMs = 0,
+                    modifier = Modifier.padding(4.dp).testTag("stepper"),
+                )
+            }
+        }
+        compose.waitForIdle()
+
+        // Unbounded mode renders no min/max edge hints.
+        compose.onNodeWithText("1000 ≤").assertDoesNotExist()
+        compose.onNodeWithText("≤ 1000").assertDoesNotExist()
+
+        // Tap to focus, empty the field with four backspaces, and type an
+        // arbitrary value: without a range it passes through uncoerced.
+        compose.onNodeWithTag("stepper").performTouchInput {
+            click(Offset(width * 0.5f, height * 0.5f))
+        }
+        compose.onNodeWithTag("stepper").performKeyInput {
+            pressKey(Key.Backspace)
+            pressKey(Key.Backspace)
+            pressKey(Key.Backspace)
+            pressKey(Key.Backspace)
+            pressKey(Key.Seven)
+            pressKey(Key.Five)
+        }
+        compose.onNodeWithText("75").assertExists()
+        compose.onNodeWithTag("stepper").performImeAction()
+        compose.onNodeWithText("75").assertExists()
+        compose.runOnIdle {
+            assertEquals(75, value.value)
+            // Every intermediate keystroke that parses propagates as-is:
+            // "100" -> 100, "10" -> 10, "1" -> 1, "7" -> 7, "75" -> 75.
+            assertEquals(listOf(100, 10, 1, 7, 75), changes)
+        }
+
+        // The stepper buttons stay enabled below any lower bound: stepping down
+        // from 75 works even though there is no minimum.
+        compose.onNodeWithContentDescription("Delete").performTouchInput { click() }
+        compose.onNodeWithText("74").assertExists()
+        compose.runOnIdle {
+            assertEquals(listOf(100, 10, 1, 7, 75, 74), changes)
+        }
+    }
+
+    @Test
     fun unfinishedEditRevertsToTheLastValidValueOnBlur() {
         val value = mutableStateOf(10)
         val changes = mutableListOf<Int>()
