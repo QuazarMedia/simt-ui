@@ -26,4 +26,16 @@
     <string name="simt_ui_rate_app_thank_you_in_love">¡Eres increíble, gracias!</string>
     <string name="simt_ui_rate_app_in_love_message">Una reseña rápida en Play Store ayuda mucho: facilita que otros descubran SIMT y mantiene el proyecto gratis para todos.</string>
     <string name="simt_ui_rate_app_feedback_message">Gracias por ser sincero con nosotros. Usaremos esto para hacer SIMT más preciso y mejor.</string>
+    <string name="simt_ui_requirement_ready">LISTO</string>
+    <string name="simt_ui_requirement_checking">COMPROBANDO…</string>
+    <string name="simt_ui_requirement_limited">LIMITADO</string>
+    <string name="simt_ui_requirement_missing">FALTANTE</string>
+    <string name="simt_ui_requirement_unknown">DESCONOCIDO</string>
+    <string name="simt_ui_requirement_fix_it">Solucionarlo</string>
+    <string name="simt_ui_requirement_fix_dismiss">Ahora no</string>
+    <string name="simt_ui_device_compatibility">COMPATIBILIDAD DEL DISPOSITIVO</string>
+    <string name="simt_ui_get_started">Empezar</string>
+    <string name="simt_ui_grant_permission">Conceder permiso</string>
+    <string name="simt_ui_permission_request_blocked_hint">El sistema ha bloqueado la solicitud de permiso. Puedes activarlo en los permisos de la app, en los ajustes del sistema.</string>
+    <string name="simt_ui_open_app_settings">Abrir ajustes de la app</string>
 </resources>

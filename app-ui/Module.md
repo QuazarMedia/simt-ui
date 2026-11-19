@@ -70,9 +70,19 @@ Layer-2 presets built on it: `ConfirmDialog` (confirm/cancel callbacks, destruct
 
 `SimtMotion` is the central Cosmos motion spec (FAST 150 ms / MEDIUM 300 ms, enter/exit/transform easings, `enterSpec`/`exitSpec`). `CosmosTier` (`FULL` / `REDUCED` / `STATIC`) with `LocalCosmosTier` (default `FULL`) lets shared UI degrade ambient animation on lower-performance devices; app roots should provide the tier from their device performance level.
 
+### Permissions (`app.simt.ui.components.permissions`, androidMain)
+
+`PermissionGate` is the single gate for permission- and hardware-gated features: an animated header (icon medallion over a caller-supplied background), a title with optional experimental tag, a device-compatibility row of `FeatureRequirement` items, and a body that adapts to the situation — requirements unmet (primary action hidden, `requirementsNotMetText` shown), blocked ("Don't ask again" → open-app-settings action), or ready (optional closable `InformationBanner` explanation plus the primary action, which fires a virtual-key haptic before invoking `onGetStarted`).
+
+`FeatureRequirement` is the presentation-level model (`label` / `status` / `description` / `fixActionLabel` / `onFix`); its `RequirementStatus` enum is a mirror of the application's availability model, and applications map their own statuses onto it at the call site. `FeatureRequirementCard` renders the status chip; a card with a description is tappable and opens an info dialog that surfaces a "Fix it" action when `onFix` is provided and the requirement is unmet.
+
+`PermissionPresentation` bundles the icon, tint and copy resources for one runtime permission; the application owns the mapping from its permission model onto this class. `PermissionRequestDialog` wraps `PermissionGate` with the presentation's copy and grant/cancel button labels.
+
+The animated header background is a caller slot (`headerBackground` on the gate and dialog, `background` on `AnimatedDialogBackground`): the library resolves the accent from `AnimatedDialogBackgroundStyle` (`NetworkGrid` → secondary color, all other styles → primary) and renders a flat tinted wash by default; applications with an ambient background (simt-app's Cosmos gate background) supply their own renderer.
+
 ### Placement
 
-The `dialogs`, `sheets` and `loader` packages live in `androidMain` because they use Android/JVM-only APIs (`java.time` pickers, `LocalConfiguration`, `DialogProperties.decorFitsSystemWindows`); the remaining components are in `commonMain`. The consumers of this extraction batch are Android-only (simt-app). `@Preview` functions from the source files were not carried over — simt-ui has no preview-tooling dependency.
+The `dialogs`, `sheets`, `loader` and `permissions` packages live in `androidMain` because they use Android/JVM-only APIs (`java.time` pickers, `LocalConfiguration`, `DialogProperties.decorFitsSystemWindows`, haptics); the remaining components are in `commonMain`. The consumers of this extraction batch are Android-only (simt-app). `@Preview` functions from the source files were not carried over — simt-ui has no preview-tooling dependency.
 
 ## Compatibility evidence and limits
 
