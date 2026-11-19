@@ -60,12 +60,15 @@ private val StepperHintInnerSpacing = 8.dp
  *   The displayed value updates instantly; the callback is debounced so callers
  *   (e.g. repository writes) are not invoked on every intermediate step.
  *   Set to 0 to disable debouncing.
- * @param tapToEdit When `true`, the value can also be set by tapping it: the field takes
- *   focus, opens a numbers-only keyboard with a Done action, and typed digits are parsed,
- *   coerced towards [min]/[max] when given, and propagated through the same [debounceMs]
- *   debounce as the stepper buttons. An unfinished edit (e.g. an emptied field) reverts to
- *   the last valid value when the field loses focus. When `false` (the default) the field
- *   is read-only and behaves exactly as a plain stepper.
+ * @param tapToEdit When `true` (the default), the value can also be set by tapping it:
+ *   the field takes focus, opens a numbers-only keyboard with a Done action, and typed
+ *   digits are parsed, coerced towards [min]/[max] when given, and propagated through the
+ *   same [debounceMs] debounce as the stepper buttons. An unfinished edit (e.g. an emptied
+ *   field) reverts to the last valid value when the field loses focus. When `false` the
+ *   field is read-only and behaves exactly as a plain stepper.
+ * @param disableTapToEdit When `true`, blocks the tap-to-edit behaviour regardless of
+ *   [tapToEdit]. Useful for conditionally disabling inline editing from a parent without
+ *   changing the field's declared capability. Defaults to `false`.
  */
 @Composable
 public fun NumberStepperField(
@@ -80,9 +83,11 @@ public fun NumberStepperField(
     supportingText: @Composable (() -> Unit)? = null,
     enabled: Boolean = true,
     debounceMs: Long = DEBOUNCE_MS,
-    tapToEdit: Boolean = false,
+    tapToEdit: Boolean = true,
+    disableTapToEdit: Boolean = false,
 ) {
     val focusManager = LocalFocusManager.current
+    val canEdit = tapToEdit && !disableTapToEdit
 
     fun coerce(v: Int): Int {
         var result = v
@@ -124,18 +129,18 @@ public fun NumberStepperField(
     var editText by remember { mutableStateOf(displayValue.toString()) }
 
     OutlinedTextField(
-        value = if (tapToEdit && isFocused) editText else displayValue.toString(),
+        value = if (canEdit && isFocused) editText else displayValue.toString(),
         onValueChange = { newText ->
-            if (!tapToEdit) return@OutlinedTextField
+            if (!canEdit) return@OutlinedTextField
             editText = newText
             // Parse and ride the same debounce as the stepper buttons (coercion into
             // [range] happens in applyStep); an unparseable edit keeps the last valid
             // value on screen.
             newText.trim().toIntOrNull()?.let { applyStep(it) }
         },
-        readOnly = !tapToEdit,
+        readOnly = !canEdit,
         keyboardOptions =
-            if (tapToEdit) {
+            if (canEdit) {
                 KeyboardOptions(keyboardType = KeyboardType.Number, imeAction = ImeAction.Done)
             } else {
                 KeyboardOptions.Default
@@ -181,20 +186,20 @@ public fun NumberStepperField(
         keyboardActions =
             KeyboardActions(
                 onDone = {
-                    if (tapToEdit) focusManager.clearFocus()
+                    if (canEdit) focusManager.clearFocus()
                 },
             ),
         modifier =
             modifier
                 .then(
-                    if (tapToEdit) {
+                    if (canEdit) {
                         Modifier
                     } else {
                         Modifier.focusProperties { canFocus = false }
                     },
                 )
                 .onFocusChanged { focusState ->
-                    if (tapToEdit) {
+                    if (canEdit) {
                         isFocused = focusState.isFocused
                         editText = displayValue.toString()
                     }

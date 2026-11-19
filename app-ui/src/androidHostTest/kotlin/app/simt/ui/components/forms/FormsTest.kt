@@ -326,7 +326,7 @@ class FormsTest {
     }
 
     @Test
-    fun stepperIsReadOnlyByDefault() {
+    fun stepperIsReadOnlyWhenTapToEditDisabled() {
         val value = mutableStateOf(10)
         val changes = mutableListOf<Int>()
         compose.setContent {
@@ -341,6 +341,7 @@ class FormsTest {
                     min = 5,
                     max = 20,
                     debounceMs = 0,
+                    tapToEdit = false,
                 )
             }
         }
