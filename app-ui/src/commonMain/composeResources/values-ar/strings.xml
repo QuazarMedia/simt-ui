@@ -11,4 +11,19 @@
     <string name="simt_ui_update_available_description_fmt">يتوفر إصدار جديد من %1$s مع تحسينات وإصلاحات. حدّث الآن للحصول على أفضل تجربة.</string>
     <string name="simt_ui_update_available_update">تحديث</string>
     <string name="simt_ui_update_available_cancel">إلغاء</string>
+    <string name="simt_ui_cancel">إلغاء</string>
+    <string name="simt_ui_save">حفظ</string>
+    <string name="simt_ui_delete">حذف</string>
+    <string name="simt_ui_confirm">تأكيد</string>
+    <string name="simt_ui_next">التالي</string>
+    <string name="simt_ui_back">رجوع</string>
+    <string name="simt_ui_ok">حسنًا</string>
+    <string name="simt_ui_rate_app_title">هل تستمتع بـ سِمت؟</string>
+    <string name="simt_ui_rate_app_message">ملاحظاتك تصنع التحسينات القادمة. اختر التعبير الذي يطابق تجربتك مع سِمت.</string>
+    <string name="simt_ui_rate_app_not_now">ليس الآن</string>
+    <string name="simt_ui_rate_app_submit">إرسال</string>
+    <string name="simt_ui_rate_app_thank_you">شكراً لتقييمك!</string>
+    <string name="simt_ui_rate_app_thank_you_in_love">أنت رائع، شكراً جزيلاً!</string>
+    <string name="simt_ui_rate_app_in_love_message">تقييم سريع على متجر Play يصنع فرقاً كبيراً — يساعد الآخرين على اكتشاف سِمت ويُبقي المشروع مجانياً للجميع.</string>
+    <string name="simt_ui_rate_app_feedback_message">شكراً على صراحتك. سنستخدم رأيك لجعل سِمت أفضل وأقوى.</string>
 </resources>

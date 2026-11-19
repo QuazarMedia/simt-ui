@@ -42,3 +42,10 @@ internal actual fun rememberCountdownHaptics(): CountdownHaptics =
             }
         }
     }
+
+@Composable
+internal actual fun currentViewParent(): Any? = null
+
+internal actual fun suppressDialogWindowAnimations(parent: Any?) {
+    // iOS presents dialogs as child view controllers; there are no window animations to suppress.
+}

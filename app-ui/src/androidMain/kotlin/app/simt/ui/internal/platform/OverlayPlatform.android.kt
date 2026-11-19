@@ -49,3 +49,10 @@ internal actual fun rememberCountdownHaptics(): CountdownHaptics {
         }
     }
 }
+
+@Composable
+internal actual fun currentViewParent(): Any? = LocalView.current.parent
+
+internal actual fun suppressDialogWindowAnimations(parent: Any?) {
+    (parent as? androidx.compose.ui.window.DialogWindowProvider)?.window?.setWindowAnimations(0)
+}

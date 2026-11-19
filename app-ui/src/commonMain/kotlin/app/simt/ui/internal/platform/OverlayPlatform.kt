@@ -23,3 +23,10 @@ internal interface CountdownHaptics {
 
 @Composable
 internal expect fun rememberCountdownHaptics(): CountdownHaptics
+
+/** Parent of the current Compose `View` on Android; null on other platforms. */
+@Composable
+internal expect fun currentViewParent(): Any?
+
+/** Suppresses platform dialog window animations on Android; no-op on other platforms. */
+internal expect fun suppressDialogWindowAnimations(parent: Any?)

@@ -11,4 +11,19 @@
     <string name="simt_ui_update_available_description_fmt">A new version of %1$s is available with improvements and fixes. Update now for the best experience.</string>
     <string name="simt_ui_update_available_update">Update</string>
     <string name="simt_ui_update_available_cancel">Cancel</string>
+    <string name="simt_ui_cancel">Cancel</string>
+    <string name="simt_ui_save">Save</string>
+    <string name="simt_ui_delete">Delete</string>
+    <string name="simt_ui_confirm">Confirm</string>
+    <string name="simt_ui_next">Next</string>
+    <string name="simt_ui_back">Back</string>
+    <string name="simt_ui_ok">OK</string>
+    <string name="simt_ui_rate_app_title">Enjoying SIMT?</string>
+    <string name="simt_ui_rate_app_message">Your feedback powers the next improvements. Pick the mood that matches your SIMT experience.</string>
+    <string name="simt_ui_rate_app_not_now">Not now</string>
+    <string name="simt_ui_rate_app_submit">Submit</string>
+    <string name="simt_ui_rate_app_thank_you">Thank you for your rating!</string>
+    <string name="simt_ui_rate_app_thank_you_in_love">You\'re amazing, thank you!</string>
+    <string name="simt_ui_rate_app_in_love_message">A quick review on the Play Store goes a long way — it helps others discover SIMT and keeps the project free for everyone.</string>
+    <string name="simt_ui_rate_app_feedback_message">Thanks for being real with us. We’ll use this to make SIMT sharper and better.</string>
 </resources>

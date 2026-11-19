@@ -44,6 +44,36 @@ Android haptics preserve `CLOCK_TICK` for intermediate values and `LONG_PRESS` f
 
 `Modifier.fullScreenTopInsets` and `fullScreenBottomInsets` pad and consume their respective inset sides. Android uses ignoring-visibility status/system-bar unions with cutouts, preserving immersive-overlay behavior. iOS uses safe drawing top and system-bar bottom. Bottom insets deliberately exclude IME. These helpers are not interchangeable with a host's ordinary `safeDrawing` policy or keyboard avoidance.
 
+## Modals and shared components
+
+The modal foundation extracted from simt-app `core:ui`: the canonical centered glass dialog, its preset dialogs, the full-screen sheet surface, the blocking loader, and the motion/tier tokens they drive.
+
+### Dialogs (`app.simt.ui.components.dialogs`, androidMain)
+
+`SimtDialog` is the Layer-1 canonical centered glass dialog: it owns the modal mechanics once (optional platform `Dialog` window hosting via `wrapInDialog`, suppressed window animations, tier-aware scale+fade entrance) and renders an `Alert` panel (icon/title/text/action slots) or a `Glass` panel (free-form content plus an optional top-end close button). `onClose` renders only for the Glass variant, which does not display a `title`. `ContentDialog` and `ModalDefaults` expose the edge-to-edge `DialogProperties` for callers hosting their own dialogs.
+
+Layer-2 presets built on it: `ConfirmDialog` (confirm/cancel callbacks, destructive styling, height-capped scrollable content), `PromptDialog`, `InfoDialog`, `ActionListDialog`, `DateTimePickerDialog`, and `RateAppDialog`. Presets keep callbacks and state caller-owned; dismissal never removes the dialog by itself.
+
+### Sheets (`app.simt.ui.components.sheets`, androidMain)
+
+`SimtSheetSurface` is the full-screen sheet with `TopOverlayHeader`, a `GradientBackground`, an optional blocking loader bound to `isBlocking`, and a `DialogActionButtons` row. Save/cancel labels are plain `String` values; callers resolve their own resources.
+
+### Blocking loader (`app.simt.ui.components.loader`, androidMain)
+
+`BlockingLoaderController`, `BlockingLoaderHandle` and `LocalBlockingLoaderState` carry the blocking-operation contract. `withBlockingLoader` runs `block` with a handle, rethrows `CancellationException` and always closes the handle. `blockingLoader` adds the progress tick loop (500 ms cadence bounded by `timeoutMs`), an abort check, and background-processing warnings: a generic warning after `BLOCKING_LOADER_WARNING_THRESHOLD_MS` (10 s) and the long-running guidance after `BACKGROUND_PROCESSING_WARNING_THRESHOLD_MS` (20 s).
+
+### Surfaces, banners, forms, buttons (commonMain)
+
+`CanopyGlass`, `GradientBackground` and `GradientDivider` are the glass/gradient surfaces; `InformationBanner` is a closable informational row; `DialogActionButtons` is the labeled action row with stable `modal_button_cancel` / `modal_button_save` test tags; `DataField` wraps a labeled input with error text.
+
+### Motion and tier (`app.simt.ui.effects`)
+
+`SimtMotion` is the central Cosmos motion spec (FAST 150 ms / MEDIUM 300 ms, enter/exit/transform easings, `enterSpec`/`exitSpec`). `CosmosTier` (`FULL` / `REDUCED` / `STATIC`) with `LocalCosmosTier` (default `FULL`) lets shared UI degrade ambient animation on lower-performance devices; app roots should provide the tier from their device performance level.
+
+### Placement
+
+The `dialogs`, `sheets` and `loader` packages live in `androidMain` because they use Android/JVM-only APIs (`java.time` pickers, `LocalConfiguration`, `DialogProperties.decorFitsSystemWindows`); the remaining components are in `commonMain`. The consumers of this extraction batch are Android-only (simt-app). `@Preview` functions from the source files were not carried over — simt-ui has no preview-tooling dependency.
+
 ## Compatibility evidence and limits
 
 The ordinary Android and CMP examples consume filesystem Maven publications without composite substitution or manual resources. Android host/emulator behavior, default R8 packaging, four locales, unsupported-locale fallback and both Native framework links have been exercised. API 28 remains host-only; iOS launch, bundled-resource runtime rendering, native IME/screen-reader behavior and physical haptics remain known validation limits. No pure Swift/SwiftUI API is promised: Kotlin consumers can embed Compose through their existing framework/controller.
