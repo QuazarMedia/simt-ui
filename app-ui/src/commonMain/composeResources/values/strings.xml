@@ -42,4 +42,6 @@
     <string name="simt_ui_google_sign_in_failed">Sign-in failed. Please try again.</string>
     <string name="simt_ui_config_error_client_id">Configuration error: default_web_client_id not found.</string>
     <string name="simt_ui_qr_scanner_prompt">Point camera at a QR code</string>
+    <string name="simt_ui_stepper_increment">Add</string>
+    <string name="simt_ui_stepper_decrement">Delete</string>
 </resources>

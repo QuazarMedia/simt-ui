@@ -41,4 +41,6 @@
     <string name="simt_ui_blocking_loader_background_processing_warning">حافظ على التطبيق في المقدمة. لا تغادر التطبيق ولا تُطفئ الشاشة.</string>
     <string name="simt_ui_google_sign_in_failed">فشل تسجيل الدخول. يرجى المحاولة مرة أخرى.</string>
     <string name="simt_ui_qr_scanner_prompt">وجّه الكاميرا نحو رمز QR</string>
+    <string name="simt_ui_stepper_increment">إضافة</string>
+    <string name="simt_ui_stepper_decrement">حذف</string>
 </resources>

@@ -1,10 +1,17 @@
 package app.simt.ui.components.forms
 
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.focusTarget
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.input.key.Key
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.test.ExperimentalTestApi
 import androidx.compose.ui.test.assert
 import androidx.compose.ui.test.click
@@ -13,10 +20,12 @@ import androidx.compose.ui.test.junit4.v2.createComposeRule
 import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
+import androidx.compose.ui.test.performImeAction
 import androidx.compose.ui.test.performKeyInput
 import androidx.compose.ui.test.performTextInput
 import androidx.compose.ui.test.performTouchInput
 import androidx.compose.ui.test.pressKey
+import androidx.compose.ui.unit.dp
 import app.simt.ui.resources.Res
 import app.simt.ui.resources.simt_ui_cd_clear
 import app.simt.ui.resources.simt_ui_city_name
@@ -313,6 +322,131 @@ class FormsTest {
         compose.runOnIdle {
             assertEquals("", value.value)
             assertEquals(listOf(""), changes)
+        }
+    }
+
+    @Test
+    fun stepperIsReadOnlyByDefault() {
+        val value = mutableStateOf(10)
+        val changes = mutableListOf<Int>()
+        compose.setContent {
+            MaterialTheme {
+                NumberStepperField(
+                    label = "Synthetic stepper",
+                    value = value.value,
+                    onValueChange = {
+                        changes.add(it)
+                        value.value = it
+                    },
+                    range = 5..20,
+                    debounceMs = 0,
+                )
+            }
+        }
+        compose.waitForIdle()
+
+        compose.onNodeWithText("10").performTouchInput {
+            click(Offset(width * 0.5f, height * 0.5f))
+        }
+        compose.onNodeWithText("10").performKeyInput { pressKey(Key.A) }
+        compose.onNodeWithText("10").assertExists()
+        compose.runOnIdle {
+            assertEquals(10, value.value)
+            assertEquals(emptyList<Int>(), changes)
+        }
+    }
+
+    @Test
+    fun tapToEditParsesCoercesAndPropagatesTypedValues() {
+        val value = mutableStateOf(10)
+        val changes = mutableListOf<Int>()
+        compose.setContent {
+            MaterialTheme {
+                NumberStepperField(
+                    label = "Synthetic stepper",
+                    value = value.value,
+                    onValueChange = {
+                        changes.add(it)
+                        value.value = it
+                    },
+                    range = 5..20,
+                    debounceMs = 0,
+                    tapToEdit = true,
+                    modifier = Modifier.padding(4.dp).testTag("stepper"),
+                )
+            }
+        }
+        compose.waitForIdle()
+
+        // Tap the value to focus it (caret lands at the end), empty the field with
+        // two backspaces, then type a replacement: the parsed value is coerced
+        // into the 5..20 range while the field is focused.
+        compose.onNodeWithTag("stepper").performTouchInput {
+            click(Offset(width * 0.5f, height * 0.5f))
+        }
+        compose.onNodeWithTag("stepper").performKeyInput {
+            pressKey(Key.Backspace)
+            pressKey(Key.Backspace)
+            pressKey(Key.Two)
+            pressKey(Key.Five)
+        }
+        compose.onNodeWithText("25").assertExists()
+        // Commit the edit with the IME action; on blur the text normalizes to
+        // the coerced value. Intermediate keystrokes are coerced too ("1" -> 5).
+        compose.onNodeWithTag("stepper").performImeAction()
+        compose.onNodeWithText("20").assertExists()
+        compose.runOnIdle {
+            assertEquals(20, value.value)
+            // Intermediate keystrokes are coerced into the range as they are
+            // typed: "1" -> 5, "2" -> 5, "25" -> 20.
+            assertEquals(listOf(5, 5, 20), changes)
+        }
+    }
+
+    @Test
+    fun unfinishedEditRevertsToTheLastValidValueOnBlur() {
+        val value = mutableStateOf(10)
+        val changes = mutableListOf<Int>()
+        compose.setContent {
+            MaterialTheme {
+                NumberStepperField(
+                    label = "Synthetic stepper",
+                    value = value.value,
+                    onValueChange = {
+                        changes.add(it)
+                        value.value = it
+                    },
+                    range = 5..20,
+                    debounceMs = 0,
+                    tapToEdit = true,
+                    modifier = Modifier.padding(4.dp),
+                )
+                Box(
+                    modifier =
+                        Modifier
+                            .size(24.dp)
+                            .focusTarget()
+                            .clickable {}
+                            .testTag("blur-target"),
+                )
+            }
+        }
+        compose.waitForIdle()
+
+        // Focus and empty the field: the test IME leaves the caret at the start,
+        // so two forward deletes remove "10".
+        compose.onNodeWithText("10").performTouchInput {
+            click(Offset(width * 0.5f, height * 0.5f))
+        }
+        compose.onNodeWithText("10").performKeyInput {
+            pressKey(Key.Delete)
+            pressKey(Key.Delete)
+        }
+        compose.onNodeWithTag("blur-target").performTouchInput { click() }
+        compose.onNodeWithText("10").assertExists()
+        compose.runOnIdle {
+            assertEquals(10, value.value)
+            assertEquals(emptyList<Int>(), changes)
         }
     }
 }

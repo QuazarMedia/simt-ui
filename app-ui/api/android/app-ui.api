@@ -180,8 +180,19 @@ public final class app/simt/ui/components/forms/ClearableTextFieldKt {
 	public static final fun ClearableTextField (Ljava/lang/String;Lkotlin/jvm/functions/Function1;Ljava/lang/String;Landroidx/compose/ui/Modifier;Ljava/lang/String;ZZLjava/lang/Integer;IILandroidx/compose/foundation/text/KeyboardOptions;Landroidx/compose/ui/graphics/vector/ImageVector;Lkotlin/jvm/functions/Function2;ZLkotlin/jvm/functions/Function0;Landroidx/compose/ui/text/input/VisualTransformation;Ljava/lang/String;Ljava/lang/String;Landroidx/compose/runtime/Composer;III)V
 }
 
+public final class app/simt/ui/components/forms/ComposableSingletons$NumberStepperFieldKt {
+	public static final field INSTANCE Lapp/simt/ui/components/forms/ComposableSingletons$NumberStepperFieldKt;
+	public fun <init> ()V
+	public final fun getLambda$-114828213$app_simt_app_ui ()Lkotlin/jvm/functions/Function2;
+	public final fun getLambda$-963804990$app_simt_app_ui ()Lkotlin/jvm/functions/Function2;
+}
+
 public final class app/simt/ui/components/forms/DataFieldKt {
 	public static final fun DataField (Ljava/lang/String;Lkotlin/jvm/functions/Function1;Ljava/lang/String;Ljava/util/List;Landroidx/compose/ui/Modifier;Ljava/lang/String;ZLjava/lang/Integer;IILandroidx/compose/foundation/text/KeyboardOptions;Landroidx/compose/ui/graphics/vector/ImageVector;Ljava/lang/String;Lkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function2;Lkotlin/jvm/functions/Function2;Landroidx/compose/runtime/Composer;III)V
+}
+
+public final class app/simt/ui/components/forms/NumberStepperFieldKt {
+	public static final fun NumberStepperField (Ljava/lang/String;ILkotlin/jvm/functions/Function1;Lkotlin/ranges/IntRange;Landroidx/compose/ui/Modifier;Ljava/lang/String;ILkotlin/jvm/functions/Function2;ZJZLandroidx/compose/runtime/Composer;III)V
 }
 
 public abstract interface class app/simt/ui/components/loader/BlockingLoaderController {

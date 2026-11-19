@@ -41,4 +41,6 @@
     <string name="simt_ui_blocking_loader_background_processing_warning">Gardez l’application au premier plan. Ne quittez pas l’application et n’éteignez pas l’écran.</string>
     <string name="simt_ui_google_sign_in_failed">Échec de la connexion. Veuillez réessayer.</string>
     <string name="simt_ui_qr_scanner_prompt">Pointez la caméra vers un code QR</string>
+    <string name="simt_ui_stepper_increment">Ajouter</string>
+    <string name="simt_ui_stepper_decrement">Supprimer</string>
 </resources>
