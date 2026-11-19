@@ -1,4 +1,4 @@
-package app.simt.ui.components.dialogs
+package app.simt.ui.features.update
 
 import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.RepeatMode

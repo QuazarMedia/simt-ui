@@ -34,17 +34,6 @@ public final class app/simt/ui/components/WindowedListKt {
 	public static final fun WindowedList-KFd677o (Ljava/util/List;Lkotlin/jvm/functions/Function1;Landroidx/compose/ui/Modifier;Landroidx/compose/foundation/lazy/LazyListState;Landroidx/compose/foundation/layout/PaddingValues;Landroidx/compose/foundation/layout/Arrangement$Vertical;Landroidx/compose/ui/Alignment$Horizontal;Lkotlin/jvm/functions/Function1;ZFZJLkotlin/jvm/functions/Function2;Lkotlin/jvm/functions/Function4;Landroidx/compose/runtime/Composer;III)V
 }
 
-public final class app/simt/ui/components/dialogs/ComposableSingletons$UpdateAvailableDialogKt {
-	public static final field INSTANCE Lapp/simt/ui/components/dialogs/ComposableSingletons$UpdateAvailableDialogKt;
-	public fun <init> ()V
-	public final fun getLambda$-1653602827$app_simt_app_ui ()Lkotlin/jvm/functions/Function3;
-	public final fun getLambda$1562352183$app_simt_app_ui ()Lkotlin/jvm/functions/Function3;
-}
-
-public final class app/simt/ui/components/dialogs/UpdateAvailableDialogKt {
-	public static final fun UpdateAvailableDialog (Ljava/lang/String;Ljava/lang/String;Lkotlin/jvm/functions/Function0;Lkotlin/jvm/functions/Function0;Landroidx/compose/ui/Modifier;Landroidx/compose/runtime/Composer;II)V
-}
-
 public final class app/simt/ui/components/forms/CityCountryFieldsKt {
 	public static final field CITY_NAME_MAX_LENGTH I
 	public static final field COUNTRY_CODE_LENGTH I
@@ -84,6 +73,48 @@ public final class app/simt/ui/effects/UiHapticsKt {
 
 public final class app/simt/ui/effects/UiMotionKt {
 	public static final fun getLocalUiMotionEnabled ()Landroidx/compose/runtime/ProvidableCompositionLocal;
+}
+
+public final class app/simt/ui/features/update/ComposableSingletons$UpdateAvailableDialogKt {
+	public static final field INSTANCE Lapp/simt/ui/features/update/ComposableSingletons$UpdateAvailableDialogKt;
+	public fun <init> ()V
+	public final fun getLambda$1121770042$app_simt_app_ui ()Lkotlin/jvm/functions/Function3;
+	public final fun getLambda$1950711096$app_simt_app_ui ()Lkotlin/jvm/functions/Function3;
+}
+
+public final class app/simt/ui/features/update/PlayCoreUpdateChecker : app/simt/ui/features/update/UpdateChecker {
+	public static final field $stable I
+	public fun <init> (Landroid/content/Context;)V
+	public fun checkForUpdate (Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public fun startUpdateFlow (Lkotlin/jvm/functions/Function0;)V
+}
+
+public final class app/simt/ui/features/update/UpdateAvailableDialogKt {
+	public static final fun UpdateAvailableDialog (Ljava/lang/String;Ljava/lang/String;Lkotlin/jvm/functions/Function0;Lkotlin/jvm/functions/Function0;Landroidx/compose/ui/Modifier;Landroidx/compose/runtime/Composer;II)V
+}
+
+public abstract interface class app/simt/ui/features/update/UpdateCheckResult {
+}
+
+public final class app/simt/ui/features/update/UpdateCheckResult$Available : app/simt/ui/features/update/UpdateCheckResult {
+	public static final field $stable I
+	public static final field INSTANCE Lapp/simt/ui/features/update/UpdateCheckResult$Available;
+	public fun equals (Ljava/lang/Object;)Z
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class app/simt/ui/features/update/UpdateCheckResult$Unavailable : app/simt/ui/features/update/UpdateCheckResult {
+	public static final field $stable I
+	public static final field INSTANCE Lapp/simt/ui/features/update/UpdateCheckResult$Unavailable;
+	public fun equals (Ljava/lang/Object;)Z
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public abstract interface class app/simt/ui/features/update/UpdateChecker {
+	public abstract fun checkForUpdate (Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public abstract fun startUpdateFlow (Lkotlin/jvm/functions/Function0;)V
 }
 
 public final class app/simt/ui/utils/FullscreenInsetsKt {

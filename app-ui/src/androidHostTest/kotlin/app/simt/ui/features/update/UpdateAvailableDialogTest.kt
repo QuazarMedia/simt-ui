@@ -1,4 +1,4 @@
-package app.simt.ui.components.dialogs
+package app.simt.ui.features.update
 
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.CompositionLocalProvider

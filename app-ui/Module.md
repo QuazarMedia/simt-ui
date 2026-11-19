@@ -26,9 +26,13 @@ Use the caller's Material3 theme. Labels, callbacks, state, window policy, reduc
 
 The header fills its bounded parent, except Android landscape retains the original half-width policy. iOS uses the full bounded width, not physical screen size. Top insets are applied by default; pass `applyTopInsets = false` when the host already owns them to avoid duplicate padding. The header is not a global safe-area or keyboard policy.
 
-## Dialogs
+## Update feature
 
-`UpdateAvailableDialog` is a self-contained update prompt: an animated gradient header banner with a pulsing update icon, the app name and current version, and a cancel/update action row. `appName` is interpolated into the title and description, so a single dialog adapts to whichever application launches it. The banner honors `LocalUiMotionEnabled`: with motion disabled it renders a static gradient with the centred icon instead of the particle and ring animation. Dismissal is caller-owned — `onDismiss` fires for the cancel button, the back press and outside clicks alike, and the dialog does not remove itself. Colours come from the caller's Material3 theme.
+`app.simt.ui.features.update` bundles the in-app update prompt as a self-contained feature: the UI (`UpdateAvailableDialog`) and the update-check contract (`UpdateChecker` / `UpdateCheckResult`) live together so hosts wire one piece to the other.
+
+`UpdateAvailableDialog` renders an animated gradient header banner with a pulsing update icon, the app name and current version, and a cancel/update action row. `appName` is interpolated into the title and description, so a single dialog adapts to whichever application launches it. The banner honors `LocalUiMotionEnabled`: with motion disabled it renders a static gradient with the centred icon instead of the particle and ring animation. Dismissal is caller-owned — `onDismiss` fires for the cancel button, the back press and outside clicks alike, and the dialog does not remove itself. Colours come from the caller's Material3 theme.
+
+`UpdateChecker` is the platform-neutral check contract: `checkForUpdate()` returns `UpdateCheckResult.Available` / `Unavailable` and never throws. `PlayCoreUpdateChecker` (androidMain) implements it with Google Play in-app updates and owns all play-core wiring, so host apps never touch play-core types directly. Show the dialog when the check returns `Available`, and call `startUpdateFlow` from its update action.
 
 ## Countdown and platform policies
 

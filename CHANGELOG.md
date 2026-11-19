@@ -4,7 +4,7 @@
 
 ### Added
 
-- `UpdateAvailableDialog` under `app.simt.ui.components.dialogs`: a self-contained update prompt with an animated header banner, a dynamic `appName` input, and cancel/update actions; English, French, Spanish and Arabic strings.
+- `app.simt.ui.features.update`: the in-app update feature as a self-contained package — `UpdateAvailableDialog` (animated header banner, dynamic `appName` input, cancel/update actions, English/French/Spanish/Arabic strings) plus the `UpdateChecker` / `UpdateCheckResult` contract and `PlayCoreUpdateChecker`, the Google Play in-app updates implementation that owns all play-core wiring.
 
 ## app-ui 0.1.0 — 2026-11-17
 

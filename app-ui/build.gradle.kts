@@ -78,6 +78,14 @@ kotlin {
                 implementation(libs.androidx.activity.compose)
             }
         }
+        named("androidMain") {
+            dependencies {
+                // Play in-app updates backing PlayCoreUpdateChecker; kept out of
+                // the public API surface so consumers never see play-core types.
+                implementation(libs.play.app.update.ktx)
+                implementation(libs.kotlinx.coroutines.play.services)
+            }
+        }
     }
 }
 

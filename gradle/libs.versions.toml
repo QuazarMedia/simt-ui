@@ -12,6 +12,7 @@ compileSdk = "37"
 minSdk = "28"
 activity = "1.13.0"
 androidxCompose = "1.12.1"
+playAppUpdate = "2.1.0"
 robolectric = "4.17"
 junit = "4.13.2"
 testRunner = "1.7.0"
@@ -34,6 +35,8 @@ compose-material-icons-extended = { module = "org.jetbrains.compose.material:mat
 compose-resources = { module = "org.jetbrains.compose.components:components-resources", version.ref = "compose" }
 kotlinx-coroutines-core = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", version.ref = "coroutines" }
 kotlinx-coroutines-test = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-test", version.ref = "coroutines" }
+kotlinx-coroutines-play-services = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-play-services", version.ref = "coroutines" }
+play-app-update-ktx = { group = "com.google.android.play", name = "app-update-ktx", version.ref = "playAppUpdate" }
 
 [plugins]
 kotlin-multiplatform = { id = "org.jetbrains.kotlin.multiplatform", version.ref = "kotlin" }
