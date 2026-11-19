@@ -84,6 +84,9 @@ kotlin {
                 // the public API surface so consumers never see play-core types.
                 implementation(libs.play.app.update.ktx)
                 implementation(libs.kotlinx.coroutines.play.services)
+                // collectAsStateWithLifecycle for the global toast host; internal to the
+                // host composable, never part of the public API.
+                implementation(libs.androidx.lifecycle.runtime.compose)
             }
         }
     }

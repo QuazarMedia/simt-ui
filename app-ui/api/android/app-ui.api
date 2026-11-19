@@ -361,6 +361,55 @@ public final class app/simt/ui/components/sheets/SimtSheetSurfaceKt {
 	public static final fun SimtSheetSurface (Ljava/lang/String;Lkotlin/jvm/functions/Function0;Landroidx/compose/ui/Modifier;Lapp/simt/ui/components/sheets/SheetEdge;Ljava/lang/String;Lkotlin/jvm/functions/Function2;Ljava/util/List;Lkotlin/jvm/functions/Function0;Lkotlin/jvm/functions/Function0;Lkotlin/jvm/functions/Function0;ZLjava/lang/String;Ljava/lang/String;ZLjava/lang/String;Lkotlin/jvm/functions/Function3;ZLandroidx/compose/ui/Modifier;Lkotlin/jvm/functions/Function2;Lkotlin/jvm/functions/Function3;Landroidx/compose/runtime/Composer;III)V
 }
 
+public final class app/simt/ui/components/toasts/GlobalToastHostKt {
+	public static final fun GlobalToastHost (Lapp/simt/ui/components/toasts/ToastController;Landroidx/compose/ui/Modifier;Landroidx/compose/runtime/Composer;II)V
+}
+
+public final class app/simt/ui/components/toasts/LocalToastControllerKt {
+	public static final fun getLocalToastController ()Landroidx/compose/runtime/CompositionLocal;
+}
+
+public abstract interface class app/simt/ui/components/toasts/ToastController {
+	public abstract fun clear ()V
+	public abstract fun dismiss (J)V
+	public abstract fun getUiState ()Lkotlinx/coroutines/flow/StateFlow;
+	public abstract fun showError (Ljava/lang/String;)V
+	public abstract fun showInfo (Ljava/lang/String;Landroidx/compose/ui/graphics/vector/ImageVector;)V
+	public abstract fun showSuccess (Ljava/lang/String;)V
+}
+
+public final class app/simt/ui/components/toasts/ToastStyle : java/lang/Enum {
+	public static final field ERROR Lapp/simt/ui/components/toasts/ToastStyle;
+	public static final field INFO Lapp/simt/ui/components/toasts/ToastStyle;
+	public static final field SUCCESS Lapp/simt/ui/components/toasts/ToastStyle;
+	public static fun getEntries ()Lkotlin/enums/EnumEntries;
+	public static fun valueOf (Ljava/lang/String;)Lapp/simt/ui/components/toasts/ToastStyle;
+	public static fun values ()[Lapp/simt/ui/components/toasts/ToastStyle;
+}
+
+public final class app/simt/ui/components/toasts/ToastSurfaceKt {
+	public static final fun ToastSurface-cf5BqRc (Ljava/lang/String;Landroidx/compose/ui/graphics/vector/ImageVector;JLandroidx/compose/ui/Modifier;Landroidx/compose/runtime/Composer;II)V
+}
+
+public final class app/simt/ui/components/toasts/ToastUiState {
+	public static final field $stable I
+	public fun <init> (JLjava/lang/String;Lapp/simt/ui/components/toasts/ToastStyle;Landroidx/compose/ui/graphics/vector/ImageVector;)V
+	public synthetic fun <init> (JLjava/lang/String;Lapp/simt/ui/components/toasts/ToastStyle;Landroidx/compose/ui/graphics/vector/ImageVector;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public final fun component1 ()J
+	public final fun component2 ()Ljava/lang/String;
+	public final fun component3 ()Lapp/simt/ui/components/toasts/ToastStyle;
+	public final fun component4 ()Landroidx/compose/ui/graphics/vector/ImageVector;
+	public final fun copy (JLjava/lang/String;Lapp/simt/ui/components/toasts/ToastStyle;Landroidx/compose/ui/graphics/vector/ImageVector;)Lapp/simt/ui/components/toasts/ToastUiState;
+	public static synthetic fun copy$default (Lapp/simt/ui/components/toasts/ToastUiState;JLjava/lang/String;Lapp/simt/ui/components/toasts/ToastStyle;Landroidx/compose/ui/graphics/vector/ImageVector;ILjava/lang/Object;)Lapp/simt/ui/components/toasts/ToastUiState;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getIcon ()Landroidx/compose/ui/graphics/vector/ImageVector;
+	public final fun getId ()J
+	public final fun getMessage ()Ljava/lang/String;
+	public final fun getStyle ()Lapp/simt/ui/components/toasts/ToastStyle;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
 public final class app/simt/ui/effects/CosmosTier : java/lang/Enum {
 	public static final field FULL Lapp/simt/ui/effects/CosmosTier;
 	public static final field REDUCED Lapp/simt/ui/effects/CosmosTier;

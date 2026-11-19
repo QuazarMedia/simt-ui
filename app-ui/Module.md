@@ -80,9 +80,15 @@ Layer-2 presets built on it: `ConfirmDialog` (confirm/cancel callbacks, destruct
 
 The animated header background is a caller slot (`headerBackground` on the gate and dialog, `background` on `AnimatedDialogBackground`): the library resolves the accent from `AnimatedDialogBackgroundStyle` (`NetworkGrid` → secondary color, all other styles → primary) and renders a flat tinted wash by default; applications with an ambient background (simt-app's Cosmos gate background) supply their own renderer.
 
+### Toasts (`app.simt.ui.components.toasts`, androidMain)
+
+`ToastController` is the application-wide contract for one-shot banners: a `StateFlow` stack of `ToastUiState` (monotonic `id`, `message`, `style`, optional custom icon) plus `showSuccess` / `showError` / `showInfo` / `dismiss` / `clear`. Applications own the implementation (a singleton injected into view-models) and provide it through `LocalToastController`.
+
+`GlobalToastHost` renders the stack above every screen — including open dialogs — inside its own click-through full-screen `Dialog` window (`FLAG_NOT_FOCUSABLE` + `FLAG_NOT_TOUCHABLE`, platform window animations disabled). Each entry animates in (slide + fade), holds for 3 s, then animates out (shrink + fade) before calling back into `controller.dismiss`, so the stack reflows smoothly. `ToastSurface` is the bare canopy-glass banner visual; the fixed accent colors (success green, error red, info blue) and the 3 s duration are module-internal.
+
 ### Placement
 
-The `dialogs`, `sheets`, `loader` and `permissions` packages live in `androidMain` because they use Android/JVM-only APIs (`java.time` pickers, `LocalConfiguration`, `DialogProperties.decorFitsSystemWindows`, haptics); the remaining components are in `commonMain`. The consumers of this extraction batch are Android-only (simt-app). `@Preview` functions from the source files were not carried over — simt-ui has no preview-tooling dependency.
+The `dialogs`, `sheets`, `loader`, `permissions` and `toasts` packages live in `androidMain` because they use Android/JVM-only APIs (`java.time` pickers, `LocalConfiguration`, `DialogProperties.decorFitsSystemWindows`, haptics, `DialogWindowProvider` window flags); the remaining components are in `commonMain`. The consumers of this extraction batch are Android-only (simt-app). `@Preview` functions from the source files were not carried over — simt-ui has no preview-tooling dependency.
 
 ## Compatibility evidence and limits
 
