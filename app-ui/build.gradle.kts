@@ -80,6 +80,10 @@ kotlin {
         }
         named("androidMain") {
             dependencies {
+                // NotificationCompat, ContextCompat and the annotation types used by the
+                // notifications kit; part of the public API (NotificationCompat.Action in
+                // NotificationSpec / NotificationActionBuilder), hence api scope.
+                api(libs.androidx.core.ktx)
                 // Play in-app updates backing PlayCoreUpdateChecker; kept out of
                 // the public API surface so consumers never see play-core types.
                 implementation(libs.play.app.update.ktx)
