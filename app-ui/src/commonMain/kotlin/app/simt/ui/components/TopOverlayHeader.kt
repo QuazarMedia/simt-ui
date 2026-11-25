@@ -58,6 +58,7 @@ import app.simt.ui.resources.simt_ui_close
 import app.simt.ui.utils.fullScreenTopInsets
 import kotlinx.coroutines.delay
 import org.jetbrains.compose.resources.stringResource
+import kotlin.time.Duration.Companion.milliseconds
 
 @Immutable
 public data class TopOverlayToolToggle(
@@ -160,10 +161,10 @@ public fun TopOverlayHeader(
 private fun TopOverlayHeaderTools(
     tools: List<TopOverlayToolToggle>,
     contentColor: Color,
-    toolsModifier: Modifier,
+    modifier: Modifier,
 ) {
     Surface(
-        modifier = toolsModifier,
+        modifier = modifier,
         color = contentColor.copy(alpha = 0.10f),
         contentColor = contentColor,
         shape = MaterialTheme.shapes.large,
@@ -255,7 +256,7 @@ private fun TopOverlayHeaderContentCard(
     }
     LaunchedEffect(contentCard) {
         if (contentCard == null) {
-            delay(duration.toLong())
+            delay(duration.toLong().milliseconds)
             rememberedContentCard = null
         }
     }
