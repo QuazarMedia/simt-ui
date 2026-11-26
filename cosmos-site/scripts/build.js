@@ -260,7 +260,7 @@ function generateProductOutputs(PRODUCT) {
   );
 
   function versionHref(targetVersion, slug) {
-    const base = targetVersion === latest && PRODUCT.isLatest ? '' : `/v/${targetVersion}`;
+    const base = targetVersion === latest ? '' : `/v/${targetVersion}`;
     return slug ? `${base}/${slug}` : base || '/';
   }
 

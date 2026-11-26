@@ -326,6 +326,7 @@ if (observatory) {
   });
 
   // Live SVG bearing instrument
+  const instrument = observatory.querySelector('.lab-instrument');
   const range = observatory.querySelector('[data-lab-heading]');
   const needle = observatory.querySelector('[data-lab-needle]');
   const targetG = observatory.querySelector('[data-lab-target]');
@@ -352,8 +353,10 @@ if (observatory) {
     targetVal.textContent = padDeg(target);
     const delta = ((target - heading + 540) % 360) - 180;
     const abs = Math.abs(delta);
-    if (abs <= 2) {
-      turnBadge.textContent = 'Aligned on target';
+    const locked = abs <= 2;
+    if (instrument) instrument.dataset.locked = locked ? 'true' : 'false';
+    if (locked) {
+      turnBadge.textContent = abs === 0 ? 'Aligned on target' : 'Aligned · detent';
       arc.setAttribute('d', '');
     } else {
       turnBadge.textContent = `Turn ${abs}° ${delta > 0 ? 'CW' : 'CCW'}`;

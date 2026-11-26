@@ -106,6 +106,8 @@ const SELF_DRAWN = {
   contextSpine: ['pressed', 'selected'],
   horizonRibbon: ['stale'],
   watchActionCapsule: ['pressed', 'pending', 'disabled'],
+  commandPalette: ['pending', 'error', 'selected'],
+  bearingScrubber: ['hover', 'pressed', 'selected', 'stale'],
 };
 
 /**
@@ -261,6 +263,34 @@ function buildPainters(state) {
       <path d="M118 124a56 56 0 0 1 84 0" fill="none" ${paint('stroke', state === 'pressed' ? 'action' : state === 'disabled' ? 'muted' : 'focus')} stroke-width="3"/>
       <text x="160" y="70" text-anchor="middle" ${paint('fill', state === 'disabled' ? 'muted' : 'text')} font-family="sans-serif" font-size="12">Target</text>
       ${state === 'pending' ? `<path d="M160 46a26 26 0 0 1 26 26" fill="none" ${paint('stroke', 'gold')} stroke-width="2.5"/>` : ''}${focus}`,
+
+    commandPalette:
+      () => `<rect x="44" y="20" width="232" height="148" ${paint('fill', 'void')} fill-opacity=".55" ${round(16)}/>
+      <rect x="64" y="34" width="192" height="120" ${painted({ fill: 'highest', stroke: 'line' })} ${round(12)}/>
+      <rect x="74" y="44" width="172" height="30" ${painted({ fill: 'hull', stroke: 'line' })} ${round(8)}/>
+      <text x="84" y="64" ${paint('fill', 'text')} font-family="sans-serif" font-size="11">Compass</text>
+      <rect x="198" y="49" width="38" height="20" ${painted({ fill: 'raised', stroke: 'line' })} ${round(5)}/>
+      <text x="217" y="63" text-anchor="middle" ${paint('fill', 'muted')} font-family="sans-serif" font-size="9">Cmd K</text>
+      ${state === 'pending' ? `<circle cx="186" cy="59" r="6" fill="none" ${paint('stroke', 'focus')} stroke-width="2" stroke-dasharray="4 3"/>` : ''}
+      ${
+        state === 'error'
+          ? `<path d="M74 74h172" ${paint('stroke', 'danger')} stroke-width="2"/><text x="84" y="102" ${paint('fill', 'danger')} font-family="sans-serif" font-size="11">No matches</text>`
+          : `<rect x="74" y="82" width="172" height="28" ${painted({ fill: 'raised', stroke: state === 'selected' ? 'identity' : 'line' })} ${round(7)}/>
+      ${state === 'selected' ? `<path d="M84 96l3 3 6-7" fill="none" ${paint('stroke', 'identity')} stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>` : ''}
+      <text x="${state === 'selected' ? 100 : 84}" y="100" ${paint('fill', 'text')} font-family="sans-serif" font-size="11">Compass · 042°</text>
+      <rect x="74" y="116" width="172" height="28" ${painted({ fill: 'hull', stroke: 'line' })} ${round(7)}/>
+      <text x="84" y="134" ${paint('fill', 'muted')} font-family="sans-serif" font-size="11">Daylight theme</text>`
+      }${focus}`,
+
+    bearingScrubber:
+      () => `<circle cx="160" cy="90" r="52" fill="none" ${paint('stroke', 'line')} ${strokeTone(state)} stroke-width="4"/>
+      <path d="M160 38a52 52 0 0 1 48 32" fill="none" ${paint('stroke', state === 'stale' ? 'faint' : 'live')} ${strokeTone(state)} stroke-width="4" stroke-linecap="round"/>
+      <circle cx="197" cy="53" r="6" fill="none" ${paint('stroke', 'gold')} stroke-width="1.5"/>
+      <circle cx="197" cy="53" r="2.5" ${paint('fill', 'gold')}/>
+      <circle cx="208" cy="70" r="9" ${painted({ fill: state === 'stale' ? 'raised' : 'highest', stroke: state === 'selected' ? 'identity' : 'ink' })} ${fillTone(state)} ${strokeTone(state)} stroke-width="2"/>
+      ${state === 'selected' ? `<circle cx="208" cy="70" r="3.5" ${paint('fill', 'identity')}/>` : ''}
+      <text x="160" y="95" text-anchor="middle" ${paint('fill', state === 'stale' ? 'faint' : 'ink')} font-family="sans-serif" font-size="18">042°</text>
+      ${state === 'stale' ? `<rect x="134" y="106" width="52" height="16" ${painted({ fill: 'raised', stroke: 'line' })} ${round(6)}/><text x="160" y="118" text-anchor="middle" ${paint('fill', 'muted')} font-family="sans-serif" font-size="9">STALE</text>` : ''}${focus}`,
   };
 
   // Two states a component can declare and no shape drew: a confirmation and an

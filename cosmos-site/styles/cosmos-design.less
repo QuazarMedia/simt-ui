@@ -338,6 +338,26 @@ main > * {
   opacity: 0.7;
   pointer-events: none;
 }
+@keyframes cosmos-read-progress {
+  to {
+    transform: scaleX(1);
+  }
+}
+@supports (animation-timeline: scroll()) {
+  @media (prefers-reduced-motion: no-preference) {
+    :root:not([data-motion='reduced']):not([data-motion='static']) .cosmos-header::after {
+      inset: auto 0 0;
+      block-size: 2px;
+      background-color: var(--accent-text);
+      background-image: var(--gradient-horizon);
+      opacity: 1;
+      transform-origin: 0 50%;
+      transform: scaleX(0);
+      animation: cosmos-read-progress linear both;
+      animation-timeline: scroll(root block);
+    }
+  }
+}
 .header-inner {
   display: flex;
   flex-wrap: wrap;
@@ -1816,6 +1836,10 @@ h1 em,
 .spec-content {
   min-inline-size: 0;
 }
+.spec-section {
+  content-visibility: auto;
+  contain-intrinsic-size: auto 420px;
+}
 .spec-section + .spec-section {
   margin-block-start: 64px;
 }
@@ -2277,6 +2301,8 @@ td {
   border-radius: var(--radius-record);
   display: grid;
   gap: 24px;
+  content-visibility: auto;
+  contain-intrinsic-size: auto 420px;
 }
 .gallery-card-head {
   display: flex;
@@ -2648,6 +2674,26 @@ html[data-motion='static'] .filmstrip .gallery-play {
   font-size: 0.75rem;
   font-weight: 600;
   white-space: nowrap;
+}
+@keyframes cosmos-detent {
+  0% {
+    transform: scale(1);
+  }
+  45% {
+    transform: scale(1.12);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+.lab-instrument[data-locked='true'] .lab-badge {
+  border-color: var(--success);
+  color: var(--success);
+}
+.lab-instrument[data-locked='true'] [data-lab-target] circle:first-child {
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: cosmos-detent var(--motion-feedback) var(--ease-standard) 1;
 }
 .lab-dial-stage {
   position: relative;
