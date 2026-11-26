@@ -1,4 +1,28 @@
-// Optional local interactions. Reading, navigation and downloads need no JavaScript.
+// Optional progressive enhancements. Reading, navigation and downloads need no JavaScript.
+const rootEl = document.documentElement;
+const toastEl = document.querySelector('[data-cosmos-toast]');
+let toastTimer = 0;
+const notify = (msg) => {
+  if (!toastEl) return;
+  toastEl.textContent = msg;
+  toastEl.hidden = false;
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => {
+    toastEl.hidden = true;
+  }, 2400);
+};
+const copyText = (value, label = value) => {
+  if (navigator.clipboard?.writeText) {
+    navigator.clipboard.writeText(value).then(
+      () => notify(`Copied ${label}`),
+      () => notify(label),
+    );
+  } else {
+    notify(label);
+  }
+};
+
+// Live component workbench demo form
 const form = document.querySelector('[data-demo-form]');
 if (form) {
   const input = form.querySelector('[data-clearable-input]');
@@ -58,35 +82,51 @@ if (form) {
   syncClear();
   window.addEventListener('pagehide', idle);
 }
-// The tier a reader chooses is a preference about their own reading, the same
-// kind of thing as the chosen theme, so it is stored and restored like one. It has
-// to be read back before anything animates, because the first thing that moves on
-// a page is the disc below and C17 asks a reader who asked for still frames not to
-// watch one spin while the galleries load. That is why the tier is restored by the
-// inline script in the document head rather than here: a module is deferred, so
-// everything between the first paint and its arrival would animate against the
-// preference the reader already gave. All this does is mark the control, so it has
-// to accept exactly the tiers the page offers.
+
+// Motion tier preference (C17) shared across workbench, gallery and observatory
 const STORED_MOTION = 'simt:cosmos-motion';
 const motionInputs = [...document.querySelectorAll('input[name="motion"]')];
-const MOTION_TIERS = new Set(motionInputs.map((input) => input.value));
-let storedMotion = null;
+const motionPills = [...document.querySelectorAll('[data-set-motion]')];
+const MOTION_TIERS = new Set([
+  ...motionInputs.map((i) => i.value),
+  ...motionPills.map((b) => b.dataset.setMotion),
+]);
+const motionListeners = [];
+const syncMotionUI = (tier) => {
+  rootEl.dataset.motion = tier;
+  motionInputs.forEach((input) => {
+    input.checked = input.value === tier;
+  });
+  motionPills.forEach((btn) => {
+    btn.setAttribute('aria-pressed', String(btn.dataset.setMotion === tier));
+  });
+  motionListeners.forEach((fn) => fn(tier));
+};
+const setMotion = (tier) => {
+  if (!MOTION_TIERS.has(tier)) return;
+  syncMotionUI(tier);
+  try {
+    localStorage.setItem(STORED_MOTION, tier);
+  } catch {}
+};
+let initialMotion = rootEl.dataset.motion || 'system';
 try {
   const saved = localStorage.getItem(STORED_MOTION);
-  if (MOTION_TIERS.has(saved)) storedMotion = saved;
-} catch {
-  storedMotion = null;
-}
-if (storedMotion !== null) {
-  const chosen = motionInputs.find((input) => input.value === storedMotion);
-  if (chosen) chosen.checked = true;
-}
+  if (MOTION_TIERS.has(saved)) initialMotion = saved;
+} catch {}
+if (MOTION_TIERS.size) syncMotionUI(initialMotion);
+motionInputs.forEach((input) => {
+  input.addEventListener('change', () => setMotion(input.value));
+  input.disabled = false;
+});
+motionPills.forEach((btn) => {
+  btn.addEventListener('click', () => {
+    setMotion(btn.dataset.setMotion);
+    notify(`Motion tier: ${btn.textContent.trim()}`);
+  });
+});
 
-// The disc revolution is the page's one ambient motion (C27, P10). It runs only
-// while the art is on screen: the observer carries the scroll half, and
-// visibilitychange carries the tab half. CSS cannot know a tab went to the
-// background, but its animation keeps running on the compositor, and C17 asks
-// that hidden screens stop animating.
+// Ambient quasar disc pauses out of view and on hidden tabs (C27, P10)
 const quasar = document.querySelector('.quasar');
 if (quasar) {
   const pause = () => {
@@ -101,24 +141,8 @@ if (quasar) {
     document.addEventListener('visibilitychange', resume);
   }
 }
-motionInputs.forEach((input) => {
-  input.addEventListener('change', () => {
-    document.documentElement.dataset.motion = input.value;
-    try {
-      localStorage.setItem(STORED_MOTION, input.value);
-    } catch {
-      // A reader with storage refused still gets the tier for this page.
-    }
-  });
-  input.disabled = false;
-});
 
-// Gallery playback (C31, C17). The card explains its motif with four stills,
-// and this only walks them once on request. Everything the reader needs is
-// already on the page: the strip carries the frames, the tier is the same
-// data-motion attribute the rest of the site uses, and the duration is read out
-// of the stylesheet rather than written here, so a motif that changes in
-// motion.json plays at its published timing without this file knowing it.
+// Gallery one-shot filmstrip playback (C31, C17)
 const strips = [...document.querySelectorAll('[data-filmstrip]')].map((frames) => {
   const strip = frames.closest('.filmstrip');
   return {
@@ -134,19 +158,12 @@ const strips = [...document.querySelectorAll('[data-filmstrip]')].map((frames) =
 if (strips.length) {
   const prefersStill = matchMedia('(prefers-reduced-motion: reduce)');
   const tier = () => {
-    const chosen = document.documentElement.dataset.motion;
+    const chosen = rootEl.dataset.motion;
     if (chosen === 'static' || chosen === 'reduced') return chosen;
     return prefersStill.matches ? 'reduced' : 'full';
   };
-  // The tier decides whether the run exists at all, so it is read per run rather
-  // than bound once: the radios above can change it while the page is open.
   const playable = (strip) => {
     const level = tier();
-    // Static says so with aria-disabled rather than with disabled, because a
-    // disabled button is not in the tab order and the stylesheet's own reason for
-    // keeping the control is that a motif which cannot run is stated by it. The
-    // note it points at appears only in this tier, so the reason for the refusal
-    // is on the control and not only in the stylesheet.
     strip.play.setAttribute('aria-disabled', level === 'static' ? 'true' : 'false');
     strip.play.disabled = false;
     if (strip.staticNote) strip.staticNote.hidden = level !== 'static';
@@ -158,11 +175,6 @@ if (strips.length) {
     current.parts.forEach((part) => delete part.dataset.current);
     delete current.strip.dataset.playing;
     current.play.disabled = false;
-    // The timer is cancelled, not overwritten. A run that was settled by a second
-    // Play press, by its card leaving the screen or by the tab being hidden still
-    // has a step queued, and letting it fire walks the frames of a run that is
-    // supposed to have stopped — which is how two strips ended up playing at once
-    // and how an orphan run cleared `running` while another was still live.
     clearTimeout(current.timer);
     current.timer = 0;
     running = null;
@@ -176,17 +188,12 @@ if (strips.length) {
       else delete part.dataset.current;
     });
     current.index += 1;
-    // One frame per duration step: the stills are the motif's own moments, so a
-    // longer run spends longer on each of them rather than reaching the last one
-    // sooner and then waiting. The run ends one interval after the last still,
-    // which is what leaves the final frame on screen long enough to read.
     current.timer = setTimeout(() => step(current), current.stepMs);
   };
   const start = (current) => {
     if (running && running !== current) settle(running);
     if (!playable(current)) {
-      current.status.textContent =
-        'The Static tier applies, so this motif does not run. The stills above are its steps.';
+      current.status.textContent = 'The Static tier applies, so this motif does not run. The stills above are its steps.';
       return;
     }
     running = current;
@@ -195,40 +202,23 @@ if (strips.length) {
     current.timer = 0;
     current.stepMs = Math.max(
       60,
-      Number.parseFloat(
-        getComputedStyle(document.documentElement).getPropertyValue(`--motion-${current.strip.dataset.durationRole}`),
-      ) / current.parts.length || 75,
+      Number.parseFloat(getComputedStyle(rootEl).getPropertyValue(`--motion-${current.strip.dataset.durationRole}`)) /
+        current.parts.length || 75,
     );
     current.strip.dataset.playing = 'true';
     current.status.textContent = `Playing ${current.strip.dataset.motif} once, ${tier() === 'reduced' ? 'as a crossfade' : 'in full'}.`;
     step(current);
   };
-  // The tier can change while the page is open, and whether a control is
-  // available is a property of the tier, so a change to it re-reads every
-  // control rather than leaving a Static page with a live Play.
-  motionInputs.forEach((input) => {
-    input.addEventListener('change', () => {
-      for (const current of strips) playable(current);
-    });
+  motionListeners.push(() => {
+    for (const current of strips) playable(current);
   });
   for (const current of strips) {
     playable(current);
-    current.play.addEventListener('click', () => {
-      // A second press while a run is going restarts it rather than queueing, so
-      // the control never leaves a reader waiting on something they cannot see.
-      if (running === current) return settle(current);
-      start(current);
-    });
+    current.play.addEventListener('click', () => (running === current ? settle(current) : start(current)));
   }
-  // Nothing plays on its own, and nothing plays on a screen nobody is looking
-  // at: the observer holds the run at its first frame while the strip is off
-  // screen, which is the same rule the ambient disc follows.
   const onScreen = new IntersectionObserver(
     ([entry]) => {
-      const current = strips.find((candidate) => candidate.strip === entry.target);
-      // A run is one pass of four stills, not a loop, so a card that leaves the
-      // screen ends its run and falls back to the resting strip rather than
-      // resuming later where the reader cannot see what moved.
+      const current = strips.find((c) => c.strip === entry.target);
       if (current && !entry.isIntersecting && running === current) settle(current);
     },
     { threshold: 0.2 },
@@ -239,36 +229,28 @@ if (strips.length) {
   });
 }
 
-// Theme profile (C06). The theme itself is CSS, so this control only records a
-// choice: the attribute it writes is what the token layer already keys on, and
-// with no choice the media query applies. Choosing the value the system already
-// asks for clears the stored value, so a visitor who returns the site to "what my
-// system wants" stops carrying an explicit answer.
-// Read from the picker the page already publishes, because the profile list has
-// one owner -- themeProfiles in the token file -- and a literal here is a second
-// copy that stops recognising a profile the picker offers. An empty set means
-// there is no picker on this page, and an unknown stored value is then discarded
-// rather than written onto the document.
+// Theme profile selector (C06) synced across header select and observatory pills
+const themeSelect = document.querySelector('[data-theme-select]');
+const themePills = [...document.querySelectorAll('[data-set-theme]')];
 const THEMES = new Set(
-  [...document.querySelectorAll('[data-theme-select] option[value]')].map((option) => option.value).filter(Boolean),
+  [...document.querySelectorAll('[data-theme-select] option[value]')].map((o) => o.value).filter(Boolean),
 );
 const STORED_THEME = 'simt:cosmos-theme';
 const themeSystem = () => (matchMedia('(prefers-color-scheme: light)').matches ? 'daylight' : 'deepSpace');
 const themeMeta = [...document.querySelectorAll('meta[name="theme-color"]')];
-// The chrome a profile paints with is published on the picker's own options, so
-// the browser agrees with the page about which colour is behind it. It used to
-// reset both metas and then select the light one, which left a browser in light
-// mode showing a cream toolbar above a page painted #0A0000 whenever the profile
-// was one of the two that are dark without being the default.
 const themeColors = new Map(
-  [...document.querySelectorAll('[data-theme-select] option[value]')].map((option) => [option.value, option.dataset.color]),
+  [...document.querySelectorAll('[data-theme-select] option[value]')].map((o) => [o.value, o.dataset.color]),
 );
 const syncThemeColor = (theme) => {
   for (const meta of themeMeta) meta.content = meta.dataset.color ?? meta.content;
   const color = themeColors.get(theme);
   if (color && themeMeta[0]) themeMeta[0].content = color;
 };
-const themeSelect = document.querySelector('[data-theme-select]');
+const syncThemePills = (active) => {
+  themePills.forEach((btn) => {
+    btn.setAttribute('aria-pressed', String(btn.dataset.setTheme === active));
+  });
+};
 if (themeSelect) {
   const stored = () => {
     try {
@@ -280,44 +262,283 @@ if (themeSelect) {
   const store = (value) => {
     try {
       value ? localStorage.setItem(STORED_THEME, value) : localStorage.removeItem(STORED_THEME);
-    } catch {
-      /* Private mode: the choice lasts for this page only. */
-    }
+    } catch {}
   };
   const apply = (theme) => {
-    if (theme) document.documentElement.dataset.cosmosTheme = theme;
-    else delete document.documentElement.dataset.cosmosTheme;
+    if (theme) rootEl.dataset.cosmosTheme = theme;
+    else delete rootEl.dataset.cosmosTheme;
     themeSelect.value = theme ?? '';
-    syncThemeColor(theme ?? themeSystem());
+    const resolved = theme || themeSystem();
+    syncThemeColor(resolved);
+    syncThemePills(resolved);
   };
-  // Reconcile the stored value on load. An unknown value is discarded, and so is
-  // a known one the system already asks for: that visitor is no longer expressing
-  // a preference, so the attribute comes off and the media query owns the page
-  // again, mid-session system changes included. Both cases end on the colour the
-  // page already has, so reconciling cannot flash.
   const initial = stored();
   const choice = THEMES.has(initial) ? initial : null;
   if (initial && (choice !== initial || choice === themeSystem())) {
     store(null);
-    delete document.documentElement.dataset.cosmosTheme;
+    delete rootEl.dataset.cosmosTheme;
   }
-  themeSelect.value = choice && choice !== themeSystem() ? choice : '';
-  syncThemeColor(choice ?? themeSystem());
+  const activeInitial = choice && choice !== themeSystem() ? choice : '';
+  themeSelect.value = activeInitial;
+  syncThemeColor(activeInitial || themeSystem());
+  syncThemePills(activeInitial || themeSystem());
   themeSelect.addEventListener('change', () => {
     const next = themeSelect.value;
     store(next && next !== themeSystem() ? next : null);
     apply(next);
   });
-  // Follow a live system change while the visitor has expressed no preference,
-  // so the browser chrome and the page cannot disagree.
+  themePills.forEach((btn) => {
+    btn.addEventListener('click', () => {
+      const next = btn.dataset.setTheme;
+      store(next === themeSystem() ? null : next);
+      apply(next === themeSystem() ? '' : next);
+      notify(`Theme profile: ${btn.textContent.trim()}`);
+    });
+  });
   matchMedia('(prefers-color-scheme: light)').addEventListener('change', (event) => {
-    if (!document.documentElement.dataset.cosmosTheme) syncThemeColor(event.matches ? 'daylight' : 'deepSpace');
+    if (!rootEl.dataset.cosmosTheme) {
+      const sys = event.matches ? 'daylight' : 'deepSpace';
+      syncThemeColor(sys);
+      syncThemePills(sys);
+    }
   });
 }
 
+// Specification version switcher
 const versionSelect = document.querySelector('[data-version-select]');
 if (versionSelect) {
   versionSelect.addEventListener('change', () => {
     if (versionSelect.value) window.location.assign(versionSelect.value);
   });
+}
+
+// Interactive Observatory: RTL toggle, bearing instrument, and surface/motion studio
+const observatory = document.querySelector('[data-observatory]');
+if (observatory) {
+  const dirButtons = [...observatory.querySelectorAll('[data-set-dir]')];
+  dirButtons.forEach((btn) => {
+    btn.addEventListener('click', () => {
+      const dir = btn.dataset.setDir;
+      rootEl.dir = dir;
+      dirButtons.forEach((b) => b.setAttribute('aria-pressed', String(b === btn)));
+      notify(`Direction: ${dir.toUpperCase()} (compass stays true north)`);
+    });
+  });
+
+  // Live SVG bearing instrument
+  const range = observatory.querySelector('[data-lab-heading]');
+  const needle = observatory.querySelector('[data-lab-needle]');
+  const targetG = observatory.querySelector('[data-lab-target]');
+  const arc = observatory.querySelector('[data-lab-arc]');
+  const arcGrad = observatory.querySelector('#lab-turn');
+  const headingVal = observatory.querySelector('[data-lab-heading-val]');
+  const headingCode = observatory.querySelector('[data-lab-heading-code]');
+  const targetVal = observatory.querySelector('[data-lab-target-val]');
+  const turnBadge = observatory.querySelector('[data-lab-turn]');
+  const targetBtns = [...observatory.querySelectorAll('[data-lab-target-set]')];
+  let heading = Number(range?.value ?? 42);
+  let target = 110;
+  const padDeg = (n) => `${String(((n % 360) + 360) % 360).padStart(3, '0')}°`;
+  const onDial = (deg) => {
+    const r = (deg * Math.PI) / 180;
+    return [160 + 128 * Math.sin(r), 160 - 128 * Math.cos(r)].map((v) => v.toFixed(1));
+  };
+  const renderDial = () => {
+    if (!needle || !targetG || !arc) return;
+    needle.setAttribute('transform', `rotate(${heading} 160 160)`);
+    targetG.setAttribute('transform', `rotate(${target} 160 160)`);
+    headingVal.textContent = padDeg(heading);
+    headingCode.textContent = padDeg(heading);
+    targetVal.textContent = padDeg(target);
+    const delta = ((target - heading + 540) % 360) - 180;
+    const abs = Math.abs(delta);
+    if (abs <= 2) {
+      turnBadge.textContent = 'Aligned on target';
+      arc.setAttribute('d', '');
+    } else {
+      turnBadge.textContent = `Turn ${abs}° ${delta > 0 ? 'CW' : 'CCW'}`;
+      const [sx, sy] = onDial(heading);
+      const [ex, ey] = onDial(target);
+      const sweep = delta > 0 ? 1 : 0;
+      arc.setAttribute('d', `M${sx} ${sy}A128 128 0 0 ${sweep} ${ex} ${ey}`);
+      if (arcGrad) {
+        arcGrad.setAttribute('x1', sx);
+        arcGrad.setAttribute('y1', sy);
+        arcGrad.setAttribute('x2', ex);
+        arcGrad.setAttribute('y2', ey);
+      }
+    }
+  };
+  if (range) {
+    range.addEventListener('input', () => {
+      heading = Number(range.value);
+      renderDial();
+    });
+    targetBtns.forEach((btn) => {
+      btn.addEventListener('click', () => {
+        target = Number(btn.dataset.labTargetSet);
+        targetBtns.forEach((b) => b.setAttribute('aria-pressed', String(b === btn)));
+        renderDial();
+      });
+    });
+    renderDial();
+  }
+
+  // Surface & choreography studio
+  const stage = observatory.querySelector('[data-lab-stage]');
+  const card = observatory.querySelector('[data-lab-card]');
+  const radiusOut = observatory.querySelector('[data-lab-radius-readout]');
+  const spaceOut = observatory.querySelector('[data-lab-space-readout]');
+  const timingOut = observatory.querySelector('[data-lab-timing-readout]');
+  const triggerBtn = observatory.querySelector('[data-lab-trigger]');
+  const copyVarsBtn = observatory.querySelector('[data-lab-copy-vars]');
+  const spaceMap = { compact: '--space-16', standard: '--space-24', generous: '--space-32' };
+  const motifMap = { feedback: ['150ms', 'standard'], state: ['300ms', 'emphasis'], context: ['500ms', 'entrance'] };
+  let activeMotif = 'state';
+  let auditionTimer = 0;
+
+  observatory.querySelectorAll('[data-lab-radius]').forEach((btn) => {
+    btn.addEventListener('click', () => {
+      const r = btn.dataset.labRadius;
+      stage.dataset.radius = r;
+      radiusOut.textContent = `--radius-${r}`;
+      observatory.querySelectorAll('[data-lab-radius]').forEach((b) => b.setAttribute('aria-pressed', String(b === btn)));
+    });
+  });
+  observatory.querySelectorAll('[data-lab-density]').forEach((btn) => {
+    btn.addEventListener('click', () => {
+      const d = btn.dataset.labDensity;
+      stage.dataset.density = d;
+      spaceOut.textContent = spaceMap[d];
+      observatory.querySelectorAll('[data-lab-density]').forEach((b) => b.setAttribute('aria-pressed', String(b === btn)));
+    });
+  });
+  observatory.querySelectorAll('[data-lab-motif]').forEach((btn) => {
+    btn.addEventListener('click', () => {
+      activeMotif = btn.dataset.labMotif;
+      const [dur, ease] = motifMap[activeMotif];
+      timingOut.textContent = `${dur} · ${ease}`;
+      observatory.querySelectorAll('[data-lab-motif]').forEach((b) => b.setAttribute('aria-pressed', String(b === btn)));
+    });
+  });
+  if (triggerBtn && card) {
+    triggerBtn.addEventListener('click', () => {
+      const tier = rootEl.dataset.motion;
+      if (tier === 'static') {
+        notify('Static tier active: final state applied immediately (C17)');
+        return;
+      }
+      const [dur, ease] = motifMap[activeMotif];
+      card.style.transitionDuration = `var(--motion-${activeMotif})`;
+      card.style.transitionTimingFunction = `var(--ease-${ease})`;
+      card.classList.add('is-auditioning');
+      clearTimeout(auditionTimer);
+      auditionTimer = setTimeout(() => card.classList.remove('is-auditioning'), Number.parseInt(dur, 10) + 60);
+      notify(`Auditioned ${activeMotif} motif (${dur}, ${ease})`);
+    });
+  }
+  if (copyVarsBtn && stage) {
+    copyVarsBtn.addEventListener('click', () => {
+      const r = stage.dataset.radius;
+      const s = spaceMap[stage.dataset.density];
+      const [, ease] = motifMap[activeMotif];
+      const snippet = `border-radius: var(--radius-${r}); padding: var(${s}); transition: transform var(--motion-${activeMotif}) var(--ease-${ease});`;
+      copyText(snippet, 'Cosmos CSS snippet');
+    });
+  }
+}
+
+// Click-to-copy gradient tokens in Light with a job
+document.querySelectorAll('[data-copy-token]').forEach((el) => {
+  const act = () => copyText(el.dataset.copyToken, el.dataset.copyToken);
+  el.addEventListener('click', act);
+  el.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter' || e.key === ' ') {
+      e.preventDefault();
+      act();
+    }
+  });
+});
+
+// Progressively enhanced Rule Filter + Scroll-Spy + Anchor Copy on Spec pages
+const specContent = document.querySelector('.spec-content');
+const allRules = specContent ? [...specContent.querySelectorAll('.rule[data-level]')] : [];
+if (specContent && allRules.length) {
+  const bar = document.createElement('div');
+  bar.className = 'spec-toolbar';
+  bar.setAttribute('role', 'search');
+  bar.innerHTML =
+    '<input type="search" class="spec-search" placeholder="Filter rules by ID or keyword (e.g. C05, contrast, motion)…" aria-label="Filter normative rules">' +
+    '<div class="pill-row" role="group" aria-label="Filter by normative level">' +
+    ['all', 'must', 'should', 'may']
+      .map(
+        (lvl, i) =>
+          `<button type="button" class="pill pill-sm" data-filter-level="${lvl}" aria-pressed="${i === 0}">${lvl.toUpperCase()}</button>`,
+      )
+      .join('') +
+    '</div><span class="spec-filter-count" aria-live="polite"></span>';
+  specContent.prepend(bar);
+
+  const search = bar.querySelector('.spec-search');
+  const levelBtns = [...bar.querySelectorAll('[data-filter-level]')];
+  const countEl = bar.querySelector('.spec-filter-count');
+  const sections = [...specContent.querySelectorAll('.spec-section')];
+  let activeLevel = 'all';
+
+  const applyFilter = () => {
+    const q = search.value.trim().toLowerCase();
+    let shown = 0;
+    for (const rule of allRules) {
+      const matchLevel = activeLevel === 'all' || rule.dataset.level === activeLevel;
+      const matchText = !q || rule.textContent.toLowerCase().includes(q) || rule.id.includes(q);
+      const visible = matchLevel && matchText;
+      rule.hidden = !visible;
+      if (visible) shown += 1;
+    }
+    for (const sec of sections) {
+      const secRules = [...sec.querySelectorAll('.rule[data-level]')];
+      if (secRules.length) sec.hidden = secRules.every((r) => r.hidden);
+    }
+    countEl.textContent = `${shown} of ${allRules.length} rules`;
+  };
+  search.addEventListener('input', applyFilter);
+  levelBtns.forEach((btn) => {
+    btn.addEventListener('click', () => {
+      activeLevel = btn.dataset.filterLevel;
+      levelBtns.forEach((b) => b.setAttribute('aria-pressed', String(b === btn)));
+      applyFilter();
+    });
+  });
+  applyFilter();
+
+  // Click rule ID badge to copy canonical rule link
+  allRules.forEach((rule) => {
+    const link = rule.querySelector('.rule-marker a');
+    if (link) {
+      link.addEventListener('click', () => {
+        copyText(`${location.origin}${location.pathname}${link.getAttribute('href')}`, `Rule ${link.textContent} link`);
+      });
+    }
+  });
+
+  // Sticky local-nav scroll-spy
+  const navLinks = new Map(
+    [...document.querySelectorAll('.local-nav ol a')].map((a) => [a.getAttribute('href')?.slice(1), a]),
+  );
+  if (navLinks.size) {
+    const spy = new IntersectionObserver(
+      (entries) => {
+        for (const entry of entries) {
+          if (!entry.isIntersecting) continue;
+          navLinks.forEach((link) => link.removeAttribute('aria-current'));
+          navLinks.get(entry.target.id)?.setAttribute('aria-current', 'location');
+        }
+      },
+      { rootMargin: '-20% 0px -65% 0px' },
+    );
+    for (const id of navLinks.keys()) {
+      const target = document.getElementById(id);
+      if (target) spy.observe(target);
+    }
+  }
 }
