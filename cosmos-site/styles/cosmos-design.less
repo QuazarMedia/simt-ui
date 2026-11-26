@@ -1623,7 +1623,7 @@ h1 em,
   padding: 0;
   margin: 0;
   display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
+  grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 12px;
 }
 .downloads li {
@@ -1644,7 +1644,8 @@ h1 em,
   display: flex;
   flex-direction: column;
   gap: 6px;
-  min-block-size: 84px;
+  block-size: 100%;
+  min-block-size: 44px;
   padding: 16px 18px;
   color: var(--gold);
   font-weight: 500;
@@ -1657,6 +1658,7 @@ h1 em,
   color: var(--muted);
   font-size: 0.8125rem;
   font-weight: 400;
+  line-height: 1.45;
 }
 .faq {
   padding-block: 96px;
@@ -2145,24 +2147,30 @@ td {
 .part-payloads span {
   color: var(--muted);
 }
-// With the block in one column the list no longer needs to span it, but a
-// full-width row would still stretch a label and its note across the whole
-// panel, so each list keeps a readable measure and the two links in a part row
-// stay on one line like the sentence they are part of.
-.downloads > ul {
-  max-inline-size: 760px;
-}
 .downloads > ul.part-payloads {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  padding-block-start: 28px;
+  border-block-start: 1px solid var(--line);
   margin-block-start: 0;
+}
+.downloads > ul.part-payloads li {
+  padding: 16px 18px;
+  color: var(--muted);
 }
 .downloads > ul.part-payloads a {
   display: inline;
+  padding: 0;
+  block-size: auto;
   min-block-size: 0;
+}
+.downloads > ul.part-payloads a:hover {
+  text-decoration: underline;
 }
 .downloads > ul.part-payloads span {
   display: block;
-  margin-block-start: 4px;
+  margin-block-start: 6px;
   font-size: 0.8125rem;
+  line-height: 1.45;
 }
 .part-release h2 {
   font-size: 1.75rem;
@@ -2976,6 +2984,9 @@ html[data-motion='static'] .filmstrip .gallery-play {
   .downloads {
     padding: 32px;
     gap: 32px;
+  }
+  .downloads ul {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
   .light-grammar {
     grid-template-columns: repeat(2, minmax(0, 1fr));
