@@ -298,6 +298,19 @@ export const componentApplicability = {
     stale: 'notFetched',
     offline: 'notNetworkBound',
   },
+  commandPalette: {
+    hover: 'notInteractive',
+    pressed: 'notInteractive',
+    disabled: 'alwaysAvailable',
+    confirmed: 'confirmedElsewhere',
+    stale: 'notFetched',
+  },
+  bearingScrubber: {
+    pending: 'notAsync',
+    disabled: 'alwaysAvailable',
+    error: 'noFailureMode',
+    confirmed: 'confirmedElsewhere',
+  },
 };
 
 export const componentRegistry = [
@@ -531,6 +544,33 @@ export const componentRegistry = [
     states: ['default', 'pressed', 'focus', 'pending', 'disabled'],
     a11y: ['W02', 'W03', 'W04', 'C19'],
     native: { web: null, android: null, wear: 'WearActionCapsule' },
+  },
+  {
+    id: 'commandPalette',
+    name: 'Command palette',
+    parts: ['webApp'],
+    rules: ['A14', 'C15', 'C19', 'C26'],
+    anatomy: ['trigger', 'searchInput', 'resultList', 'shortcutHint'],
+    roles: ['highest', 'surface', 'text', 'muted', 'focus', 'boundary', 'line'],
+    layers: ['scrim', 'modal'],
+    radius: 'overlay',
+    motion: 'apertureMorph',
+    states: ['default', 'focus', 'pending', 'error', 'selected', 'offline'],
+    a11y: ['A14', 'C15', 'C19', 'C20'],
+    native: { web: 'CommandPalette', android: null, wear: null },
+  },
+  {
+    id: 'bearingScrubber',
+    name: 'Bearing scrubber',
+    parts: ['webPage', 'android', 'watch'],
+    rules: ['C08', 'P12', 'M15', 'W13', 'C19', 'C20'],
+    anatomy: ['bearingArc', 'targetCorona', 'headingThumb', 'deltaReadout'],
+    roles: ['surface', 'text', 'muted', 'precision', 'live', 'focus', 'boundary'],
+    radius: 'circle',
+    motion: 'instrumentDetent',
+    states: ['default', 'hover', 'pressed', 'focus', 'selected', 'stale', 'offline'],
+    a11y: ['C08', 'C19', 'C20', 'W04'],
+    native: { web: 'BearingDial', android: 'SimtBearingScrubber', wear: 'WearRotaryDial' },
   },
 ];
 

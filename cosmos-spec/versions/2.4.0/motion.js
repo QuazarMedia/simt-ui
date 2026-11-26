@@ -255,6 +255,54 @@ export const motionMotifs = [
     settlesTo:
       'The incoming context at rest, the outgoing one gone, focus and scroll at the incoming context own values.',
   },
+  {
+    id: 'apertureMorph',
+    job: 'Carry the single focal anchor between summary and detail.',
+    trigger: 'A selected record, target marker or instrument tile opens its detail context or returns to its origin.',
+    steps: [
+      'The single named focal anchor morphs across the container frame.',
+      'Surrounding chrome cross-resolves in opacity without blocking input.',
+    ],
+    properties: ['transform', 'opacity'],
+    duration: 'state',
+    easing: ['arrival', 'departure'],
+    tiers: {
+      full: 'The focal anchor and its container frame travel over the state duration; dismissal reverses on departure.',
+      reduced: 'Opacity cross-resolve over feedback; no travel.',
+      static: 'The destination surface settles immediately with the focal anchor in place.',
+    },
+    platforms: {
+      css: 'One view-transition-name per route on the focal anchor; animate transform and opacity only on snapshots, never blocking pointer input.',
+      compose:
+        'SharedTransitionLayout with sharedElement on the focal anchor inside graphicsLayer; avoid sibling re-layout.',
+      wear: 'Never morph across a round bezel; present the destination directly with a visible back target.',
+    },
+    settlesTo: 'The focal object at its destination geometry, chrome settled and focus on the destination heading.',
+  },
+  {
+    id: 'instrumentDetent',
+    job: 'Confirm a dial, scrubber or sheet locking onto a detent.',
+    trigger: 'A bearing enters target alignment, a rotary/slider crosses a cardinal detent, or a sheet settles onto an anchor.',
+    steps: [
+      'The lock reticle pulses subtly in scale and highlight opacity once.',
+      'The reticle settles cleanly at rest with exact numeric confirmation.',
+    ],
+    properties: ['transform', 'opacity'],
+    duration: 'feedback',
+    easing: ['standard'],
+    tiers: {
+      full: 'One-shot reticle scale (1.0 -> 1.06 -> 1.0) and highlight peak over the feedback duration; paired haptic tick on native.',
+      reduced: 'Opacity lock highlight over feedback; no scale travel.',
+      static: 'Locked state and numeric confirmation settle immediately.',
+    },
+    platforms: {
+      css: 'Compositor-only transform scale and opacity on the reticle layer; triggered once per crossing without shifting labels.',
+      compose:
+        'One-shot graphicsLayer scale/alpha via Animatable paired with debounced HapticFeedback when system haptics are enabled.',
+      wear: 'Single reticle highlight paired with rotary CONFIRM detent; completely suppressed in ambient mode.',
+    },
+    settlesTo: 'The reticle at target alignment with exact numeric confirmation and no looping glow.',
+  },
 ];
 
 // When to fetch the motif document. Published twice — once as the pointer every

@@ -1,4 +1,3 @@
-import { authority } from '../site/authority.js';
 import { colors, gradients, platformAdapters, tokens } from './tokens.js';
 import { oklch } from './color.js';
 import { durationFor, easingKeysFor, EASING_PURPOSES, motionMotifs } from './motion.js';
@@ -9,7 +8,6 @@ const rule = (id, title, requirement, acceptance, level = 'must') => ({ id, titl
 const section = (id, title, summary, rules = [], table = null) => ({ id, title, summary, rules, table });
 const table = (caption, columns, rows) => ({ caption, columns, rows });
 
-/** The release is published directly at the standalone origin root. */
 export const releasePath = '';
 
 // The geometry and easing tables are generated from platformAdapters so the
@@ -233,19 +231,26 @@ const componentIndex = () =>
 // claim in the record is always the size of the document that shipped with it.
 // Nothing in a note may type a size by hand: scripts/verify.js refuses one.
 export const release = {
-  version: '2.3.0',
-  updated: '2026-10-03',
+  version: '2.4.0',
+  updated: '2026-11-26',
   status: 'Normative specification',
-  owner: 'SIMT UI product design and platform maintainers',
-  base: authority.origin,
+  owner: 'SIMT product design and platform maintainers',
+  base: 'https://cosmos.simt.app',
   scope: 'Shared foundations plus four platform parts: web page, web app, mobile app and watch app.',
   implementationStatus:
     'The web product and the mobile product are built on this specification. Conformance is recorded rule by rule in a release record; examples use illustrative data.',
-  // The notes for the release named above, oldest change first. A list rather
-  // than a map keyed by version, because the version is declared once, here: a
-  // second copy of it that only has to agree is a value the gate would have to
-  // exist to check.
   notes: [
+    'Reclaims C28 for shared-element continuity via the new apertureMorph motif (CSS View Transitions and Compose SharedTransitionLayout).',
+    'Adds C32 for speculative readiness, paint/layout containment (content-visibility: auto, Modifier.drawWithCache) and 50 ms main-thread interaction yielding.',
+    'Adds the instrumentDetent motif and tactile detent haptics (M15, W13) with a 2-degree bearing deadband and 250 ms cooldown.',
+    'Adds progressive interactive specimens (P12), CSS scroll-driven choreography (P13), command palette (A14), optimistic intent/sync (A15), GPU-cached drawing and AGSL shader discipline (M16), and glanceable Wear tiles and complications (W14).',
+    'Adds commandPalette and bearingScrubber to the component registry (19 components total) with full 11-state coverage.',
+  ],
+  history: [
+    {
+      version: '2.3.0',
+      updated: '2026-10-03',
+      notes: [
     'Adds C27 and the light tokens: eight gradients and two shadows composed only from the existing anchors.',
       'C11 now specifies one deterministic edge star layer with a published parity fixture, and moves to the new atmosphere section.',
       'The focus aperture is drawn as a quasar: core, corona and optional accretion ring (C03, A03, M01).',
@@ -331,15 +336,10 @@ export const release = {
       'The gallery stops asking for an accessibility it did not have. A selected chip filled with the identity accent and labelled it in ink, which measures 2.00:1, 2.96:1 and 1.00:1 across the three profiles that publish identity; selection is now a tonal treatment -- an accent ring and a check over the raised fill, with the label on the pair that reads. Gold focus is no longer borrowed to mark selection, so a selected state and a focused one are not the same ring. Heading order is a rule rather than a count, so a page cannot go from one h1 straight to h3; the four frames of a strip are named by position; a drawing is named by the component the registry publishes; the state matrix scrolls inside a focusable, named region like every other scroll container; the footer brand and the part download links carry the published target floor instead of a 29 px line box; and a motif the Static tier will not run is announced by a control that stays in the tab order, marked by aria-disabled rather than removed from it.',
       'Four sentences in this document contradicted another part of it. The surface budget said only the focal surface adds a rim border while the gradient grammar gives the rim to the focal or selected surface and the state matrix permits it, so the budget was amended to the answer the other two already gave. The same sentence required a surface called Canopy that no part of the registry publishes, so the one translucency allowance now names the role it uses and states the legibility floor without inventing a colour. The composited contrast document said eligibility was never stored per pair while every one of its 212 pairs stores it, so the sentence describes what it does. And two figures were typed into prose -- a role count and the version -- so both are now read from the record they belong to, and the checks that hold them are the reason a rule cannot name a surface the registry does not publish or a version the release record does not carry.',
       'C11 no longer types a number. Every star figure it states is read from the starfield module, which is the same source the agent brief reads, so the rule and the brief cannot disagree; and the Ink claim is restated as the cap the algorithm actually keeps -- at most a tenth of the layer in any one accent, so Ink is the majority -- because a 70% floor is not a property the generator can hold: measured, the accepted share is 69.6% on a 320px screen, where placement rejects one star of the layer it asked for. The clearance figure is gone with the token that carried it: the exclusion region is authored per surface in the same normalised coordinates the stars are placed in, and a published dimension nothing applied was a promise with no consumer.',
-      'No anchor colour or section URL changed, so every section address stays valid.',
+        'No anchor colour or section URL changed, so every section address stays valid.',
+      ],
+    },
   ],
-  // Every release before the one above, oldest first. Empty while 2.3.0 is the
-  // only release that shipped; an entry moves here when `version` moves on.
-  // Each entry is a version, the date that version shipped, and its notes: the
-  // date is required rather than optional because the changelog, the release
-  // feed and the sitemap all report it, and a release the origin can name but
-  // not date is one a reader cannot order.
-  history: [],
 };
 
 const percent = (n) => `${Math.round(n * 100)}%`;
@@ -705,6 +705,12 @@ export const pages = [
             'Animate a state change by naming the published motif whose job is that change, and spend only the properties, duration and easing tokens that motif lists. A change with no motif does not animate. A new choreography is added as a motif with its own job rather than designed once inside a component. The motifs are published in motion.json, and the curve parity fixture in that document is how a native port proves it matches.',
             'Every animated state change names a motif, and every motif in motion.json is reachable from at least one surface. No motif animates a property outside its allowed list, and none loops or repeats to hold attention: stale data dims and gains a label. Reduced removes travel and keeps an opacity change within the feedback duration; Static settles immediately and reaches the same final state as Full. A port reproduces the sampled curve values to the published precision, or the mapping is wrong.',
           ),
+          rule(
+            'C28',
+            'Shared-element continuity',
+            'Preserve one focal anchor across summary-to-detail views via apertureMorph (view-transition-name or SharedTransitionLayout). Animate transform/opacity only, never block input, and settle within state duration.',
+            'One anchor plus frame morphs per navigation. Reduced crossfades within feedback; Static settles at once; mid-transition back never traps focus.',
+          ),
         ],
         [easingMapping(), motifMapping()],
       ),
@@ -755,6 +761,13 @@ export const pages = [
             'Conformance & maintenance',
             'Release only after applicable rules pass contrast, input, localization, state and performance checks. Record exceptions with affected rule, product reason, accessible alternative, owner and expiry. A palette or semantic-rule change requires a version update and migration note; minor additions preserve stable IDs.',
             'The release record links screenshots, accessibility findings, performance traces and resolved defects. Core maintainers review shared changes; platform maintainers review adapter changes. Broken required flows block acceptance.',
+          ),
+          rule(
+            'C32',
+            'Speculative readiness & paint isolation',
+            'Isolate off-screen sections/rows via content-visibility: auto + contain-intrinsic-size, or keyed LazyColumn + drawWithCache natively. Prefetch only on intent (hover/focus/proximity), skip on Save-Data/low power, never mutate state, and yield past 50ms.',
+            'Off-screen sections skip initial paint. Prefetch honors Save-Data and privacy (C21). Handlers yield so INP ≤200ms and 120Hz hold.',
+            'should',
           ),
         ],
         table(
@@ -846,6 +859,13 @@ export const pages = [
           'Use a horizon ribbon to order real dates or steps, with direct labels and connected milestones. Category color follows common meanings; category filters pair a label with count or selected state. Do not add an auto-scrolling marquee to communicate essential content.',
           'All milestone and category content is available as text. Horizontal overflow has an obvious scroll or navigation affordance without fading essential labels.',
         ),
+        rule(
+          'P12',
+          'Interactive specimen contract',
+          'Build live public specimens (atlas views, dials, theme or token studios) from inline SVG and native HTML controls hydrated on interaction or visibility—never a canvas runtime or heavy bundle on first load. Resolve every surface through active theme CSS custom properties and label illustrative data explicitly (C21).',
+          'With JavaScript disabled, every specimen remains a complete labeled diagram and summary. Interactive controls meet 44px targets, full keyboard operation, CLS = 0 and INP ≤200ms across all supported profiles.',
+          'should',
+        ),
       ]),
       section('conversion', 'Confident, calm conversion', 'Make the destination and commitment clear.', [
         rule(
@@ -873,6 +893,13 @@ export const pages = [
           'Enhancement lifecycle',
           'At most one optional compositor-only ambient hero motion in Full; stop it when out of view or page hidden. Content never starts invisible awaiting an observer. Reduced and data-saving modes show final static compositions. Third-party tags are isolated from critical rendering and governed by the product consent policy.',
           'No animation-frame loop runs while scrolling the reference page. The first paint remains useful if script fails. Layout shift stays within the shared CLS budget.',
+        ),
+        rule(
+          'P13',
+          'Scroll-linked CSS choreography',
+          'Drive narrative scroll progress (reading horizon, section reveals or sticky transitions) with native CSS Scroll-Driven Animations (animation-timeline: scroll()/view()) on transform and opacity only, rather than main-thread scroll listeners or requestAnimationFrame loops. Keep all content visible by default in unsupported browsers, Reduced and Static tiers.',
+          'Full-page scroll traces show zero layout-thrashing scroll handlers. Disabling scroll timelines or enabling Reduced/Static renders every section immediately at full opacity without hidden content.',
+          'should',
         ),
       ]),
       section('release', 'Web page acceptance', 'Verify the narrative and the real path out of it.', [
@@ -909,6 +936,13 @@ export const pages = [
           'Context spine',
           'Place location scope, active time/filter summary and result count on one stable context spine. Selected detail begins with identity, date/time, place precision and participation state; the primary action follows those facts. Keep maps mounted across sheets when geography is part of the task, but release inactive hidden routes.',
           'Closing detail restores the previous selected marker/list row, focus and scroll. Browser back restores context. Filters and result count agree across map and list; manual map exploration never silently turns on follow-location.',
+        ),
+        rule(
+          'A14',
+          'Command palette & keyboard velocity',
+          'Offer a keyboard-invocable command palette (Cmd/Ctrl+K or / outside text inputs, plus a visible trigger) inside a native modal layer (C15) to jump directly to places, saved records, filters and theme/motion preferences. Filter cached local items instantly with debounced remote search and never hijack browser-reserved shortcuts.',
+          'Open, filter, selection and Escape dismissal keep per-keystroke latency <100ms (INP ≤200ms) with combobox/listbox semantics, focus restored to the trigger and complete Arabic RTL alignment.',
+          'should',
         ),
       ]),
       section('discovery', 'Discover by place, time or people', 'Dense information, with calm priority.', [
@@ -985,6 +1019,13 @@ export const pages = [
           'SSR public content and safe shell data only; authenticate before rendering private payloads. Authenticated responses default to private, no-store unless a reviewed isolation policy permits caching. Offline data is shown only when policy permits, with timestamp and safe recovery. Never trade data isolation for instant-looking transitions.',
           'Multi-account switching cannot reveal previous private data. Rendered errors are localized and safe; technical error IDs may appear only as support metadata. Retry is bounded and cancel/abort is respected.',
         ),
+        rule(
+          'A15',
+          'Optimistic intent & resilient sync',
+          'For reversible low-risk actions (save, bookmark, read state, filter edits), render intent within one frame (≤16ms) using the pending and confirmed treatments (C12, C16) while guarding an idempotent in-flight mutation. Reconcile strictly to authoritative server truth and roll back visibly with inline retry on failure.',
+          'Reversible toggles update within one frame with zero layout shift, block duplicate submissions, and restore prior server truth plus actionable inline error recovery on simulated network or 500 failure.',
+          'should',
+        ),
       ]),
       section('release', 'Web app acceptance', 'Ship a complete task slice, including the hard states.', [
         rule(
@@ -1040,6 +1081,13 @@ export const pages = [
           'Map, tracks & links',
           'Use map-native geometry, visible scale/attribution, trace direction and labeled start/current/end states. Tracking distinguishes running, paused, stopping, saved and failed persistence. A share/link preview makes target precision and audience clear before leaving the device.',
           'Location denial, coarse-only permission, unavailable tiles, offline coverage, sensor interruption and process restoration all have designed paths. Saving success is based on durable persistence, not an animation finishing.',
+        ),
+        rule(
+          'M15',
+          'Tactile haptics & detent restraint',
+          'Pair instrument thresholds (north/target lock, sheet detent, geofence crossing) with platform haptic primitives via instrumentDetent, honoring system haptic settings. Apply a ±2° deadband or 250ms cooldown so sensor jitter never buzzes.',
+          'Target crossing fires one crisp detent tick and stays quiet while aligned. System haptics off silences output; every cue has a visual and TalkBack state.',
+          'should',
         ),
       ]),
       section(
@@ -1111,6 +1159,12 @@ export const pages = [
             'Cache static paths/gradients and compose with stable models. Subscribe to sensor presentation only for the active lifecycle; release hidden map/media resources. Reduce cosmetic work first under battery saver/thermal pressure. Persistent recording follows its explicit service contract and does not depend on a visible composable.',
             'Repeated tool/sheet navigation does not grow retained allocations. Background/foreground and process death preserve only the intended durable state. Red/Reduced/Static do not affect saved data or task availability.',
           ),
+          rule(
+            'M16',
+            'GPU-cached drawing & shader discipline',
+            'Cache static dial geometry, star layers (C11) and gradients via Modifier.drawWithCache or render nodes; avoid per-frame Path/Brush allocation. Any optional Full-tier AGSL RuntimeShader for the focal nebula caps cadence, suspends off-screen or under thermal/battery pressure (C17) and falls back to the static gradient.',
+            'GPU traces show zero per-frame Path/Paint allocation and zero static-ring recomposition during 30s compass rotation (graphicsLayer rotationZ only), plus static fallback on battery saver.',
+          ),
         ],
       ),
       section('release', 'Mobile acceptance', 'Verify real instruments on real hands and hardware.', [
@@ -1162,6 +1216,13 @@ export const pages = [
           'Use rotary input for native list scrolling and appropriate value adjustment; expose focus/state and a touch alternative. Keep system swipe-back behavior. Long press is optional, never the sole route. TalkBack receives one coherent instrument description with an explicit refresh/read action.',
           'Touch, rotary and TalkBack complete each essential task. Rotary focus is acquired and released with the active screen. Sensor updates do not flood announcements.',
         ),
+        rule(
+          'W13',
+          'Rotary detent & edge progress',
+          'Pair rotary bezel/crown stepping across lists, targets and dial adjustments with per-detent micro-haptics (instrumentDetent) and an edge progress arc inside the circular safe zone (W02). Clamp overscroll without pushing text past the round edge and fade the rotary indicator after 1.5s of inactivity.',
+          'Rotary input steps cleanly through all items on 192dp and 228dp round hardware with synchronized rotary focus, unclipped edge indicators and zero output in ambient mode (W08).',
+          'should',
+        ),
       ]),
       section('screens', 'A small set of useful tools', 'Each tool has one recognizable visual structure.', [
         rule(
@@ -1195,6 +1256,13 @@ export const pages = [
           'Wake & confidence',
           'On return to interactive mode, display the last value as stale until a fresh valid sample arrives. Restore target and navigation state; never flash a bright intermediate surface. A watch face complication/tile exposes only supported concise public-safe facts and opens the corresponding task.',
           'Stale becomes fresh only on new evidence. Interrupted connection and missing phone do not discard the current task. A complication never leaks private target text or exact coordinates without the product authorization.',
+        ),
+        rule(
+          'W14',
+          'Glanceable tiles & curved complications',
+          'Author Wear OS Tiles and watch-face complications as atomic, zero-navigation answers painted strictly from Cosmos semantic roles. Reserve CurvedLayout edge labels for short copy (≤18 characters) with tabular numerals at center (C08), honor platform refresh budgets without per-second polling, mark cached timestamps on disconnect (W09) and deep-link to the matching tool.',
+          'Tiles render unclipped on 192dp and 228dp round screens at largest font scale, display honest cached timestamps offline and add negligible idle battery cost in the 30-minute power test (W11).',
+          'should',
         ),
       ]),
       section('performance', 'Battery is part of UX', 'Remove work that cannot help the person.', [
@@ -1242,6 +1310,6 @@ export const faqs = [
   ],
   [
     'How should an agent implement a screen?',
-    'Load the manifest, common part and relevant platform part. Map applicable rule IDs to a screen brief, use exported tokens, implement the supported data and state contracts, then attach real release evidence.',
+    'Load the manifest, common part and relevant platform part. Map applicable rule IDs to a screen brief, use exported tokens, implement the supported data and state contracts (including v2.4.0 spatial continuity under C28, speculative paint isolation under C32 and tactile instrument motifs), then attach real release evidence.',
   ],
 ];

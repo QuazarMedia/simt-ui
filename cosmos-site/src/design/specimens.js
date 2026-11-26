@@ -1,11 +1,32 @@
-import { gradients, paintVariable } from './tokens.js';
-import { starfieldSVG } from './starfield.js';
-
 // Static, accessible design illustrations. Fictional records are labeled by the surrounding figure.
 // Every gradient below is drawn from a published token so the specimens obey C27 themselves.
-const byName = Object.fromEntries(gradients.map((g) => [g.name, g]));
-// See paintVariable: a name nothing publishes is a build failure, not a black shape.
-const variable = paintVariable;
+
+export const MOTION_TIERS = [
+  { value: 'system', label: 'System' },
+  { value: 'reduced', label: 'Reduced' },
+  { value: 'static', label: 'Static' },
+];
+
+export function motionPicker() {
+  const options = MOTION_TIERS.map(
+    (tier, index) =>
+      `<label><input type="radio" name="motion" value="${tier.value}"${index === 0 ? ' checked' : ''} disabled> ${tier.label}</label>`,
+  ).join('');
+  return `<fieldset class="mode-demo"><legend>Motion preference</legend>${options}</fieldset>`;
+}
+
+export function workbench() {
+  return `<section class="workbench" id="workbench" aria-labelledby="workbench-title"><div><p class="eyebrow">LIVE COMPONENT STUDY</p><h2 id="workbench-title">Feel the difference.</h2><p>Try the focus, field, selection and action states. This is a local demonstration; no data is sent.</p></div>
+  <div class="workbench-controls"><form data-demo-form><label for="specimen-name">Target name</label><div class="clear-field"><input id="specimen-name" value="Riverside lookout" required maxlength="60" aria-describedby="target-hint" data-clearable-input disabled><button type="button" data-clear-input aria-label="Clear target name" hidden disabled>×</button></div><p class="field-hint" id="target-hint">Keep the label useful at a glance.</p><div class="action-row"><button class="button button-primary" type="submit" data-loading-button disabled>Save target</button><button class="button button-secondary" type="button" data-reset-demo disabled>Reset</button></div><p class="demo-status" role="status" data-demo-status>Ready to try.</p><noscript><p>Interactive examples need JavaScript. The complete specification is available above and as plain text.</p></noscript></form>
+  ${motionPicker()}</div></section>`;
+}
+
+export function createSpecimens(spec) {
+  const { gradients, paintVariable, tokens } = spec.tokens;
+  const { starfieldSVG } = spec.starfield;
+  const byName = Object.fromEntries(gradients.map((g) => [g.name, g]));
+  // See paintVariable: a name nothing publishes is a build failure, not a black shape.
+  const variable = paintVariable;
 // A painting instruction rather than a baked hex. `var()` is not resolved inside a
 // presentation attribute, so the declaration goes in an inline style. Every specimen
 // here is inlined into the themed page and so resolves through this: baking the color
@@ -58,7 +79,7 @@ const compass = (id, small = false) => `<svg class="compass-dial" viewBox="0 0 3
   <circle cx="160" cy="160" r="81" ${painted({ fill: 'void', stroke: 'ink' })} stroke-opacity=".1"/>
 </svg>`;
 
-export const orbit = `<div class="quasar"><svg class="orbit-art" viewBox="0 0 600 600" aria-hidden="true">
+const orbit = `<div class="quasar"><svg class="orbit-art" viewBox="0 0 600 600" aria-hidden="true">
   <defs>${radial('q-corona', 'corona')}${radial('q-nebula', 'nebula')}${linear('q-horizon', 'horizon')}${along('q-jet', 'horizon', 300, 96, 300, 504)}</defs>
   <circle cx="300" cy="300" r="300" fill="url(#q-nebula)"/>
   <g fill="none" ${paint('stroke', 'muted')} stroke-opacity=".16"><circle cx="300" cy="300" r="240"/><circle cx="300" cy="300" r="180" stroke-dasharray="2 6"/><circle cx="300" cy="300" r="116"/><path d="M40 300h520" stroke-dasharray="2 10"/></g>
@@ -137,42 +158,148 @@ function watch() {
   <div class="watch-mode-labels"><span>Interactive · one useful answer</span><span>Ambient · one quiet reading</span></div></div>`;
 }
 
-export function specimen(kind) {
+function specimen(kind) {
   return { common, 'web-page': webPage, 'web-app': webApp, 'mobile-app': mobile, 'watch-app': watch }[kind]();
 }
 
 // A live index of the light grammar: each sample paints its own token.
-export function lightGrammar() {
-  return `<ul class="light-grammar" aria-label="Cosmos gradient tokens">${gradients.map((g) => `<li data-light="${g.name}"><span class="light-sample" aria-hidden="true"><i></i></span><strong>${g.name}</strong><p>${g.job}</p></li>`).join('')}</ul>`;
+function lightGrammar() {
+  return `<ul class="light-grammar" aria-label="Cosmos gradient tokens">${gradients
+    .map(
+      (g) =>
+        `<li data-light="${g.name}" data-copy-token="var(--gradient-${g.name})" tabindex="0" role="button" aria-label="Copy --gradient-${g.name}: ${g.job}"><span class="light-sample" aria-hidden="true"><i></i></span><div class="light-meta"><strong>${g.name}</strong><code>--gradient-${g.name}</code></div><p>${g.job}</p></li>`,
+    )
+    .join('')}</ul>`;
 }
 
-// The tier picker is one control with two homes. It first shipped inside the
-// component workbench, which is published on the common page only, so a reader
-// who arrived at a gallery had no way to reach Reduced or Static even though the
-// gallery is the surface whose whole point is showing what motion does. The
-// control ships disabled and the client enables it, so a page that carries it
-// without scripting still explains itself.
-// The tier list has one owner. It is read three more places and each of them
-// used to write it out: the picker below, the inline script that has to restore
-// the tier before anything animates, the set the client will accept, and the
-// published example. A fourth tier that reached only one of them would either be
-// offered and then refused, or restored by a script that no control can reach.
-export const MOTION_TIERS = [
-  { value: 'system', label: 'System' },
-  { value: 'reduced', label: 'Reduced' },
-  { value: 'static', label: 'Static' },
-];
-
-export function motionPicker() {
-  const options = MOTION_TIERS.map(
-    (tier, index) =>
-      `<label><input type="radio" name="motion" value="${tier.value}"${index === 0 ? ' checked' : ''} disabled> ${tier.label}</label>`,
-  ).join('');
-  return `<fieldset class="mode-demo"><legend>Motion preference</legend>${options}</fieldset>`;
+function observatory() {
+  return `<section class="observatory" id="observatory" aria-labelledby="observatory-title" data-observatory>
+  <div class="observatory-head">
+    <div>
+      <p class="eyebrow">INTERACTIVE OBSERVATORY</p>
+      <h2 id="observatory-title">Test the system live.</h2>
+      <p>Switch real theme profiles, flip logical RTL direction while true north holds steady (C20), scrub the orbital bearing instrument, and audition Cosmos geometry and motion tiers in place.</p>
+    </div>
+    <div class="observatory-dock" role="group" aria-label="Live environment controls">
+      <div class="dock-group">
+        <span class="dock-label">Theme profile</span>
+        <div class="pill-row" data-lab-themes>
+          <button type="button" class="pill" data-set-theme="deepSpace" aria-pressed="false"><i class="swatch-dot swatch-deepSpace" aria-hidden="true"></i>Deep Space</button>
+          <button type="button" class="pill" data-set-theme="daylight" aria-pressed="false"><i class="swatch-dot swatch-daylight" aria-hidden="true"></i>Daylight</button>
+          <button type="button" class="pill" data-set-theme="astronomy" aria-pressed="false"><i class="swatch-dot swatch-astronomy" aria-hidden="true"></i>Astronomy</button>
+          <button type="button" class="pill" data-set-theme="watchAmbient" aria-pressed="false"><i class="swatch-dot swatch-watchAmbient" aria-hidden="true"></i>Ambient</button>
+        </div>
+      </div>
+      <div class="dock-group">
+        <span class="dock-label">Motion tier</span>
+        <div class="pill-row" data-lab-motion>
+          ${MOTION_TIERS.map((t) => `<button type="button" class="pill" data-set-motion="${t.value}" aria-pressed="false">${t.label}</button>`).join('')}
+        </div>
+      </div>
+      <div class="dock-group">
+        <span class="dock-label">Script direction</span>
+        <div class="pill-row" data-lab-dir>
+          <button type="button" class="pill" data-set-dir="ltr" aria-pressed="true">LTR</button>
+          <button type="button" class="pill" data-set-dir="rtl" aria-pressed="false">RTL</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="observatory-grid">
+    <article class="lab-card lab-instrument" aria-labelledby="lab-instrument-title">
+      <header class="lab-card-head">
+        <div>
+          <span class="preview-kicker">INSTRUMENT · C08 / C20</span>
+          <h3 id="lab-instrument-title">True-north bearing dial</h3>
+        </div>
+        <span class="lab-badge" data-lab-turn>Turn 68° CW</span>
+      </header>
+      <div class="lab-dial-stage" dir="ltr">
+        <svg class="lab-dial" viewBox="0 0 320 320" aria-hidden="true" data-lab-dial>
+          <defs>${radial('lab-corona', 'corona')}${along('lab-turn', 'horizon', ...onDial(HEADING - 8), ...onDial(TARGET + 8))}</defs>
+          <circle cx="160" cy="160" r="140" fill="none" stroke="currentColor" stroke-opacity=".2"/>
+          <path data-lab-arc d="${turn}" fill="none" stroke="url(#lab-turn)" stroke-width="3" stroke-linecap="round"/>
+          <circle cx="160" cy="160" r="115" fill="none" stroke="currentColor" stroke-opacity=".14" stroke-dasharray="1 10"/>
+          <path d="M160 20v14M160 300v-14M300 160h-14M20 160h14" ${paint('stroke', 'gold')} stroke-width="2"/>
+          <g fill="currentColor" font-size="14" text-anchor="middle"><text x="160" y="58">N</text><text x="266" y="166">E</text><text x="160" y="273">S</text><text x="54" y="166">W</text></g>
+          <g data-lab-needle transform="rotate(${HEADING} 160 160)"><path d="M160 35l8 16h-16z" ${paint('fill', 'ink')}/></g>
+          <g data-lab-target transform="rotate(${TARGET} 160 160)"><circle cx="160" cy="58" r="34" fill="url(#lab-corona)" opacity=".75"/><circle cx="160" cy="58" r="9" fill="none" ${paint('stroke', 'gold')} stroke-opacity=".85"/><circle cx="160" cy="58" r="4" ${paint('fill', 'gold')}/></g>
+          <circle cx="160" cy="160" r="78" ${painted({ fill: 'void', stroke: 'ink' })} stroke-opacity=".12"/>
+        </svg>
+        <div class="lab-dial-readout">
+          <strong data-lab-heading-val>042°</strong>
+          <span>Target <b data-lab-target-val>110°</b></span>
+        </div>
+      </div>
+      <div class="lab-controls">
+        <label class="lab-range">
+          <span>Heading <code data-lab-heading-code>042°</code></span>
+          <input type="range" min="0" max="359" value="${HEADING}" data-lab-heading aria-label="Compass heading in degrees">
+        </label>
+        <div class="pill-row lab-presets" role="group" aria-label="Target bearing presets">
+          <button type="button" class="pill pill-sm" data-lab-target-set="42">042°</button>
+          <button type="button" class="pill pill-sm" data-lab-target-set="110" aria-pressed="true">110°</button>
+          <button type="button" class="pill pill-sm" data-lab-target-set="248">248°</button>
+          <button type="button" class="pill pill-sm" data-lab-target-set="315">315°</button>
+        </div>
+      </div>
+    </article>
+    <article class="lab-card lab-surface-studio" aria-labelledby="lab-surface-title">
+      <header class="lab-card-head">
+        <div>
+          <span class="preview-kicker">SURFACE &amp; MOTION · C09 / C27 / C31</span>
+          <h3 id="lab-surface-title">Geometry &amp; choreography</h3>
+        </div>
+        <button type="button" class="pill pill-sm" data-lab-copy-vars>Copy CSS</button>
+      </header>
+      <div class="lab-stage" data-lab-stage data-radius="record" data-density="standard">
+        <div class="lab-specimen-card" data-lab-card>
+          <div class="lab-specimen-top">
+            <span class="preview-kicker">LIVE COSMOS RECORD</span>
+            <span class="lab-signal-dot" aria-hidden="true"></span>
+          </div>
+          <h4>Riverside lookout</h4>
+          <p>Approximate place · 18:30 · 4 places left</p>
+          <div class="lab-token-chips">
+            <span data-lab-radius-readout>--radius-record</span>
+            <span data-lab-space-readout>--space-24</span>
+          </div>
+          <div class="lab-specimen-actions">
+            <button type="button" class="button button-primary lab-pulse-btn" data-lab-trigger="state">Audition motion</button>
+            <span class="lab-timing-tag" data-lab-timing-readout>300ms · emphasis</span>
+          </div>
+        </div>
+      </div>
+      <div class="lab-controls">
+        <div class="dock-group">
+          <span class="dock-label">Corner role</span>
+          <div class="pill-row">
+            <button type="button" class="pill pill-sm" data-lab-radius="control" aria-pressed="false">Control · ${tokens.radius.control.$value.value}</button>
+            <button type="button" class="pill pill-sm" data-lab-radius="record" aria-pressed="true">Record · ${tokens.radius.record.$value.value}</button>
+            <button type="button" class="pill pill-sm" data-lab-radius="overlay" aria-pressed="false">Overlay · ${tokens.radius.overlay.$value.value}</button>
+          </div>
+        </div>
+        <div class="dock-group">
+          <span class="dock-label">Surface rhythm</span>
+          <div class="pill-row">
+            <button type="button" class="pill pill-sm" data-lab-density="compact" aria-pressed="false">Compact · 16</button>
+            <button type="button" class="pill pill-sm" data-lab-density="standard" aria-pressed="true">Standard · 24</button>
+            <button type="button" class="pill pill-sm" data-lab-density="generous" aria-pressed="false">Generous · 32</button>
+          </div>
+        </div>
+        <div class="dock-group">
+          <span class="dock-label">Motif duration</span>
+          <div class="pill-row">
+            <button type="button" class="pill pill-sm" data-lab-motif="feedback" aria-pressed="false">150ms feedback</button>
+            <button type="button" class="pill pill-sm" data-lab-motif="state" aria-pressed="true">300ms state</button>
+            <button type="button" class="pill pill-sm" data-lab-motif="context" aria-pressed="false">500ms context</button>
+          </div>
+        </div>
+      </div>
+    </article>
+  </div>
+</section>`;
 }
 
-export function workbench() {
-  return `<section class="workbench" id="workbench" aria-labelledby="workbench-title"><div><p class="eyebrow">LIVE COMPONENT STUDY</p><h2 id="workbench-title">Feel the difference.</h2><p>Try the focus, field, selection and action states. This is a local demonstration; no data is sent.</p></div>
-  <div class="workbench-controls"><form data-demo-form><label for="specimen-name">Target name</label><div class="clear-field"><input id="specimen-name" value="Riverside lookout" required maxlength="60" aria-describedby="target-hint" data-clearable-input disabled><button type="button" data-clear-input aria-label="Clear target name" hidden disabled>×</button></div><p class="field-hint" id="target-hint">Keep the label useful at a glance.</p><div class="action-row"><button class="button button-primary" type="submit" data-loading-button disabled>Save target</button><button class="button button-secondary" type="button" data-reset-demo disabled>Reset</button></div><p class="demo-status" role="status" data-demo-status>Ready to try.</p><noscript><p>Interactive examples need JavaScript. The complete specification is available above and as plain text.</p></noscript></form>
-  ${motionPicker()}</div></section>`;
+return { MOTION_TIERS, orbit, specimen, lightGrammar, observatory, motionPicker, workbench };
 }

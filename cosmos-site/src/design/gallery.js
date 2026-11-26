@@ -1,15 +1,3 @@
-import { paintVariable } from './tokens.js';
-import {
-  COMPONENT_FAMILIES,
-  componentRegistry,
-  componentsForFamily,
-  familyFor,
-  PART_LABELS,
-  motionRolesFor,
-  slugForRule,
-} from './components.js';
-import { motionMotifs } from './motion.js';
-import { STATE_TREATMENTS, releasePath } from './specification.js';
 import { motionPicker } from './specimens.js';
 
 // The component gallery.
@@ -29,6 +17,20 @@ import { motionPicker } from './specimens.js';
 // Every colour below is a published token resolved through the themed page, so a
 // card follows whichever profile the reader selected. C27 is why the specimens
 // draw from the gradient grammar rather than inventing a glow.
+
+export function createGallery(spec) {
+  const { paintVariable } = spec.tokens;
+  const {
+    COMPONENT_FAMILIES,
+    componentRegistry,
+    componentsForFamily,
+    familyFor,
+    PART_LABELS,
+    motionRolesFor,
+    slugForRule,
+  } = spec.components;
+  const { motionMotifs } = spec.motion;
+  const { STATE_TREATMENTS, releasePath } = spec;
 
 // A painted name resolves to the variable that actually publishes it, and a name
 // nothing publishes fails the build rather than silently painting black: the
@@ -104,6 +106,8 @@ const SELF_DRAWN = {
   contextSpine: ['pressed', 'selected'],
   horizonRibbon: ['stale'],
   watchActionCapsule: ['pressed', 'pending', 'disabled'],
+  commandPalette: ['pending', 'error', 'selected'],
+  bearingScrubber: ['hover', 'pressed', 'selected', 'stale'],
 };
 
 /**
@@ -259,6 +263,34 @@ function buildPainters(state) {
       <path d="M118 124a56 56 0 0 1 84 0" fill="none" ${paint('stroke', state === 'pressed' ? 'action' : state === 'disabled' ? 'muted' : 'focus')} stroke-width="3"/>
       <text x="160" y="70" text-anchor="middle" ${paint('fill', state === 'disabled' ? 'muted' : 'text')} font-family="sans-serif" font-size="12">Target</text>
       ${state === 'pending' ? `<path d="M160 46a26 26 0 0 1 26 26" fill="none" ${paint('stroke', 'gold')} stroke-width="2.5"/>` : ''}${focus}`,
+
+    commandPalette:
+      () => `<rect x="44" y="20" width="232" height="148" ${paint('fill', 'void')} fill-opacity=".55" ${round(16)}/>
+      <rect x="64" y="34" width="192" height="120" ${painted({ fill: 'highest', stroke: 'line' })} ${round(12)}/>
+      <rect x="74" y="44" width="172" height="30" ${painted({ fill: 'hull', stroke: 'line' })} ${round(8)}/>
+      <text x="84" y="64" ${paint('fill', 'text')} font-family="sans-serif" font-size="11">Compass</text>
+      <rect x="198" y="49" width="38" height="20" ${painted({ fill: 'raised', stroke: 'line' })} ${round(5)}/>
+      <text x="217" y="63" text-anchor="middle" ${paint('fill', 'muted')} font-family="sans-serif" font-size="9">Cmd K</text>
+      ${state === 'pending' ? `<circle cx="186" cy="59" r="6" fill="none" ${paint('stroke', 'focus')} stroke-width="2" stroke-dasharray="4 3"/>` : ''}
+      ${
+        state === 'error'
+          ? `<path d="M74 74h172" ${paint('stroke', 'danger')} stroke-width="2"/><text x="84" y="102" ${paint('fill', 'danger')} font-family="sans-serif" font-size="11">No matches</text>`
+          : `<rect x="74" y="82" width="172" height="28" ${painted({ fill: 'raised', stroke: state === 'selected' ? 'identity' : 'line' })} ${round(7)}/>
+      ${state === 'selected' ? `<path d="M84 96l3 3 6-7" fill="none" ${paint('stroke', 'identity')} stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>` : ''}
+      <text x="${state === 'selected' ? 100 : 84}" y="100" ${paint('fill', 'text')} font-family="sans-serif" font-size="11">Compass · 042°</text>
+      <rect x="74" y="116" width="172" height="28" ${painted({ fill: 'hull', stroke: 'line' })} ${round(7)}/>
+      <text x="84" y="134" ${paint('fill', 'muted')} font-family="sans-serif" font-size="11">Daylight theme</text>`
+      }${focus}`,
+
+    bearingScrubber:
+      () => `<circle cx="160" cy="90" r="52" fill="none" ${paint('stroke', 'line')} ${strokeTone(state)} stroke-width="4"/>
+      <path d="M160 38a52 52 0 0 1 48 32" fill="none" ${paint('stroke', state === 'stale' ? 'faint' : 'live')} ${strokeTone(state)} stroke-width="4" stroke-linecap="round"/>
+      <circle cx="197" cy="53" r="6" fill="none" ${paint('stroke', 'gold')} stroke-width="1.5"/>
+      <circle cx="197" cy="53" r="2.5" ${paint('fill', 'gold')}/>
+      <circle cx="208" cy="70" r="9" ${painted({ fill: state === 'stale' ? 'raised' : 'highest', stroke: state === 'selected' ? 'identity' : 'ink' })} ${fillTone(state)} ${strokeTone(state)} stroke-width="2"/>
+      ${state === 'selected' ? `<circle cx="208" cy="70" r="3.5" ${paint('fill', 'identity')}/>` : ''}
+      <text x="160" y="95" text-anchor="middle" ${paint('fill', state === 'stale' ? 'faint' : 'ink')} font-family="sans-serif" font-size="18">042°</text>
+      ${state === 'stale' ? `<rect x="134" y="106" width="52" height="16" ${painted({ fill: 'raised', stroke: 'line' })} ${round(6)}/><text x="160" y="118" text-anchor="middle" ${paint('fill', 'muted')} font-family="sans-serif" font-size="9">STALE</text>` : ''}${focus}`,
   };
 
   // Two states a component can declare and no shape drew: a confirmation and an
@@ -441,7 +473,7 @@ function card(component) {
  * here already carrying it, and a control here would only restate a choice they
  * have already made.
  */
-export function galleryIndex() {
+function galleryIndex() {
   const families = [...COMPONENT_FAMILIES]
     .sort((a, b) => a.order - b.order)
     .map((family) => {
@@ -454,7 +486,7 @@ export function galleryIndex() {
     </li>`;
     })
     .join('');
-  return `<main id="main-content"><div class="breadcrumb"><a href="${releasePath}">Cosmos</a><span aria-hidden="true">/</span><span>Gallery</span></div>
+  return `<main id="main-content"><div class="breadcrumb"><a href="${releasePath || '/'}">Cosmos</a><span aria-hidden="true">/</span><span>Gallery</span></div>
   <section class="gallery-hero"><p class="eyebrow">COMPONENT GALLERY</p><h1>Every component, drawn from its own contract.</h1>
   <p>A card is a rendering of a registry entry: the state matrix is the rule's own wording, the timing is the motif's own duration and easing, and the colours are the published tokens. Nothing here restates a decision. Each page is static HTML, so it reads the same with scripting off and under every theme, and playback only repeats what the stills already show.</p></section>
   <ul class="gallery-families">${families}</ul>
@@ -468,10 +500,10 @@ export function galleryIndex() {
 }
 
 /** One family page: every component filed under that family. */
-export function galleryFamily(familyId) {
+function galleryFamily(familyId) {
   const family = COMPONENT_FAMILIES.find((candidate) => candidate.id === familyId);
   const members = componentsForFamily(familyId);
-  return `<main id="main-content"><div class="breadcrumb"><a href="${releasePath}">Cosmos</a><span aria-hidden="true">/</span><a href="${releasePath}/gallery">Gallery</a><span aria-hidden="true">/</span><span>${family.label}</span></div>
+  return `<main id="main-content"><div class="breadcrumb"><a href="${releasePath || '/'}">Cosmos</a><span aria-hidden="true">/</span><a href="${releasePath}/gallery">Gallery</a><span aria-hidden="true">/</span><span>${family.label}</span></div>
   <section class="gallery-hero"><p class="eyebrow">COMPONENT FAMILY</p><h1>${family.label}</h1>
   <p>Governed by ${family.rules.map((rule) => `<code>${rule}</code>`).join(' and ')}. ${members.length} ${members.length === 1 ? 'component' : 'components'} in this family, each drawn from its registry entry.</p>
   <div class="gallery-tier">${motionPicker()}</div></section>
@@ -480,4 +512,5 @@ export function galleryFamily(familyId) {
   <p class="gallery-back"><a class="text-link" href="${releasePath}/gallery">All families <span aria-hidden="true">↑</span></a></p></main>`;
 }
 
-export const GALLERY_FAMILIES = COMPONENT_FAMILIES;
+return { galleryIndex, galleryFamily, GALLERY_FAMILIES: COMPONENT_FAMILIES };
+}

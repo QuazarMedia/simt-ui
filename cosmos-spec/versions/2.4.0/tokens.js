@@ -871,4 +871,6 @@ export const metrics = {
   targets: { web: { value: 44, unit: 'css-px' }, android: { value: 48, unit: 'dp' }, wear: { value: 48, unit: 'dp' } },
   webVitals: { lcpMs: 2500, inpMs: 200, cls: 0.1, percentile: 75 },
   native: { frameDeadline60HzMs: 16.67, frameDeadline90HzMs: 11.11, frameDeadline120HzMs: 8.33, allowedJankPercent: 5 },
+  interaction: { mainThreadTaskBudgetMs: 50, optimisticFeedbackMs: 16 },
+  haptics: { bearingDeadbandDeg: 2, detentCooldownMs: 250 },
 };

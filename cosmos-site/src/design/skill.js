@@ -1,22 +1,3 @@
-import { release, pages } from './specification.js';
-import {
-  colors,
-  cssRolePrefix,
-  cssThemeAttribute,
-  metrics,
-  themeProfiles,
-  tokens,
-  platformAdapters,
-  gradients,
-  shadows,
-} from './tokens.js';
-import { starfield } from './starfield.js';
-import { motionMotifs } from './motion.js';
-import { componentRegistry } from './components.js';
-// Published-document budgets live with the product that publishes them, not in
-// the token file: they bound this repository's output, not an interface.
-import { budgets } from '../site/product.js';
-
 /**
  * The Cosmos design skill: a short, opinionated brief for an agent that is
  * about to write or change SIMT user interface.
@@ -52,6 +33,41 @@ const FAILURES = [
   ['C22', 'A machine request answered with the home page'],
   ['C23', '"Looks right" offered as proof'],
 ];
+
+// A share printed straight from a fraction prints 1.4999999999999998, and the
+// brief is read by an agent that will take it as a figure. Rounded the same way
+// the specification rounds it, so the two documents cannot disagree about the
+// number they both publish.
+const percent = (share) => String(Number((share * 100).toFixed(4)));
+
+// One line per profile, each naming what that profile is for. The mapping is
+// authored here rather than derived, because the role tables in tokens.js list
+// colors, not intent, and the intent is the part an agent needs.
+const PROFILE_PURPOSE = {
+  deepSpace: 'the signature dark theme and the default',
+  daylight: 'a light theme for bright environments, keeping the brand anchors',
+  astronomy: 'red-luminance instruments for night observing, user-selected',
+  watchAmbient: 'the always-on watch state, background and content only — interactive roles are deliberately absent',
+};
+
+export const skillRuleIds = FAILURES.map(([id]) => id);
+
+export function createSkill(spec, budgets) {
+  const { release, pages } = spec;
+  const {
+    colors,
+    cssRolePrefix,
+    cssThemeAttribute,
+    metrics,
+    themeProfiles,
+    tokens,
+    platformAdapters,
+    gradients,
+    shadows,
+  } = spec.tokens;
+  const { starfield } = spec.starfield;
+  const { motionMotifs } = spec.motion;
+  const { componentRegistry } = spec.components;
 
 const byId = new Map(
   pages.flatMap((p) => p.sections.flatMap((s) => s.rules.map((r) => [r.id, { ...r, slug: p.slug, section: s }]))),
@@ -106,12 +122,6 @@ function numbers() {
 | Star layer | Outer ${percent(starfield.band)}% band; area / ${starfield.density.screen.areaPerStar} clamped ${starfield.density.screen.min}–${starfield.density.screen.max} for screens, area / ${starfield.density.dialog.areaPerStar} clamped ${starfield.density.dialog.min}–${starfield.density.dialog.max} for dialogs; ≤ ${percent(starfield.maxAccentShare)}% of the layer in any one accent, so Ink is the majority; ${starfield.bucket} px/dp size bucket | C11 |`;
 }
 
-// A share printed straight from a fraction prints 1.4999999999999998, and the
-// brief is read by an agent that will take it as a figure. Rounded the same way
-// the specification rounds it, so the two documents cannot disagree about the
-// number they both publish.
-const percent = (share) => String(Number((share * 100).toFixed(4)));
-
 function failures() {
   return FAILURES.map(([id, headline]) => {
     const { title, requirement, acceptance } = cite(id);
@@ -142,23 +152,13 @@ function platforms() {
     .join('\n');
 }
 
-// One line per profile, each naming what that profile is for. The mapping is
-// authored here rather than derived, because the role tables in tokens.js list
-// colors, not intent, and the intent is the part an agent needs.
-const PROFILE_PURPOSE = {
-  deepSpace: 'the signature dark theme and the default',
-  daylight: 'a light theme for bright environments, keeping the brand anchors',
-  astronomy: 'red-luminance instruments for night observing, user-selected',
-  watchAmbient: 'the always-on watch state, background and content only — interactive roles are deliberately absent',
-};
-
 function themes() {
   return Object.keys(themeProfiles)
     .map((name) => `- \`${name}\` — ${PROFILE_PURPOSE[name] ?? 'published profile'}`)
     .join('\n');
 }
 
-export function skillMarkdown() {
+function skillMarkdown() {
   const rules = FAILURES.map(([id]) => cite(id));
 
   return `---
@@ -242,4 +242,5 @@ ${platforms()}
 `;
 }
 
-export const skillRuleIds = FAILURES.map(([id]) => id);
+return { skillMarkdown, skillRuleIds };
+}

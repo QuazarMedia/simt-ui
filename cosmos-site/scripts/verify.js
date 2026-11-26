@@ -5,8 +5,7 @@ import { fileURLToPath } from 'node:url';
 import { gzipSync } from 'node:zlib';
 import { build, generatedOutputs } from './build.js';
 import { authority, canonicalUrl } from '../src/site/authority.js';
-import product, { budgetOf, productResourceUrl, productRouteUrl } from '../src/site/product.js';
-import { pages, release } from '../src/design/specification.js';
+import product, { allRoutes, budgetOf, latest, products, productResourceUrl, productRouteUrl } from '../src/site/product.js';
 
 const root = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 const read = (path) => readFileSync(join(root, path), 'utf8');
@@ -15,7 +14,7 @@ const routeOutput = (route) => (route.path ? `${route.path}/index.html` : 'index
 const resourceOutput = (resource) => resource.path;
 
 function checkRoutes(outputs) {
-  const routes = product.routes;
+  const routes = allRoutes;
   assert.equal(new Set(routes.map((route) => route.path)).size, routes.length, 'route paths must be unique');
   for (const route of routes) {
     const path = routeOutput(route);
@@ -26,30 +25,36 @@ function checkRoutes(outputs) {
     assert.equal((html.match(/<h1[ >]/g) ?? []).length, 1, `${path}: exactly one H1`);
     assert.match(html, /<main\b[\s\S]*?<\/main>/, `${path}: static main content`);
     assert(!/<canvas\b|fonts\.(?:googleapis|gstatic)\.com/.test(html), `${path}: must render without remote or client drawing`);
+    assert(html.includes('data-version-select'), `${path}: missing version switcher`);
     assert(bytes(html) <= budgetOf('htmlBytesPerRoute'), `${path}: HTML budget`);
   }
   assert.equal(new Set(routes.map(productRouteUrl)).size, routes.length, 'canonical routes must be unique');
-  assert.equal(productRouteUrl(routes[0]), authority.origin, 'overview must be the canonical origin');
+  assert.equal(productRouteUrl(product.routes[0]), authority.origin, 'overview must be the canonical origin');
 }
 
 function checkResources(outputs) {
-  for (const resource of product.resources) {
-    assert(outputs.has(resourceOutput(resource)), `missing declared resource ${resource.path}`);
-    assert.equal(productResourceUrl(resource), `${authority.origin}/${resource.path}`);
-  }
-  const manifest = JSON.parse(outputs.get('manifest.json'));
-  const specification = JSON.parse(outputs.get('specification.json'));
-  const rules = JSON.parse(outputs.get('rules.json'));
-  assert.equal(manifest.canonical, authority.origin);
-  assert.equal(specification.base, authority.origin);
-  assert.equal(specification.version, '2.3.0');
-  assert.equal(release.version, '2.3.0');
-  assert.equal(rules.ruleCount, pages.flatMap((page) => page.sections).flatMap((section) => section.rules).length);
-  assert.equal(rules.sections.length, 36, 'union section contract');
-  for (const page of pages.filter((entry) => entry.slug !== 'common')) {
-    const scoped = JSON.parse(outputs.get(`${page.slug}/rules.json`));
-    assert(scoped.sections.every((section) => section.platform === 'common' || section.platform === page.slug));
-    assert(scoped.ruleCount < rules.ruleCount);
+  for (const p of products) {
+    const { pages, release } = p.spec;
+    const prefix = p.basePath ? `${p.basePath.slice(1)}/` : '';
+    for (const resource of p.resources) {
+      assert(outputs.has(resourceOutput(resource)), `missing declared resource ${resource.path}`);
+      assert.equal(productResourceUrl(resource), `${authority.origin}/${resource.path}`);
+    }
+    const manifest = JSON.parse(outputs.get(`${prefix}manifest.json`));
+    const specification = JSON.parse(outputs.get(`${prefix}specification.json`));
+    const rules = JSON.parse(outputs.get(`${prefix}rules.json`));
+    assert.equal(manifest.canonical, p.base);
+    assert.equal(specification.base, p.base);
+    assert.equal(specification.version, p.version);
+    assert.equal(release.version, p.version);
+    if (p.isLatest) assert.equal(p.version, latest);
+    assert.equal(rules.ruleCount, pages.flatMap((page) => page.sections).flatMap((section) => section.rules).length);
+    assert.equal(rules.sections.length, 36, 'union section contract');
+    for (const page of pages.filter((entry) => entry.slug !== 'common')) {
+      const scoped = JSON.parse(outputs.get(`${prefix}${page.slug}/rules.json`));
+      assert(scoped.sections.every((section) => section.platform === 'common' || section.platform === page.slug));
+      assert(scoped.ruleCount < rules.ruleCount);
+    }
   }
 }
 
@@ -90,7 +95,7 @@ function checkEnvelope(outputs) {
   assert(!notFound.includes('rel="canonical"'));
   const sitemap = outputs.get('sitemap.xml');
   const listed = [...sitemap.matchAll(/<loc>([^<]+)<\/loc>/g)].map((match) => match[1]);
-  assert.deepEqual(listed.sort(), product.routes.filter((route) => route.inSitemap).map(productRouteUrl).sort());
+  assert.deepEqual(listed.sort(), allRoutes.filter((route) => route.inSitemap).map(productRouteUrl).sort());
   assert(outputs.get('robots.txt').includes(`Sitemap: ${canonicalUrl('/sitemap.xml')}`));
   assert.equal(outputs.get('.well-known/ard.json'), outputs.get('.well-known/ai-catalog.json'));
   const catalog = JSON.parse(outputs.get('.well-known/ard.json'));
@@ -149,7 +154,7 @@ export function verify({ built = false } = {}) {
     checkBuilt(outputs);
     checkAssets(outputs);
   }
-  console.log(`Cosmos: ${product.routes.length} routes, ${JSON.parse(outputs.get('rules.json')).ruleCount} rules and ${outputs.size} deterministic outputs verified.`);
+  console.log(`Cosmos: ${allRoutes.length} routes (${products.length - 1} versioned), ${JSON.parse(outputs.get('rules.json')).ruleCount} rules and ${outputs.size} deterministic outputs verified.`);
   return outputs.size;
 }
 
