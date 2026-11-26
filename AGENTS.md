@@ -1,0 +1,343 @@
+<!-- simt:begin -->
+<!-- simt:generated -->
+<!-- simt:sha=7497dcce13068164496a88042e8b0a668a8e9bf1 -->
+<!-- simt:sources=rules/core.md,rules/stacks/jvm.md,rules/mdc/intake-questions.mdc,rules/mdc/slice-commit.mdc,rules/mdc/test-gate.mdc -->
+<!-- Generated content. Do not edit by hand - your changes are overwritten.
+     Run `simt sync --yes` to regenerate, or `simt check` to see what is stale. -->
+
+## Core
+
+Where a rule cites a decision, run `simt rules why ADR-NNN` to read it,
+including whether it is still in force.
+
+These rules are stack-agnostic. Whatever is specific to your stack, your product or your
+commands belongs in this repository, not here.
+
+### Truth
+
+- Never claim a test you did not run, a check you did not execute, or a deploy you did not
+  perform.
+- Read the real runner manifest before running anything. A command absent from it is not a
+  command. (Which file that is depends on the stack: `package.json` scripts, Gradle tasks,
+  `pyproject.toml` entry points.)
+- Report what you left alone: unrelated dirty files, skipped checks, unreviewed scope.
+
+### Git
+
+The commit and push procedure - order, message format, worktrees - is the `slice-commit`
+rule; follow it for every commit and push.
+
+- Commit locally, report the SHA. **Push only on explicit approval.** (ADR-001)
+- Before asking for push approval, state whether the push triggers a deployment, a migration
+  or any remote mutation.
+- Once approved, you may push directly without the pre-push gate re-running the full suite
+  when you already ran that suite green on the current state and changed nothing since: cite
+  the already-passing run as the pass, and the gate recognizes the evidence and skips the
+  re-run rather than paying for it again. (ADR-120)
+- Never use `--no-verify`, amend, rebase, reset or rewrite history unless explicitly asked.
+- Never commit failing, partial, secret-bearing or unrelated work.
+
+### Refactoring
+
+- Outside the current change's blast radius, do not refactor. (ADR-002)
+- Inside it, a second real use extracts, and the extraction is finished: no orphaned imports,
+  exports, styles, messages or files remain.
+- A third copy of the same logic is a defect. So is an abstraction invented for one caller.
+
+### Validation
+
+- Focused tests are the default gate. A full suite runs only against a named trigger: phase
+  exit, release gate, cross-system behaviour, a repo-declared numeric gate, explicit
+  instruction, or pre-push on a declared protected branch. (ADR-003)
+- Name the exact commands and test files. Partial pass is a blocker; `6/8 pass` is the
+  canonical example of a blocked state. Never justify a skip without a pre-existing written
+  reason. (ADR-006)
+- Evidence discipline is mandatory everywhere. A **numeric** bar is declared per repo in the
+  repository's manifest (`simt.json`), never assumed centrally. (ADR-006)
+- The pre-commit hook owns format and lint for staged files; do not re-run what it just ran.
+  Manual runs are correct when the hook is absent, when diagnosing a failure, or for a check
+  the hook does not cover. (ADR-004)
+- Declare a gate only if this repository can run it — a script that exists, a tool that is
+  installed, a command you name. A gate that cannot run blocks every commit until someone
+  reaches for `--no-verify`. (ADR-017)
+- Invoke tools through the repository's own runner — `npm run`, `uv run -m`, `./gradlew` —
+  never a package runner like `npx` or a bare console entrypoint. (ADR-010)
+
+### Surfaces
+
+- Where a `simt` MCP server is installed, its tools answer the same questions as the CLI
+  commands named here — one logic with two doors, not two systems. Use whichever surface
+  your harness exposes; a result from either is the same evidence. (ADR-126)
+
+### Code and review
+
+- No type-system escapes, no unawaited async work, no debug printing in application code.
+- Enforced: by `simt check`: more than 400 lines warns, more than 1000 fails (`limits.fileLines`)
+- Never weaken CSP, CORS, auth, audit, cache or validation controls to silence a test, warning
+  or alert.
+- Review verdicts are exactly three: `BLOCK`, `APPROVE WITH RESIDUAL RISK` (must list what was
+  not reviewed), `APPROVE`. (ADR-008)
+- Accessibility, correctness, privacy and security are hard gates, not subjective tradeoffs.
+- Never direct two agents to edit the same files concurrently. Select the minimum viable team.
+- Every agent works to a stated budget and stops at a concrete blocker rather than drifting.
+  Approval by budget never converts a known failure into an approval.
+
+### Scope of these rules
+
+Product policy, stack-specific rule bodies, repo commands and paths stay in the repo. A rule
+here states only what holds everywhere; the moment one repository needs an exception, it is that
+repository's rule, not a widening of this one.
+
+## Stack: jvm
+
+Applies to: a JVM build — `gradle`, a committed `pom.xml`, Kotlin or Java. The
+Android rules live in the `android` profile (`simt rules show android`), which
+selects when an `AndroidManifest.xml` is present.
+
+### Build
+
+- `./gradlew` only, never a system `gradle`; `./mvnw` where a wrapper is committed,
+  never a system `mvn`. Never `--configuration-cache` where a repo documents that it
+  breaks.
+- `./gradlew spotlessApply` is the formatting entrypoint in repos that use Spotless.
+- Pin the JVM toolchain in the build file (`java.toolchain`, `sourceCompatibility`).
+  A JDK on the developer's PATH is not a floor anything enforces.
+
+### Modules and layers
+
+- The core domain module depends on no other internal module. Enforce it; do not add an
+  import that breaks the direction.
+- Layer suffixes: `*Repository`, `*Service`, `*Mapper`, `*Controller`. A class named
+  `*Repository` that talks to HTTP is not a repository.
+
+### Kotlin
+
+- Four-space indent, LF, 300-char line limit.
+- No `!!`. Prefer a sealed `RepositoryResult<T>` over exceptions for expected failures.
+- Expose `MutableStateFlow` as `StateFlow` via `.asStateFlow()`; update state with
+  `_state.update { }`.
+- Java and Kotlin interop: `Optional` in a Java signature, a nullability annotation in
+  a Kotlin one, and never a platform type left untyped at the boundary.
+
+### Testing
+
+- Unit tests for services, repositories and mappers; an integration test only when the
+  behaviour is genuinely cross-system.
+- Assert behaviour, not implementation. Never weaken an assertion to match current
+  behaviour.
+- Test the narrowest layer that proves the behaviour.
+
+### Data
+
+- One new sequential immutable migration per change. Never edit an applied migration.
+  Define coexistence order and forward repair; do not promise SQL rollback.
+- Prepared, parameterised statements only. Never interpolate a value into SQL, and
+  never assemble SQL by string concatenation from a caller-supplied identifier.
+
+Commands for this repository:
+
+- build: `./gradlew build`
+- focused test (JVM): `./gradlew test --tests {class}`
+
+New task? Run `simt brief "<task>"` before exploring; before editing a file, `simt why <file>`.
+
+## Process: intake-questions
+
+When starting, resuming, or scoping a feature slice or plan task, do not jump into code
+without resolving open material decisions.
+
+### Agent Defaults (Do Not Ask)
+
+Apply documented defaults without questions for:
+
+- Operational/procedural choices (tracker updates, commit vs push, validation depth,
+  artifact shape).
+- Slice sequencing and repository ownership when already defined in the active plan
+  tracker table (`docs/plans/*`).
+- Standard engineering conventions.
+
+### When To Ask (1-5 Questions Max)
+
+Ask only when a functionality, business, privacy, security, or technical decision is not
+settled in authority docs, and the answer materially changes behavior, scope, contracts,
+migrations, or risk.
+
+Five is a ceiling, not a quota. Ask fewer when fewer decisions are genuinely open; never pad
+the list to reach it, and never split one decision into several questions to fit under it.
+
+- Ask the user, offering choices with the recommended one first.
+- If that is not available, present numbered choices with `(recommended)` on the first option.
+- Do not ask operational or procedural choices; apply the best documented option.
+
+### Small work (no plan file)
+
+When the whole of the work is small — fewer than three slices — do not create a plan file.
+Plan it and implement it directly, in a single slice: state the slice and its acceptance
+checks, resolve any material decisions, and build it. The `docs/plans/*` tracker table and
+its `NNNN-slug.md` deliverable are for work that spans multiple slices; a single slice has
+nothing to track. The slice-commit procedure still applies to the one commit it produces.
+
+### Required First Turn
+
+1. State the smallest independently valuable slice, the owning repo, the active plan
+   tracker task ID (from `docs/plans/*`), and the acceptance checks.
+2. Either ask the unresolved material decision questions, or state that the authority docs
+   leave no material open decision and proceed to implementation.
+3. Proceed without waiting when no material decision remains.
+
+## Process: slice-commit
+
+A slice is the smallest change that is independently valuable on its own. Committing
+one is a mechanical procedure with a fixed order, because every step after it depends
+on the one before: you cannot review a diff you have not staged, and you cannot claim
+evidence for a test you have not run.
+
+### Commit message
+
+A message is read by the next agent before they are told what to do. The title says
+what changed in one line; the body carries what that line cannot — what the change
+is, why it was asked for, and what was run to prove it. A reader never reconstructs
+that from the patch.
+
+The title is Conventional Commits: imperative, no trailing period, a short scope slug
+that names the subsystem — not a ticket id.
+
+    feat(dispatcher): skip the test gate on a push that already passed
+
+The body is sections in a fixed order, separated by one blank line. `What` and
+`Why` are always present; the other two appear only when they have something to say.
+
+    What: <the title said out: what the change is, in one to two sentences>
+
+    Why: <the task, defect, or decision that asked for this, in one to three sentences>
+
+    Delta: <before> -> <after>
+
+    Evidence: <what ran on this tree, and what it said>
+
+`What` is the title in a sentence or two — the change explained, not a file list
+recited. It is capped on purpose: one to two sentences, never a paragraph, and no
+more detail than the title asks for. `Why` is the one claim the diff cannot make.
+`Delta` states a change the patch does not show by itself — skipped work, scheduling,
+wire format — as one line with an ASCII arrow, never a paragraph. `Evidence` names
+the commands that ran and their result; it is the fixed shape that makes "never
+claim a test you did not run" checkable, and it appears only when something ran.
+
+The state before the change is not a section of its own: `Delta` carries the
+before -> arrow, and the diff is the before written down. A section that recites
+what the tree already shows spends words on what the patch will show anyway.
+
+The message ends with a trailer block, the last paragraph after one blank line:
+decision and task ids on a `Refs:` line when a record settles the change, then the
+attribution in the form git renders as a co-author. Trailers are the part of a message
+with a grammar, so the ids sit where `git log --grep` finds them:
+
+    Refs: ADR-120
+    Co-Authored-By: Simt Dev <noreply@simt.space>
+
+The attribution stays even when every section is dropped. Labels and trailers are
+ASCII; wrap at 72 columns.
+
+### Order
+
+1. **Run the focused test the change needs**, through the repository's own runner,
+   naming the exact command and the exact file — see `test-gate`. A full suite is
+   for a named trigger, not for progress.
+2. **Stage only what the slice touched.** `git status` first, and leave unrelated work
+   alone. Report what you left alone; silence about it reads as "I reverted it".
+3. **Read the staged diff.** Not the working tree — the diff. It is what will be
+   committed, and it is the last chance to notice a file that does not belong.
+4. **Write the message in the format above.** The title names what changed; the body
+   carries what the diff cannot, and omits what it already shows.
+5. **Commit.** `git commit`, non-interactive. Report the SHA.
+6. **Stop.**
+
+### Pushing is a separate decision
+
+**Never push because the work is finished.** Push is a separate act with its own
+approval, and pushing the branch a remote treats as production can deploy it.
+
+Before asking for approval, state what the push will do: which branch, how many
+commits, and whether it triggers a deployment, a migration, or any other remote
+mutation. Then wait. Approval to commit is not approval to push.
+
+Never use `--no-verify`. A hook that fails is telling you something about the change;
+skipping it turns a gate into a suggestion and the next person has no way to know it
+was skipped.
+
+Once the push is approved, you may push directly without the pre-push gate re-running
+the full suite when you already ran that suite green on the current state and changed
+nothing since: the gate records every run against the tree it ran on, recognises that
+evidence, and skips the re-run, reporting the skip and the record that earned it.
+Cite the already-passing run as the pass — do not claim a re-run that did not happen.
+(ADR-120)
+
+### Worktrees
+
+A worktree is the unit of isolation for concurrent work. The rules that keep it honest:
+
+- **One agent, one worktree, one slice.** Never direct two agents at the same files
+  concurrently; give each its own worktree and a slice whose files do not overlap.
+- **Start from the record, not from memory.** `simt slice start <id>` creates the
+  worktree for the tracker row and returns its path; work in that path, not the main
+  checkout.
+- **Finish from the main checkout.** `simt slice finish <id>` runs the declared gates
+  and commits the staged work on the slice branch — or, when nothing is staged, lands
+  the commit already on its branch — records the SHA in the main checkout's tracker,
+  merges the branch into the main checkout, and removes the worktree and its branch
+  (ADR-209, ADR-210). It refuses when run inside the worktree, because a worktree cannot
+  delete the directory that shell is standing in. A slice is not done when its worktree
+  is green — it is done when that one command has merged it.
+- **A kept worktree is a failure to report.** `finish` removes a worktree only when it
+  can do so without discarding untracked work. A kept worktree and branch are named in
+  its output; remove them once their contents are accounted for, and report what was
+  left behind.
+- **Never rewrite history across worktrees.** A rebase, reset or amend in one worktree
+  changes the base every other worktree branched from; coordinate it, or do not do it.
+
+### What never belongs in a commit
+
+- Failing, partial, or unrun work. A commit is a claim; a partial one is a false one.
+- Secrets, tokens, or generated artefacts that drift.
+- Work nobody asked for. Unrelated changes in a slice commit are invisible in review
+  and impossible to revert on their own.
+
+## Process: test-gate
+
+Applies to every feature slice, bugfix, and plan tracker task. Docs/config-only chores are
+exempt from test deltas but require named doc/format checks to pass.
+
+### Implementer Requirements
+
+1. **Name exact commands and test files**: your test runner, through the repository's own script or task, selecting
+   `path/to/the.changed.test.ts` on its own.
+2. **100% Pass Required**: the named commands must exit 0 with every test passing. A
+   partial pass (e.g. 6/8 passing) is a hard blocker, and so is quoting the passing subset.
+3. **Behavioral Test Deltas**:
+   - New feature/contract/route path -> new or extended test asserting the behavior.
+   - Bugfix -> regression test reproducing the failure mode.
+   - If no test file changed, justify why the existing tests fully prove the invariant.
+4. **Cross-Repo Order**: commit the API producer (contract/migration) before any
+   consumer generates against it. Never apply remote migrations or deploy from uncommitted
+   code.
+
+### Reviewer Mandatory Block
+
+Return `BLOCK` when:
+
+- Any test fails, is skipped (without pre-existing justification), or is unrun.
+- An executable diff has no test delta and no explicit justification.
+- The coordinator cites partial suite results or defers a failing test.
+- **Consumer side:** a consumer requires a new API field with no backward-compatibility or
+  deploy-order evidence.
+- **Producer side:** the API producer ships without a test asserting the new invariant
+  or field.
+
+The last two are complementary, not alternatives. A reviewer that checks only one of them
+misses half of the failure they exist to catch.
+
+## Disclosure
+
+- simt-commands — Command reference for simt-dev: which commands are mutating vs read-only, and a scenario-to-command mapping for the agent.
+
+<!-- simt:end -->

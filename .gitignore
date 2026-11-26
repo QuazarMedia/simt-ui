@@ -21,3 +21,6 @@ local.properties
 google-services.json
 GoogleService-Info.plist
 git.config
+
+# Write journal for `simt undo`. Local state, never shared.
+.simt/local/
