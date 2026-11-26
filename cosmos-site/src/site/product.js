@@ -169,6 +169,7 @@ export function createProduct(spec, { isLatest = false } = {}) {
       relativePath: '',
       markdown: prefix('specification.md'),
       label: 'Overview',
+      updated: release.updated,
       summary:
         'One shared foundation and four platform parts. The four theme profiles are the single definition of a surface; Deep Space is the signature and Daylight, Astronomy red and Watch ambient are real, selectable adapters the documentation itself renders in.',
       inSitemap: true,
@@ -178,6 +179,7 @@ export function createProduct(spec, { isLatest = false } = {}) {
       relativePath: p.slug,
       markdown: prefix(`${p.slug}.md`),
       label: p.label,
+      updated: release.updated,
       summary: p.description,
       inSitemap: true,
     })),
@@ -185,6 +187,7 @@ export function createProduct(spec, { isLatest = false } = {}) {
       path: prefix('gallery'),
       relativePath: 'gallery',
       label: 'Gallery',
+      updated: release.updated,
       summary:
         "Every component drawn from its own contract: the state matrix in the rule's own wording, the timing from the named motif, and the colours from the published tokens.",
       inSitemap: true,
@@ -193,6 +196,7 @@ export function createProduct(spec, { isLatest = false } = {}) {
       path: prefix(`gallery/${family.id}`),
       relativePath: `gallery/${family.id}`,
       label: `Gallery · ${family.label}`,
+      updated: release.updated,
       summary: `The ${family.label.toLowerCase()} family, governed by ${family.rules.join(' and ')}, every component drawn from its registry entry.`,
       inSitemap: true,
     })),
@@ -341,11 +345,14 @@ export function createProduct(spec, { isLatest = false } = {}) {
   ];
 
   const releases = [
-    ...release.history,
-    { version: release.version, updated: release.updated, summary: release.scope },
-  ]
-    .reverse()
-    .map((entry) => ({ ...entry, url: base, title: label }));
+    ...release.history.map((entry) => ({
+      ...entry,
+      summary: entry.summary || `${entry.notes?.length ?? 0} specification changes in Cosmos ${entry.version}.`,
+      url: canonicalUrl(`v/${entry.version}`),
+      title: label,
+    })),
+    { version: release.version, updated: release.updated, summary: release.scope, url: base, title: label },
+  ].reverse();
 
   function llms() {
     const line = (r) => `- [${r.label}](${canonicalUrl(r.path ? `${r.path}/` : '')}): ${r.summary}`;

@@ -356,6 +356,9 @@ main > * {
       animation: cosmos-read-progress linear both;
       animation-timeline: scroll(root block);
     }
+    [dir='rtl'] .cosmos-header::after {
+      transform-origin: 100% 50%;
+    }
   }
 }
 .header-inner {
@@ -408,7 +411,7 @@ main > * {
 }
 .version-picker select,
 .theme-picker select {
-  min-block-size: 40px;
+  min-block-size: 44px;
   padding: 6px 12px;
   border: 1px solid var(--boundary);
   border-radius: var(--radius-control);
@@ -429,7 +432,7 @@ main > * {
   display: inline-flex;
   gap: 6px;
   align-items: center;
-  min-block-size: 40px;
+  min-block-size: 44px;
   padding-inline: 12px;
   border: 1px solid var(--line);
   border-radius: var(--radius-control);
@@ -1877,6 +1880,8 @@ h1 em,
 .rule-marker a {
   display: inline-flex;
   align-items: center;
+  justify-content: center;
+  min-inline-size: 44px;
   min-block-size: 44px;
   color: var(--accent-text);
 }
@@ -2299,6 +2304,7 @@ td {
 }
 .gallery-grid {
   display: grid;
+  grid-template-columns: minmax(0, 1fr);
   gap: 32px;
   padding-block-end: 32px;
 }
@@ -2308,6 +2314,8 @@ td {
   border: 1px solid var(--line);
   border-radius: var(--radius-record);
   display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  min-inline-size: 0;
   gap: 24px;
   content-visibility: auto;
   contain-intrinsic-size: auto 420px;
@@ -2315,7 +2323,7 @@ td {
 .gallery-card-head {
   display: flex;
   flex-wrap: wrap;
-  align-items: baseline;
+  align-items: center;
   justify-content: space-between;
   gap: 8px 16px;
 }
@@ -2323,11 +2331,22 @@ td {
   font-size: 1.375rem;
 }
 .gallery-card-rules {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 4px 6px;
   color: var(--muted);
   font-size: 0.8125rem;
 }
+.gallery-card-rules a {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-inline-size: 44px;
+  min-block-size: 44px;
+}
 .gallery-card-rules code {
-  margin-inline-end: 2px;
+  margin-inline-end: 0;
 }
 // A card draws one drawing per declared state, which is anywhere from one to nine,
 // so the grid fills its row instead of assuming a fixed column count.
@@ -2475,8 +2494,11 @@ td {
   block-size: 3px;
   background: var(--gradient-horizon);
   opacity: 1;
-  transform-origin: left center;
+  transform-origin: 0 50%;
   transform: scaleX(var(--progress));
+}
+[dir='rtl'] .filmstrip-progress {
+  transform-origin: 100% 50%;
 }
 .filmstrip-controls {
   display: flex;
@@ -2597,9 +2619,11 @@ html[data-motion='static'] .filmstrip .gallery-play {
 .pill {
   display: inline-flex;
   align-items: center;
+  justify-content: center;
   gap: 8px;
-  min-block-size: 40px;
-  padding: 6px 14px;
+  min-inline-size: 44px;
+  min-block-size: 44px;
+  padding: 8px 14px;
   border: 1px solid var(--boundary);
   border-radius: 999px;
   background: var(--void);
@@ -2612,8 +2636,9 @@ html[data-motion='static'] .filmstrip .gallery-play {
     color var(--motion-feedback) var(--ease-standard);
 }
 .pill-sm {
-  min-block-size: 36px;
-  padding: 4px 12px;
+  min-inline-size: 44px;
+  min-block-size: 44px;
+  padding: 6px 12px;
   font-size: 0.75rem;
 }
 .pill:hover {
@@ -2757,6 +2782,8 @@ html[data-motion='static'] .filmstrip .gallery-play {
 }
 .lab-range input[type='range'] {
   inline-size: 100%;
+  min-block-size: 44px;
+  background: transparent;
   accent-color: var(--gold);
   cursor: pointer;
 }
@@ -2853,7 +2880,7 @@ html[data-motion='static'] .filmstrip .gallery-play {
   flex-wrap: wrap;
 }
 .lab-pulse-btn {
-  min-block-size: 40px;
+  min-block-size: 44px;
   padding-inline: 18px;
   font-size: 0.875rem;
 }
@@ -2877,7 +2904,7 @@ html[data-motion='static'] .filmstrip .gallery-play {
 }
 .spec-search {
   flex: 1 1 220px;
-  min-block-size: 40px;
+  min-block-size: 44px;
   padding: 8px 14px;
   border: 1px solid var(--boundary);
   border-radius: var(--radius-control);

@@ -82,3 +82,15 @@ test('all discovery references use the canonical origin', () => {
     assert(!value.includes('https://simt.space/cosmos/design'), path);
   }
 });
+
+test('releases feed and asset headers contain no placeholder text or duplicate rules', () => {
+  const releases = outputs.get('releases.xml');
+  assert(!releases.includes('>undefined<'), 'releases.xml must not emit undefined summaries');
+  assert(!releases.includes('>null<'), 'releases.xml must not emit null summaries');
+  const headerPaths = outputs
+    .get('_headers')
+    .split(/\n\n+/)
+    .map((block) => block.split('\n')[0].trim())
+    .filter((line) => line && !line.startsWith('#'));
+  assert.equal(new Set(headerPaths).size, headerPaths.length, '_headers must not contain duplicate path rules');
+});

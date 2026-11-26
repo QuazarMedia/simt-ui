@@ -58,7 +58,7 @@ function sitemapXml() {
   const entries = allRoutes.filter((route) => route.inSitemap);
   return `<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-${entries.map((route) => `  <url><loc>${xml(productRouteUrl(route))}</loc><lastmod>${product.updated}</lastmod><changefreq>monthly</changefreq></url>`).join('\n')}
+${entries.map((route) => `  <url><loc>${xml(productRouteUrl(route))}</loc><lastmod>${route.updated || product.updated}</lastmod><changefreq>monthly</changefreq></url>`).join('\n')}
 </urlset>
 `;
 }
@@ -182,7 +182,6 @@ function headers() {
     [authority.discovery.fullText, 'Content-Type: text/plain; charset=utf-8\nCache-Control: public, max-age=3600, must-revalidate'],
     ['/.well-known/*.json', 'Content-Type: application/json; charset=utf-8\nCache-Control: public, max-age=0, must-revalidate\nX-Content-Type-Options: nosniff'],
     ['/.well-known/security.txt', 'Content-Type: text/plain; charset=utf-8\nCache-Control: public, max-age=86400, must-revalidate\nX-Content-Type-Options: nosniff'],
-    ['/*.md', 'Content-Type: text/markdown; charset=utf-8\nCache-Control: public, max-age=0, must-revalidate\nX-Content-Type-Options: nosniff'],
     ...products.flatMap((p) => p.headerRules().map((rule) => rule.split('\n'))),
     ...allRoutes
       .filter((route) => route.markdown)
