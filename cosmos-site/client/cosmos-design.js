@@ -314,3 +314,10 @@ if (themeSelect) {
     if (!document.documentElement.dataset.cosmosTheme) syncThemeColor(event.matches ? 'daylight' : 'deepSpace');
   });
 }
+
+const versionSelect = document.querySelector('[data-version-select]');
+if (versionSelect) {
+  versionSelect.addEventListener('change', () => {
+    if (versionSelect.value) window.location.assign(versionSelect.value);
+  });
+}

@@ -3,12 +3,16 @@ import test from 'node:test';
 import Ajv2020 from 'ajv/dist/2020.js';
 import addFormats from 'ajv-formats';
 import { generatedOutputs } from './build.js';
+import { products } from '../src/site/product.js';
 
 const outputs = generatedOutputs();
 const document = (name) => JSON.parse(outputs.get(`${name}.json`));
 const ajv = new Ajv2020({ allErrors: true, strict: true, strictRequired: false });
 addFormats(ajv);
-for (const name of ['rules', 'specification']) ajv.addSchema(document(`${name}.schema`));
+for (const p of products) {
+  const prefix = p.basePath ? `${p.basePath.slice(1)}/` : '';
+  for (const name of ['rules', 'specification']) ajv.addSchema(document(`${prefix}${name}.schema`));
+}
 const validate = ajv.getSchema(document('rules.schema').$id);
 const counts = { 'mobile-app': 17, 'web-page': 16, 'web-app': 17, 'watch-app': 16 };
 const scopes = [['rules', 36], ...Object.entries(counts).map(([part, count]) => [`${part}/rules`, count])];

@@ -1,11 +1,32 @@
-import { gradients, paintVariable } from './tokens.js';
-import { starfieldSVG } from './starfield.js';
-
 // Static, accessible design illustrations. Fictional records are labeled by the surrounding figure.
 // Every gradient below is drawn from a published token so the specimens obey C27 themselves.
-const byName = Object.fromEntries(gradients.map((g) => [g.name, g]));
-// See paintVariable: a name nothing publishes is a build failure, not a black shape.
-const variable = paintVariable;
+
+export const MOTION_TIERS = [
+  { value: 'system', label: 'System' },
+  { value: 'reduced', label: 'Reduced' },
+  { value: 'static', label: 'Static' },
+];
+
+export function motionPicker() {
+  const options = MOTION_TIERS.map(
+    (tier, index) =>
+      `<label><input type="radio" name="motion" value="${tier.value}"${index === 0 ? ' checked' : ''} disabled> ${tier.label}</label>`,
+  ).join('');
+  return `<fieldset class="mode-demo"><legend>Motion preference</legend>${options}</fieldset>`;
+}
+
+export function workbench() {
+  return `<section class="workbench" id="workbench" aria-labelledby="workbench-title"><div><p class="eyebrow">LIVE COMPONENT STUDY</p><h2 id="workbench-title">Feel the difference.</h2><p>Try the focus, field, selection and action states. This is a local demonstration; no data is sent.</p></div>
+  <div class="workbench-controls"><form data-demo-form><label for="specimen-name">Target name</label><div class="clear-field"><input id="specimen-name" value="Riverside lookout" required maxlength="60" aria-describedby="target-hint" data-clearable-input disabled><button type="button" data-clear-input aria-label="Clear target name" hidden disabled>×</button></div><p class="field-hint" id="target-hint">Keep the label useful at a glance.</p><div class="action-row"><button class="button button-primary" type="submit" data-loading-button disabled>Save target</button><button class="button button-secondary" type="button" data-reset-demo disabled>Reset</button></div><p class="demo-status" role="status" data-demo-status>Ready to try.</p><noscript><p>Interactive examples need JavaScript. The complete specification is available above and as plain text.</p></noscript></form>
+  ${motionPicker()}</div></section>`;
+}
+
+export function createSpecimens(spec) {
+  const { gradients, paintVariable } = spec.tokens;
+  const { starfieldSVG } = spec.starfield;
+  const byName = Object.fromEntries(gradients.map((g) => [g.name, g]));
+  // See paintVariable: a name nothing publishes is a build failure, not a black shape.
+  const variable = paintVariable;
 // A painting instruction rather than a baked hex. `var()` is not resolved inside a
 // presentation attribute, so the declaration goes in an inline style. Every specimen
 // here is inlined into the themed page and so resolves through this: baking the color
@@ -58,7 +79,7 @@ const compass = (id, small = false) => `<svg class="compass-dial" viewBox="0 0 3
   <circle cx="160" cy="160" r="81" ${painted({ fill: 'void', stroke: 'ink' })} stroke-opacity=".1"/>
 </svg>`;
 
-export const orbit = `<div class="quasar"><svg class="orbit-art" viewBox="0 0 600 600" aria-hidden="true">
+const orbit = `<div class="quasar"><svg class="orbit-art" viewBox="0 0 600 600" aria-hidden="true">
   <defs>${radial('q-corona', 'corona')}${radial('q-nebula', 'nebula')}${linear('q-horizon', 'horizon')}${along('q-jet', 'horizon', 300, 96, 300, 504)}</defs>
   <circle cx="300" cy="300" r="300" fill="url(#q-nebula)"/>
   <g fill="none" ${paint('stroke', 'muted')} stroke-opacity=".16"><circle cx="300" cy="300" r="240"/><circle cx="300" cy="300" r="180" stroke-dasharray="2 6"/><circle cx="300" cy="300" r="116"/><path d="M40 300h520" stroke-dasharray="2 10"/></g>
@@ -137,42 +158,14 @@ function watch() {
   <div class="watch-mode-labels"><span>Interactive · one useful answer</span><span>Ambient · one quiet reading</span></div></div>`;
 }
 
-export function specimen(kind) {
+function specimen(kind) {
   return { common, 'web-page': webPage, 'web-app': webApp, 'mobile-app': mobile, 'watch-app': watch }[kind]();
 }
 
 // A live index of the light grammar: each sample paints its own token.
-export function lightGrammar() {
+function lightGrammar() {
   return `<ul class="light-grammar" aria-label="Cosmos gradient tokens">${gradients.map((g) => `<li data-light="${g.name}"><span class="light-sample" aria-hidden="true"><i></i></span><strong>${g.name}</strong><p>${g.job}</p></li>`).join('')}</ul>`;
 }
 
-// The tier picker is one control with two homes. It first shipped inside the
-// component workbench, which is published on the common page only, so a reader
-// who arrived at a gallery had no way to reach Reduced or Static even though the
-// gallery is the surface whose whole point is showing what motion does. The
-// control ships disabled and the client enables it, so a page that carries it
-// without scripting still explains itself.
-// The tier list has one owner. It is read three more places and each of them
-// used to write it out: the picker below, the inline script that has to restore
-// the tier before anything animates, the set the client will accept, and the
-// published example. A fourth tier that reached only one of them would either be
-// offered and then refused, or restored by a script that no control can reach.
-export const MOTION_TIERS = [
-  { value: 'system', label: 'System' },
-  { value: 'reduced', label: 'Reduced' },
-  { value: 'static', label: 'Static' },
-];
-
-export function motionPicker() {
-  const options = MOTION_TIERS.map(
-    (tier, index) =>
-      `<label><input type="radio" name="motion" value="${tier.value}"${index === 0 ? ' checked' : ''} disabled> ${tier.label}</label>`,
-  ).join('');
-  return `<fieldset class="mode-demo"><legend>Motion preference</legend>${options}</fieldset>`;
-}
-
-export function workbench() {
-  return `<section class="workbench" id="workbench" aria-labelledby="workbench-title"><div><p class="eyebrow">LIVE COMPONENT STUDY</p><h2 id="workbench-title">Feel the difference.</h2><p>Try the focus, field, selection and action states. This is a local demonstration; no data is sent.</p></div>
-  <div class="workbench-controls"><form data-demo-form><label for="specimen-name">Target name</label><div class="clear-field"><input id="specimen-name" value="Riverside lookout" required maxlength="60" aria-describedby="target-hint" data-clearable-input disabled><button type="button" data-clear-input aria-label="Clear target name" hidden disabled>×</button></div><p class="field-hint" id="target-hint">Keep the label useful at a glance.</p><div class="action-row"><button class="button button-primary" type="submit" data-loading-button disabled>Save target</button><button class="button button-secondary" type="button" data-reset-demo disabled>Reset</button></div><p class="demo-status" role="status" data-demo-status>Ready to try.</p><noscript><p>Interactive examples need JavaScript. The complete specification is available above and as plain text.</p></noscript></form>
-  ${motionPicker()}</div></section>`;
+return { MOTION_TIERS, orbit, specimen, lightGrammar, motionPicker, workbench };
 }

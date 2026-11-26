@@ -369,6 +369,26 @@ main > * {
   font-size: 0.6875rem;
   letter-spacing: 0.06em;
 }
+.js .version-label {
+  display: none;
+}
+.version-picker {
+  display: none;
+  margin-inline-start: auto;
+}
+.js .version-picker {
+  display: inline-flex;
+}
+.version-picker select,
+.theme-picker select {
+  min-block-size: 44px;
+  padding: 8px 12px;
+  border: 1px solid var(--boundary);
+  border-radius: var(--radius-control);
+  background: var(--hull);
+  color: var(--ink);
+  font-size: 0.875rem;
+}
 .header-download {
   display: inline-flex;
   gap: 12px;
@@ -386,15 +406,6 @@ main > * {
 }
 .js .theme-picker {
   display: inline-flex;
-}
-.theme-picker select {
-  min-block-size: 44px;
-  padding: 8px 12px;
-  border: 1px solid var(--boundary);
-  border-radius: var(--radius-control);
-  background: var(--hull);
-  color: var(--ink);
-  font-size: 0.875rem;
 }
 .platform-nav {
   display: flex;

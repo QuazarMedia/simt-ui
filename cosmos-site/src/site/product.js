@@ -1,205 +1,21 @@
 import { authority, canonicalUrl } from './authority.js';
-import { pages, release } from '../design/specification.js';
-import { GALLERY_FAMILIES } from '../design/gallery.js';
+import { latestVersion, listVersions, loadSpec } from '../../../cosmos-spec/registry.js';
+import { skillRuleIds } from '../design/skill.js';
 
 // A gallery route per family is only worth publishing if each stays inside the
 // per-route HTML budget, so the family list is owned by the registry rather than
 // typed here: a family added there gets a route here, and `npm run check` refuses
 // a family page that would breach the budget.
 
-// This Worker publishes one product directly at its canonical origin.
+// This Worker publishes the latest version at its canonical origin root, and
+// every available Cosmos version under /v/<version>.
 export const slug = 'cosmos';
-export const basePath = '';
-const base = authority.origin;
+export const versions = listVersions();
+export const latest = latestVersion();
 
-// The product's name, stated once: the descriptor, the agent catalog and a feed
-// entry that names the product it belongs to are three places that would
-// otherwise each carry their own copy of it.
 const label = 'Cosmos Design System';
-
-/** Canonical URL of a document inside this product. */
-const url = (path) => canonicalUrl(path);
-
-// The agent-skill media type is a property of that document, not of this module.
 const AGENT_SKILL_MEDIA_TYPE = 'text/markdown; profile="urn:air:agent-skills"';
-
-/**
- * Every human-readable route this product publishes, in the order a reader
- * meets them. `inSitemap` is explicit rather than inferred: a route can be
- * canonical and still not belong in a sitemap (a workbench, a specimen).
- */
-export const routes = [
-  {
-    path: '',
-    markdown: 'specification.md',
-    label: 'Overview',
-    summary:
-      'One shared foundation and four platform parts. The four theme profiles are the single definition of a surface; Deep Space is the signature and Daylight, Astronomy red and Watch ambient are real, selectable adapters the documentation itself renders in.',
-    inSitemap: true,
-  },
-  ...pages.map((p) => ({
-    path: p.slug,
-    markdown: `${p.slug}.md`,
-    label: p.label,
-    summary: p.description,
-    inSitemap: true,
-  })),
-  // The gallery is a reading surface, not a contract: it renders the registry and
-  // the rules, so it is in the sitemap as a way in, and every family route is its
-  // own address so a reader can link to one family without linking to all of them.
-  {
-    path: 'gallery',
-    label: 'Gallery',
-    summary:
-      "Every component drawn from its own contract: the state matrix in the rule's own wording, the timing from the named motif, and the colours from the published tokens.",
-    inSitemap: true,
-  },
-  ...GALLERY_FAMILIES.map((family) => ({
-    path: `gallery/${family.id}`,
-    label: `Gallery · ${family.label}`,
-    summary: `The ${family.label.toLowerCase()} family, governed by ${family.rules.join(' and ')}, every component drawn from its registry entry.`,
-    inSitemap: true,
-  })),
-];
-
-/**
- * The machine-readable documents this product publishes, each with the reason an
- * agent would open it. The agent brief and llms.txt are generated from this
- * list, so a document cannot be published without being described somewhere.
- */
-const partPages = pages.filter((page) => page.slug !== 'common');
-const partSlug = (slug) => slug.replace(/-([a-z])/g, (_, letter) => letter.toUpperCase());
-
-export const resources = [
-  {
-    id: 'manifest',
-    path: 'manifest.json',
-    label: 'Resource manifest',
-    mediaType: 'application/json',
-    description:
-      'Version, authority, platform inheritance, stable section URLs and download links. Start here for automated implementation.',
-  },
-  {
-    id: 'index',
-    path: 'specification.json',
-    label: 'Specification index',
-    mediaType: 'application/json',
-    description:
-      'The pages, their sections and the rule IDs in each. Read this first, then fetch only what the task needs.',
-  },
-  {
-    id: 'rules',
-    path: 'rules.json',
-    label: 'Normative rules',
-    mediaType: 'application/json',
-    description:
-      'Every rule once, grouped by platform section, each with its normative level, requirement, acceptance criterion and canonical URL.',
-  },
-  {
-    id: 'tokens',
-    path: 'tokens.json',
-    label: 'Typed design tokens',
-    mediaType: 'application/json',
-    description:
-      'Self-contained typed base tokens plus the theme adapters, the per-platform geometry and easing mapping, and the address of the composited contrast measurements.',
-  },
-  {
-    id: 'contrastPairs',
-    path: 'contrast-pairs.json',
-    label: 'Composited contrast',
-    mediaType: 'application/json',
-    description:
-      'Measured composited contrast for every role pair in every theme profile, with the guidance for each pair. Fetch it when introducing a colour, pairing a translucent surface or checking a theme.',
-  },
-  {
-    id: 'motion',
-    path: 'motion.json',
-    label: 'Motion motifs',
-    mediaType: 'application/json',
-    description:
-      'The named choreographies a state change animates with, each with its trigger, steps, allowed properties, duration, easing and per-tier and per-platform behaviour, plus the sampled curve values a native port reproduces. Fetch it when choosing a choreography, deciding between motion tiers or porting a transition to a native toolkit.',
-  },
-  {
-    id: 'components',
-    path: 'components.json',
-    label: 'Component index',
-    mediaType: 'application/json',
-    description:
-      'Rule IDs, theme roles, states, motifs and native counterparts per component, sliced by platform part.',
-  },
-  {
-    id: 'css',
-    path: 'tokens.css',
-    label: 'Web token variables',
-    mediaType: 'text/css',
-    description: 'Scoped CSS custom properties, one set per theme profile, plus the brand anchors.',
-  },
-  {
-    id: 'skill',
-    path: 'cosmos-design-skill.md',
-    label: 'Agent design skill',
-    mediaType: 'text/markdown',
-    description:
-      'A short Markdown brief for an agent about to build or review SIMT interface. Quoted from the specification source, so it cannot drift.',
-  },
-  {
-    id: 'markdown',
-    path: 'specification.md',
-    label: 'Complete plain-text specification',
-    mediaType: 'text/markdown',
-    description: 'The full readable contract in Markdown.',
-  },
-  {
-    id: 'changelog',
-    path: 'changelog.md',
-    label: 'Release changelog',
-    mediaType: 'text/markdown',
-    description:
-      'What every published Cosmos version changed, newest first. The current version also states its own changes in specification.md.',
-  },
-  {
-    id: 'schema',
-    path: 'specification.schema.json',
-    label: 'Specification schema',
-    mediaType: 'application/json',
-    description: 'JSON Schema for the index.',
-  },
-  {
-    id: 'rulesSchema',
-    path: 'rules.schema.json',
-    label: 'Rules schema',
-    mediaType: 'application/json',
-    description: 'JSON Schema for the normative rules document.',
-  },
-  // The per-part payloads are declared here rather than left to the generator,
-  // because this list is what llms.txt and the agent catalog are built from: a
-  // document that exists but is not declared is a document no agent is told
-  // about, and the four parts are the whole reason a reader fetches one payload
-  // instead of the whole specification.
-  ...partPages.flatMap((part) => [
-    {
-      id: `${partSlug(part.slug)}Tokens`,
-      label: `${part.label} tokens`,
-      path: `${part.slug}/tokens.json`,
-      mediaType: 'application/json',
-      description: `The ${part.label} part's tokens: the common foundations plus only that platform's adapter, geometry and easing, so a ${part.label} build never reads the other three parts.`,
-    },
-    {
-      id: `${partSlug(part.slug)}Rules`,
-      label: `${part.label} rules`,
-      path: `${part.slug}/rules.json`,
-      mediaType: 'application/json',
-      description: `The rules the ${part.label} part inherits: the common rules plus only those that constrain it, each with its normative level, requirement and acceptance criterion.`,
-    },
-  ]),
-  {
-    id: 'releaseTemplate',
-    path: 'release-template.json',
-    label: 'Release record template',
-    mediaType: 'application/json',
-    description: 'Product, build, environment, applicable rules, evidence, dependencies and exceptions.',
-  },
-];
+const partSlug = (s) => s.replace(/-([a-z])/g, (_, letter) => letter.toUpperCase());
 
 /**
  * Byte budgets for this product's published documents. They live with the
@@ -327,194 +143,324 @@ export const budgets = {
 };
 
 /** This product's sections of /llms.txt. */
-export function llms() {
-  const line = (r) => `- [${r.label}](${url(r.path ? `${r.path}/` : '')}): ${r.summary}`;
-  const doc = (r) => `- [${r.label}](${url(r.path)}): ${r.description}`;
-  return `## Cosmos Design System
+const previousBasePath = '/cosmos-design';
+
+export const accessibility = {
+  target: 'WCAG 2.2 AA on the web, with equivalent behaviour natively',
+  brief: 'cosmos-design-skill.md',
+};
+
+export function createProduct(spec, { isLatest = false } = {}) {
+  const { pages, release } = spec;
+  const { COMPONENT_FAMILIES: galleryFamilies } = spec.components;
+  const basePath = spec.basePath;
+  const dirPrefix = basePath.replace(/^\//, '');
+  const prefix = (path) => {
+    if (!dirPrefix) return path;
+    return path ? `${dirPrefix}/${path}` : dirPrefix;
+  };
+  const base = spec.release.base;
+  const url = (path) => canonicalUrl(prefix(path));
+  const partPages = pages.filter((page) => page.slug !== 'common');
+
+  const routes = [
+    {
+      path: prefix(''),
+      relativePath: '',
+      markdown: prefix('specification.md'),
+      label: 'Overview',
+      summary:
+        'One shared foundation and four platform parts. The four theme profiles are the single definition of a surface; Deep Space is the signature and Daylight, Astronomy red and Watch ambient are real, selectable adapters the documentation itself renders in.',
+      inSitemap: true,
+    },
+    ...pages.map((p) => ({
+      path: prefix(p.slug),
+      relativePath: p.slug,
+      markdown: prefix(`${p.slug}.md`),
+      label: p.label,
+      summary: p.description,
+      inSitemap: true,
+    })),
+    {
+      path: prefix('gallery'),
+      relativePath: 'gallery',
+      label: 'Gallery',
+      summary:
+        "Every component drawn from its own contract: the state matrix in the rule's own wording, the timing from the named motif, and the colours from the published tokens.",
+      inSitemap: true,
+    },
+    ...galleryFamilies.map((family) => ({
+      path: prefix(`gallery/${family.id}`),
+      relativePath: `gallery/${family.id}`,
+      label: `Gallery · ${family.label}`,
+      summary: `The ${family.label.toLowerCase()} family, governed by ${family.rules.join(' and ')}, every component drawn from its registry entry.`,
+      inSitemap: true,
+    })),
+  ];
+
+  const resources = [
+    {
+      id: 'manifest',
+      path: prefix('manifest.json'),
+      relativePath: 'manifest.json',
+      label: 'Resource manifest',
+      mediaType: 'application/json',
+      description:
+        'Version, authority, platform inheritance, stable section URLs and download links. Start here for automated implementation.',
+    },
+    {
+      id: 'index',
+      path: prefix('specification.json'),
+      relativePath: 'specification.json',
+      label: 'Specification index',
+      mediaType: 'application/json',
+      description:
+        'The pages, their sections and the rule IDs in each. Read this first, then fetch only what the task needs.',
+    },
+    {
+      id: 'rules',
+      path: prefix('rules.json'),
+      relativePath: 'rules.json',
+      label: 'Normative rules',
+      mediaType: 'application/json',
+      description:
+        'Every rule once, grouped by platform section, each with its normative level, requirement, acceptance criterion and canonical URL.',
+    },
+    {
+      id: 'tokens',
+      path: prefix('tokens.json'),
+      relativePath: 'tokens.json',
+      label: 'Typed design tokens',
+      mediaType: 'application/json',
+      description:
+        'Self-contained typed base tokens plus the theme adapters, the per-platform geometry and easing mapping, and the address of the composited contrast measurements.',
+    },
+    {
+      id: 'contrastPairs',
+      path: prefix('contrast-pairs.json'),
+      relativePath: 'contrast-pairs.json',
+      label: 'Composited contrast',
+      mediaType: 'application/json',
+      description:
+        'Measured composited contrast for every role pair in every theme profile, with the guidance for each pair. Fetch it when introducing a colour, pairing a translucent surface or checking a theme.',
+    },
+    {
+      id: 'motion',
+      path: prefix('motion.json'),
+      relativePath: 'motion.json',
+      label: 'Motion motifs',
+      mediaType: 'application/json',
+      description:
+        'The named choreographies a state change animates with, each with its trigger, steps, allowed properties, duration, easing and per-tier and per-platform behaviour, plus the sampled curve values a native port reproduces. Fetch it when choosing a choreography, deciding between motion tiers or porting a transition to a native toolkit.',
+    },
+    {
+      id: 'components',
+      path: prefix('components.json'),
+      relativePath: 'components.json',
+      label: 'Component index',
+      mediaType: 'application/json',
+      description:
+        'Rule IDs, theme roles, states, motifs and native counterparts per component, sliced by platform part.',
+    },
+    {
+      id: 'css',
+      path: prefix('tokens.css'),
+      relativePath: 'tokens.css',
+      label: 'Web token variables',
+      mediaType: 'text/css',
+      description: 'Scoped CSS custom properties, one set per theme profile, plus the brand anchors.',
+    },
+    {
+      id: 'skill',
+      path: prefix('cosmos-design-skill.md'),
+      relativePath: 'cosmos-design-skill.md',
+      label: 'Agent design skill',
+      mediaType: 'text/markdown',
+      description:
+        'A short Markdown brief for an agent about to build or review SIMT interface. Quoted from the specification source, so it cannot drift.',
+    },
+    {
+      id: 'markdown',
+      path: prefix('specification.md'),
+      relativePath: 'specification.md',
+      label: 'Complete plain-text specification',
+      mediaType: 'text/markdown',
+      description: 'The full readable contract in Markdown.',
+    },
+    {
+      id: 'changelog',
+      path: prefix('changelog.md'),
+      relativePath: 'changelog.md',
+      label: 'Release changelog',
+      mediaType: 'text/markdown',
+      description:
+        'What every published Cosmos version changed, newest first. The current version also states its own changes in specification.md.',
+    },
+    {
+      id: 'schema',
+      path: prefix('specification.schema.json'),
+      relativePath: 'specification.schema.json',
+      label: 'Specification schema',
+      mediaType: 'application/json',
+      description: 'JSON Schema for the index.',
+    },
+    {
+      id: 'rulesSchema',
+      path: prefix('rules.schema.json'),
+      relativePath: 'rules.schema.json',
+      label: 'Rules schema',
+      mediaType: 'application/json',
+      description: 'JSON Schema for the normative rules document.',
+    },
+    ...partPages.flatMap((part) => [
+      {
+        id: `${partSlug(part.slug)}Tokens`,
+        label: `${part.label} tokens`,
+        path: prefix(`${part.slug}/tokens.json`),
+        relativePath: `${part.slug}/tokens.json`,
+        mediaType: 'application/json',
+        description: `The ${part.label} part's tokens: the common foundations plus only that platform's adapter, geometry and easing, so a ${part.label} build never reads the other three parts.`,
+      },
+      {
+        id: `${partSlug(part.slug)}Rules`,
+        label: `${part.label} rules`,
+        path: prefix(`${part.slug}/rules.json`),
+        relativePath: `${part.slug}/rules.json`,
+        mediaType: 'application/json',
+        description: `The rules the ${part.label} part inherits: the common rules plus only those that constrain it, each with its normative level, requirement and acceptance criterion.`,
+      },
+    ]),
+    {
+      id: 'releaseTemplate',
+      path: prefix('release-template.json'),
+      relativePath: 'release-template.json',
+      label: 'Release record template',
+      mediaType: 'application/json',
+      description: 'Product, build, environment, applicable rules, evidence, dependencies and exceptions.',
+    },
+  ];
+
+  const releases = [
+    ...release.history,
+    { version: release.version, updated: release.updated, summary: release.scope },
+  ]
+    .reverse()
+    .map((entry) => ({ ...entry, url: base, title: label }));
+
+  function llms() {
+    const line = (r) => `- [${r.label}](${canonicalUrl(r.path ? `${r.path}/` : '')}): ${r.summary}`;
+    const doc = (r) => `- [${r.label}](${canonicalUrl(r.path)}): ${r.description}`;
+    return `## Cosmos Design System
 
 ${routes.map(line).join('\n')}
 
 ### Machine-readable resources
 
 ${resources.map(doc).join('\n')}`;
+  }
+
+  function agentEntries({ ruleCount, skillRuleIds: citedRuleIds = skillRuleIds }) {
+    return [
+      {
+        identifier: 'urn:air:cosmos.simt.app:design-skill',
+        displayName: 'Cosmos design skill',
+        type: AGENT_SKILL_MEDIA_TYPE,
+        url: url('cosmos-design-skill.md'),
+        description: `A short Markdown brief for an agent about to build or review SIMT interface: the ${citedRuleIds.length} Cosmos rules generated interface breaks most often, the numbers it should not guess, how to read the theme adapters and contrast pairs, and the checks to run before claiming conformance. Every rule text and number is generated from the Cosmos specification, so it cannot drift from it.`,
+        tags: ['design-system', 'accessibility', 'implementation', 'cosmos'],
+        capabilities: ['design-review', 'ui-authoring', 'conformance-preparation'],
+        representativeQueries: [
+          'Which Cosmos rules should an agent follow when building SIMT interface?',
+          'How do I pick accessible colors from the Cosmos design tokens?',
+          'What are the Cosmos touch target and web vitals budgets?',
+          'How do I design the Cosmos reduced-motion tier?',
+        ],
+        version: release.version,
+        updatedAt: `${release.updated}T00:00:00Z`,
+      },
+      {
+        identifier: 'urn:air:cosmos.simt.app:specification',
+        displayName: 'Cosmos specification index',
+        type: 'application/json',
+        url: url('specification.json'),
+        description: `The machine-readable map of the Cosmos specification: ${pages.length} platform parts, their sections, the ${ruleCount} normative rules in total, the metrics they constrain, the byte budget each published document is held to, and the provenance of the system. Rules, tokens and the JSON schemas are listed under resources.`,
+        tags: ['design-system', 'specification', 'tokens', 'cosmos'],
+        capabilities: ['specification-lookup', 'rule-lookup', 'token-lookup'],
+        representativeQueries: [
+          'Which Cosmos rule covers a given interface decision?',
+          'What are the Cosmos acceptance criteria for this rule ID?',
+          'Which token publishes the value for this metric?',
+        ],
+        version: release.version,
+        updatedAt: `${release.updated}T00:00:00Z`,
+      },
+    ];
+  }
+
+  function rewrites() {
+    return routes.flatMap((route) => {
+      if (route.path === '') return ['/ /index.html 200'];
+      const clean = `/${route.path}`;
+      return [`${clean} ${clean}/index.html 200`, `${clean}/ ${clean}/index.html 200`];
+    });
+  }
+
+  function redirects() {
+    if (!isLatest) return [];
+    return [`${previousBasePath} / 301`, `${previousBasePath}/* /:splat 301`];
+  }
+
+  function headerRules() {
+    if (!isLatest) return [];
+    const immutable = (days) => `Cache-Control: public, max-age=${60 * 60 * 24 * days}${days > 30 ? ', immutable' : ''}`;
+    const served = (contentType) =>
+      `Content-Type: ${contentType}; charset=utf-8\nCache-Control: public, max-age=0, must-revalidate\nX-Content-Type-Options: nosniff`;
+    return [
+      `/sky-hero.svg\n  ${immutable(7)}`,
+      `/*.json\n  ${served('application/json')}`,
+      `/*.md\n  ${served('text/markdown')}`,
+      `/*.css\n  ${served('text/css')}`,
+    ];
+  }
+
+  return {
+    slug,
+    isLatest,
+    spec,
+    accessibility,
+    label,
+    summary:
+      'The design contract for every SIMT product: one specification, five parts, and the machine-readable tokens, rules and agent brief derived from it.',
+    version: release.version,
+    updated: release.updated,
+    releases,
+    base,
+    basePath,
+    previousBasePath,
+    stylesheet: authority.stylesheet,
+    routes,
+    resources,
+    fullTextResources: ['specification.md', 'cosmos-design-skill.md'],
+    budgets,
+    llms,
+    agentEntries,
+    rewrites,
+    redirects,
+    headerRules,
+  };
 }
 
-/**
- * Entries this product contributes to /.well-known/ard.json and its
- * predecessor /.well-known/ai-catalog.json. The catalog is the discovery
- * surface an agent reads before it knows a product exists, so an entry states
- * what it answers as well as what it is.
- */
-export function agentEntries({ ruleCount, skillRuleIds }) {
-  return [
-    {
-      identifier: 'urn:air:cosmos.simt.app:design-skill',
-      displayName: 'Cosmos design skill',
-      type: AGENT_SKILL_MEDIA_TYPE,
-      url: url('cosmos-design-skill.md'),
-      description: `A short Markdown brief for an agent about to build or review SIMT interface: the ${skillRuleIds.length} Cosmos rules generated interface breaks most often, the numbers it should not guess, how to read the theme adapters and contrast pairs, and the checks to run before claiming conformance. Every rule text and number is generated from the Cosmos specification, so it cannot drift from it.`,
-      tags: ['design-system', 'accessibility', 'implementation', 'cosmos'],
-      capabilities: ['design-review', 'ui-authoring', 'conformance-preparation'],
-      representativeQueries: [
-        'Which Cosmos rules should an agent follow when building SIMT interface?',
-        'How do I pick accessible colors from the Cosmos design tokens?',
-        'What are the Cosmos touch target and web vitals budgets?',
-        'How do I design the Cosmos reduced-motion tier?',
-      ],
-      version: release.version,
-      updatedAt: `${release.updated}T00:00:00Z`,
-    },
-    {
-      identifier: 'urn:air:cosmos.simt.app:specification',
-      displayName: 'Cosmos specification index',
-      type: 'application/json',
-      url: url('specification.json'),
-      description: `The machine-readable map of the Cosmos specification: ${pages.length} platform parts, their sections, the ${ruleCount} normative rules in total, the metrics they constrain, the byte budget each published document is held to, and the provenance of the system. Rules, tokens and the JSON schemas are listed under resources.`,
-      tags: ['design-system', 'specification', 'tokens', 'cosmos'],
-      capabilities: ['specification-lookup', 'rule-lookup', 'token-lookup'],
-      representativeQueries: [
-        'Which Cosmos rule covers a given interface decision?',
-        'What are the Cosmos acceptance criteria for this rule ID?',
-        'Which token publishes the value for this metric?',
-      ],
-      version: release.version,
-      updatedAt: `${release.updated}T00:00:00Z`,
-    },
-  ];
-}
+const latestSpec = await loadSpec(latest, { origin: authority.origin, basePath: '' });
+const versionedSpecs = await Promise.all(
+  versions.map((v) => loadSpec(v, { origin: authority.origin, basePath: `/v/${v}` })),
+);
 
-/**
- * Route rewrites for this product. Wrangler's asset handler does not resolve a
- * directory to its index.html, so each clean route is declared as a 200 rewrite:
- * never a redirect, because the bare form is canonical and appears in published
- * JSON. Both spellings are listed so a visitor who types the other one gets the
- * same bytes.
- *
- * There is deliberately no wildcard rule. A `/cosmos-design/*.html` redirect was
- * here and it broke every published page: a Cloudflare splat matches `/` as well
- * as any other character, so it matched the nested per-part `index.html` files
- * this build actually writes and 301'd each to a path that is neither published
- * nor rewritten — which, under `html_handling: "none"`, is the noindex 404 page.
- * A single splat cannot express the intent either: one anchored on
- * `index.html` would capture `common/index` into `:splat`. And it was the one
- * rule verification could not check, because a rule with a `*` or a `:splat` has
- * no resolvable target. `checkRewrites` now refuses any rule it would have to
- * skip, so the cheapest way to serve the `.html` spelling is a 200 rewrite that
- * resolves.
- */
-export function rewrites() {
-  return routes.flatMap((route) => {
-    if (route.path === '') return ['/ /index.html 200'];
-    const clean = `/${route.path}`;
-    return [`${clean} ${clean}/index.html 200`, `${clean}/ ${clean}/index.html 200`];
-  });
-}
-
-/**
- * Where this sub-context published before it moved under the context root. The
- * move is a permanent one, so the old address answers with a 301 rather than a
- * second copy of the document: a link already in the wild -- in another
- * repository's documentation, in a published changelog, in somebody's notes --
- * arrives, and no agent finds two canonical URLs for one specification.
- */
-export const previousBasePath = '/cosmos-design';
-
-/**
- * The redirects that carry the old address to the new one. Two rules rather
- * than one per published document, because the source is a prefix that
- * published nothing and the destination is the whole sub-context: a splat here
- * is safe for the reason the wildcard above is not. That rule redirected a
- * published `index.html` to a path this build does not write; this one redirects
- * a path this build does not publish to one it does, and the two prefixes cannot
- * match each other, so there is no request that can loop.
- *
- * `scripts/verify.js` checks the shape of both rules and proves the coverage
- * against what the build published, so the one rule no gate would otherwise be
- * able to resolve is checked the only way a splat can be.
- */
-/**
- * Every version this product has published, newest first, for the origin's
- * release feed.
- *
- * The versions are the release record's own — `release.history` plus the release
- * currently being published — rather than a second list, so a version can be
- * named in two places only if it were already named twice in the changelog. The
- * notes are not carried: a release note here is a paragraph written for the
- * changelog and read in context, and a feed entry that repeats all of them is a
- * document nobody can subscribe to. The feed links the changelog, which is where
- * the notes are read.
- *
- * Each entry states its own `summary` because a feed entry with only a title is
- * a list and not a feed; the current release takes the scope the specification
- * already publishes, and a release added to `release.history` supplies the line
- * that describes it. `scripts/verify.js` holds every entry to the shape, so a
- * historical release moved in without one fails the build rather than shipping a
- * titleless entry.
- */
-export const releases = [
-  ...release.history,
-  { version: release.version, updated: release.updated, summary: release.scope },
-]
-  .reverse()
-  .map((entry) => ({ ...entry, url: base, title: label }));
-
-export function redirects() {
-  return [`${previousBasePath} / 301`, `${previousBasePath}/* /:splat 301`];
-}
-
-/** Cache and content-type rules for this product's published paths. */
-export function headerRules() {
-  const immutable = (days) => `Cache-Control: public, max-age=${60 * 60 * 24 * days}${days > 30 ? ', immutable' : ''}`;
-  const served = (contentType) =>
-    `Content-Type: ${contentType}; charset=utf-8\nCache-Control: public, max-age=0, must-revalidate\nX-Content-Type-Options: nosniff`;
-  return [
-    `/sky-hero.svg\n  ${immutable(7)}`,
-    `/*.json\n  ${served('application/json')}`,
-    `/*.md\n  ${served('text/markdown')}`,
-    `/*.css\n  ${served('text/css')}`,
-  ];
-}
-
-/**
- * What this product claims about accessibility, and the agent brief that carries
- * the detail. It lives here rather than in humans.txt because the claim belongs
- * to the product: an origin can publish several, and an envelope paragraph that
- * names one of them is a paragraph the next product makes false. The brief is
- * named as a path rather than written as a sentence, and scripts/site.js refuses
- * to publish a brief this product does not declare in `resources` above.
- */
-export const accessibility = {
-  target: 'WCAG 2.2 AA on the web, with equivalent behaviour natively',
-  brief: 'cosmos-design-skill.md',
-};
-
-const product = {
-  slug,
-  accessibility,
-  label,
-  summary:
-    'The design contract for every SIMT product: one specification, five parts, and the machine-readable tokens, rules and agent brief derived from it.',
-  version: release.version,
-  updated: release.updated,
-  releases,
-  base,
-  basePath,
-  // The legacy path remains a same-host compatibility redirect.
-  previousBasePath,
-  stylesheet: authority.stylesheet,
-  routes,
-  resources,
-  fullTextResources: ['specification.md', 'cosmos-design-skill.md'],
-  budgets,
-  llms,
-  agentEntries,
-  rewrites,
-  redirects,
-  headerRules,
-};
+const product = createProduct(latestSpec, { isLatest: true });
+export const versionedProducts = versionedSpecs.map((s) => createProduct(s, { isLatest: false }));
+export const products = [product, ...versionedProducts];
+export const allRoutes = products.flatMap((p) => p.routes);
 
 export default product;
-export const products = [product];
 export const productRouteUrl = (route) => (route.path ? canonicalUrl(route.path) : authority.origin);
 export const productResourceUrl = (resource) => canonicalUrl(resource.path);
 export function budgetOf(key) {

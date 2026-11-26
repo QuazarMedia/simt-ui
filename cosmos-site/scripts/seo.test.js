@@ -2,10 +2,10 @@ import assert from 'node:assert/strict';
 import test from 'node:test';
 import { generatedOutputs } from './build.js';
 import { authority } from '../src/site/authority.js';
-import product, { productRouteUrl } from '../src/site/product.js';
+import { allRoutes, productRouteUrl } from '../src/site/product.js';
 
 const outputs = generatedOutputs();
-const pages = product.routes.map((route) => [route.path ? `${route.path}/index.html` : 'index.html', outputs.get(route.path ? `${route.path}/index.html` : 'index.html'), route]);
+const pages = allRoutes.map((route) => [route.path ? `${route.path}/index.html` : 'index.html', outputs.get(route.path ? `${route.path}/index.html` : 'index.html'), route]);
 const links = (html) =>
   [...html.matchAll(/<link\b[^>]*>/g)].map(([tag]) =>
     Object.fromEntries([...tag.matchAll(/([\w-]+)="([^"]*)"/g)].map(([, key, value]) => [key, value])),
@@ -61,7 +61,7 @@ test('Markdown alternates transcribe their own routes with canonical headers', (
   const headerBlocks = outputs.get('_headers').split(/\n\n/);
   for (const [file, html, route] of pages) {
     const alternates = links(html).filter((link) => link.rel === 'alternate' && link.type === 'text/markdown');
-    assert.deepEqual(alternates.map((link) => link.href), route.markdown ? [`${product.base}/${route.markdown}`] : [], file);
+    assert.deepEqual(alternates.map((link) => link.href), route.markdown ? [`${authority.origin}/${route.markdown}`] : [], file);
     if (!route.markdown) continue;
     assert(outputs.has(route.markdown), route.markdown);
     assert(headerBlocks.some((block) => block.startsWith(`/${route.markdown}\n`) && block.includes(`Link: <${canonicalOf(html)}>; rel="canonical"`)), route.markdown);

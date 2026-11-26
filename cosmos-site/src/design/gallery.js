@@ -1,15 +1,3 @@
-import { paintVariable } from './tokens.js';
-import {
-  COMPONENT_FAMILIES,
-  componentRegistry,
-  componentsForFamily,
-  familyFor,
-  PART_LABELS,
-  motionRolesFor,
-  slugForRule,
-} from './components.js';
-import { motionMotifs } from './motion.js';
-import { STATE_TREATMENTS, releasePath } from './specification.js';
 import { motionPicker } from './specimens.js';
 
 // The component gallery.
@@ -29,6 +17,20 @@ import { motionPicker } from './specimens.js';
 // Every colour below is a published token resolved through the themed page, so a
 // card follows whichever profile the reader selected. C27 is why the specimens
 // draw from the gradient grammar rather than inventing a glow.
+
+export function createGallery(spec) {
+  const { paintVariable } = spec.tokens;
+  const {
+    COMPONENT_FAMILIES,
+    componentRegistry,
+    componentsForFamily,
+    familyFor,
+    PART_LABELS,
+    motionRolesFor,
+    slugForRule,
+  } = spec.components;
+  const { motionMotifs } = spec.motion;
+  const { STATE_TREATMENTS, releasePath } = spec;
 
 // A painted name resolves to the variable that actually publishes it, and a name
 // nothing publishes fails the build rather than silently painting black: the
@@ -441,7 +443,7 @@ function card(component) {
  * here already carrying it, and a control here would only restate a choice they
  * have already made.
  */
-export function galleryIndex() {
+function galleryIndex() {
   const families = [...COMPONENT_FAMILIES]
     .sort((a, b) => a.order - b.order)
     .map((family) => {
@@ -454,7 +456,7 @@ export function galleryIndex() {
     </li>`;
     })
     .join('');
-  return `<main id="main-content"><div class="breadcrumb"><a href="${releasePath}">Cosmos</a><span aria-hidden="true">/</span><span>Gallery</span></div>
+  return `<main id="main-content"><div class="breadcrumb"><a href="${releasePath || '/'}">Cosmos</a><span aria-hidden="true">/</span><span>Gallery</span></div>
   <section class="gallery-hero"><p class="eyebrow">COMPONENT GALLERY</p><h1>Every component, drawn from its own contract.</h1>
   <p>A card is a rendering of a registry entry: the state matrix is the rule's own wording, the timing is the motif's own duration and easing, and the colours are the published tokens. Nothing here restates a decision. Each page is static HTML, so it reads the same with scripting off and under every theme, and playback only repeats what the stills already show.</p></section>
   <ul class="gallery-families">${families}</ul>
@@ -468,10 +470,10 @@ export function galleryIndex() {
 }
 
 /** One family page: every component filed under that family. */
-export function galleryFamily(familyId) {
+function galleryFamily(familyId) {
   const family = COMPONENT_FAMILIES.find((candidate) => candidate.id === familyId);
   const members = componentsForFamily(familyId);
-  return `<main id="main-content"><div class="breadcrumb"><a href="${releasePath}">Cosmos</a><span aria-hidden="true">/</span><a href="${releasePath}/gallery">Gallery</a><span aria-hidden="true">/</span><span>${family.label}</span></div>
+  return `<main id="main-content"><div class="breadcrumb"><a href="${releasePath || '/'}">Cosmos</a><span aria-hidden="true">/</span><a href="${releasePath}/gallery">Gallery</a><span aria-hidden="true">/</span><span>${family.label}</span></div>
   <section class="gallery-hero"><p class="eyebrow">COMPONENT FAMILY</p><h1>${family.label}</h1>
   <p>Governed by ${family.rules.map((rule) => `<code>${rule}</code>`).join(' and ')}. ${members.length} ${members.length === 1 ? 'component' : 'components'} in this family, each drawn from its registry entry.</p>
   <div class="gallery-tier">${motionPicker()}</div></section>
@@ -480,4 +482,5 @@ export function galleryFamily(familyId) {
   <p class="gallery-back"><a class="text-link" href="${releasePath}/gallery">All families <span aria-hidden="true">↑</span></a></p></main>`;
 }
 
-export const GALLERY_FAMILIES = COMPONENT_FAMILIES;
+return { galleryIndex, galleryFamily, GALLERY_FAMILIES: COMPONENT_FAMILIES };
+}
