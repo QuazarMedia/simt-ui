@@ -557,6 +557,10 @@ public final class app/simt/ui/components/forms/TleValidationError : java/lang/E
 	public static fun values ()[Lapp/simt/ui/components/forms/TleValidationError;
 }
 
+public final class app/simt/ui/components/layout/AccordionGroupKt {
+	public static final fun AccordionGroup (Ljava/lang/String;ZLkotlin/jvm/functions/Function1;Ljava/lang/String;Ljava/lang/String;Landroidx/compose/ui/Modifier;Ljava/lang/String;Ljava/lang/Integer;Landroidx/compose/ui/state/ToggleableState;Lkotlin/jvm/functions/Function0;Lkotlin/jvm/functions/Function0;Lkotlin/jvm/functions/Function2;Landroidx/compose/runtime/Composer;III)V
+}
+
 public final class app/simt/ui/components/layout/CustomToolbarKt {
 	public static final fun CustomToolbar (Ljava/util/List;Landroidx/compose/ui/Modifier;Landroidx/compose/runtime/Composer;II)V
 }

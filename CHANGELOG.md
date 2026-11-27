@@ -38,7 +38,8 @@
 - Android-only `TLEField` with clipboard paste/clear, blur sanitization, stable resource-independent validation errors and epoch freshness; its label, hints, status and error strings are available in English, French, Spanish and Arabic.
 - Robolectric host behavior tests for icon-palette auto-scroll, icon/color/name selection propagation, name truncation, TLE sanitization, checksum and epoch validation, malformed epoch handling, and clipboard paste/clear.
 - Reusable `InfoRow`, `MetricBadge` and `CustomToolbar` layout primitives in `app.simt.ui.components.layout` (commonMain), with caller-owned content, theme, modifiers and callbacks.
-- Robolectric host behavior tests for layout rows, metric labels, callback replacement and horizontally scrolling toolbar actions (`LayoutPrimitivesTest`).
+- `AccordionGroup` in `app.simt.ui.components.layout` (commonMain), with caller-owned expansion, labels, optional subtitle/count, tri-state and long-press actions, 48 dp action targets and reduced-motion-aware transitions.
+- Robolectric host behavior tests for layout rows, metric labels, callback replacement, horizontally scrolling toolbar actions, accordion disclosure, tri-state isolation, long press, touch targets and motion policy (`LayoutPrimitivesTest`, `AccordionGroupTest`).
 
 ### Notes
 

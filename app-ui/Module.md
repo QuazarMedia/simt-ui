@@ -28,7 +28,7 @@ Use the caller's Material3 theme. Labels, callbacks, state, window policy, reduc
 
 ## Layout primitives
 
-`InfoRow` renders a caller-owned label/value pair with a decorative leading icon, optional trailing slot and optional click callback. `MetricBadge` renders a caller-owned value and uppercase label with an accent icon. `CustomToolbar` arranges caller-owned composable items in a horizontally scrolling Material3 card with shared scroll-edge effects. All three use the caller's Material3 theme, expose an external modifier and keep labels, icons, colors and actions caller-owned.
+`InfoRow` renders a caller-owned label/value pair with a decorative leading icon, optional trailing slot and optional click callback. `MetricBadge` renders a caller-owned value and uppercase label with an accent icon. `CustomToolbar` arranges caller-owned composable items in a horizontally scrolling Material3 card with shared scroll-edge effects. `AccordionGroup` renders a caller-controlled expandable canopy-glass panel with optional subtitle/count, tri-state action and long-press callback; its accessibility labels are caller-owned, its checkbox and disclosure targets are at least 48 dp, and `LocalUiMotionEnabled = false` applies expansion and collapse immediately. All four use the caller's Material3 theme, expose an external modifier and keep labels, icons, colors and actions caller-owned.
 
 ## Tooltip and header
 
