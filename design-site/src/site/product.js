@@ -1,5 +1,5 @@
 import { authority, canonicalUrl } from './authority.js';
-import { latestVersion, listVersions, loadSpec } from '../../../design-spec/registry.js';
+import { latestVersion, listVersions, loadSpec, majorVersion, versionName } from '../../../design-spec/registry.js';
 import { skillRuleIds } from '../design/skill.js';
 import { libraryPreviewRewrites, publishedLibraries, webLibraries } from '../design/library-previews.js';
 
@@ -373,17 +373,27 @@ export function createProduct(spec, { isLatest = false } = {}) {
   const releases = [
     ...release.history.map((entry) => ({
       ...entry,
+      majorVersion: majorVersion(entry.version),
+      versionName: versionName(entry.version),
       summary: entry.summary || `${entry.notes?.length ?? 0} specification changes in ${entry.version}.`,
       url: canonicalUrl(`v/${entry.version}`),
       title: label,
     })),
-    { version: release.version, updated: release.updated, summary: release.scope, url: base, title: label },
+    {
+      version: release.version,
+      majorVersion: release.majorVersion,
+      versionName: release.versionName,
+      updated: release.updated,
+      summary: release.scope,
+      url: base,
+      title: label,
+    },
   ].reverse();
 
   function llms() {
     const line = (r) => `- [${r.label}](${canonicalUrl(r.path ? `${r.path}/` : '')}): ${r.summary}`;
     const doc = (r) => `- [${r.label}](${canonicalUrl(r.path)}): ${r.description}`;
-    return `## SIMT Design
+    return `## ${label} ${release.versionName} ${release.version}
 
 ${routes.map(line).join('\n')}
 
@@ -396,7 +406,7 @@ ${resources.map(doc).join('\n')}`;
     return [
       {
         identifier: 'urn:air:design.simt.app:design-skill',
-        displayName: 'SIMT Design skill',
+        displayName: `SIMT Design ${release.versionName} skill`,
         type: AGENT_SKILL_MEDIA_TYPE,
         url: url('simt-design-skill.md'),
         description: `A short Markdown brief for an agent about to build or review a SIMT interface: the ${citedRuleIds.length} Design rules that generated interfaces break most often, the numbers it should not guess, how to read the theme adapters and contrast pairs, and the checks to run before claiming conformance. Every rule text and number is generated from the Design specification, so it cannot drift from it.`,
@@ -409,11 +419,13 @@ ${resources.map(doc).join('\n')}`;
           'How should I implement the Design reduced-motion tiers?',
         ],
         version: release.version,
+        majorVersion: release.majorVersion,
+        versionName: release.versionName,
         updatedAt: `${release.updated}T00:00:00Z`,
       },
       {
         identifier: 'urn:air:design.simt.app:specification',
-        displayName: 'SIMT Design specification index',
+        displayName: `SIMT Design ${release.versionName} specification index`,
         type: 'application/json',
         url: url('specification.json'),
         description: `The machine-readable map of the Design specification: ${pages.length - 1} platform parts plus the common foundations, their sections, the ${ruleCount} normative rules in total, the metrics they constrain, the byte budget each published document is held to, and the provenance of the system. Rules, tokens and the JSON schemas are listed under resources.`,
@@ -425,6 +437,8 @@ ${resources.map(doc).join('\n')}`;
           'Which token publishes the value for this metric?',
         ],
         version: release.version,
+        majorVersion: release.majorVersion,
+        versionName: release.versionName,
         updatedAt: `${release.updated}T00:00:00Z`,
       },
     ];
@@ -479,9 +493,10 @@ ${resources.map(doc).join('\n')}`;
     spec,
     accessibility,
     label,
-    summary:
-      'The design contract for every SIMT product: one specification, five parts, and the machine-readable tokens, rules and agent brief derived from it.',
+    summary: `The ${release.versionName} ${release.version} design contract for every SIMT product: one specification, five parts, and the machine-readable tokens, rules and agent brief derived from it.`,
     version: release.version,
+    majorVersion: release.majorVersion,
+    versionName: release.versionName,
     updated: release.updated,
     releases,
     base,

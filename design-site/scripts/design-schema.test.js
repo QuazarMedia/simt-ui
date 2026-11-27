@@ -52,6 +52,12 @@ for (const [name, count] of scopes) {
       (d) => {
         d.version = 'invalid';
       },
+      (d) => {
+        d.majorVersion = 3;
+      },
+      (d) => {
+        d.versionName = 'Unnamed';
+      },
     ]) {
       const invalid = structuredClone(value);
       mutate(invalid);

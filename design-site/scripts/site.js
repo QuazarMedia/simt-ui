@@ -155,7 +155,7 @@ function releasesXml() {
 ${entries
   .map(
     (entry) => `  <entry>
-    <title>${xml(`${entry.title} ${entry.version}`)}</title>
+    <title>${xml(`${entry.title} ${entry.versionName} ${entry.version}`)}</title>
     <id>${xml(`${product.base}/changelog.md#${entry.version}`)}</id>
     <link rel="alternate" type="text/html" href="${xml(entry.url)}"/>
     <updated>${entry.updated}T00:00:00Z</updated>
@@ -217,6 +217,8 @@ function agentCatalog(entries) {
           url: product.base,
           description: product.summary,
           version: product.version,
+          majorVersion: product.majorVersion,
+          versionName: product.versionName,
           updatedAt: `${product.updated}T00:00:00Z`,
         },
       ],

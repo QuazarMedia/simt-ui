@@ -2,7 +2,7 @@ import assert from 'node:assert/strict';
 import test from 'node:test';
 import { generatedOutputs } from './build.js';
 import { authority } from '../src/site/authority.js';
-import product, { allRoutes, productRouteUrl } from '../src/site/product.js';
+import product, { allRoutes, products, productRouteUrl } from '../src/site/product.js';
 
 const outputs = generatedOutputs();
 const pages = allRoutes.map((route) => [route.path ? `${route.path}/index.html` : 'index.html', outputs.get(route.path ? `${route.path}/index.html` : 'index.html'), route]);
@@ -42,6 +42,10 @@ test('current publication uses the SIMT Design origin and assets', () => {
   const html = outputs.get('index.html');
   assert.match(html, /<span>SIMT <b>Design<\/b><\/span>/);
   assert.match(html, />SIMT \/ Design<\/a>/);
+  assert.match(html, /<title>SIMT Design Cosmos 2\.4\.0 \| Cross-platform UI specification<\/title>/);
+  assert.match(html, /SPECIFICATION Cosmos 2\.4\.0/);
+  assert.match(html, /<option value="\/" selected>Cosmos 2\.4\.0 \(latest\)<\/option>/);
+  assert.equal(meta(html, 'description'), 'SIMT Design Cosmos 2.4.0: a shared foundation and four production design specifications for public websites, social web apps, native mobile instruments and simplified watches.');
   assert(html.includes('href="/styles/site.css"'));
   assert(html.includes('src="/assets/site.js"'));
   assert.equal(meta(html, 'og:image'), `${authority.origin}/images/simt-design-system.png`);
@@ -56,10 +60,73 @@ test('current publication uses the SIMT Design origin and assets', () => {
   assert.equal(catalog.products[0].identifier, 'urn:simt:product:design');
   assert.equal(catalog.products[0].displayName, 'SIMT Design');
   assert.equal(catalog.products[0].version, product.version);
+  assert.equal(catalog.products[0].majorVersion, 2);
+  assert.equal(catalog.products[0].versionName, 'Cosmos');
   assert.equal(catalog.products[0].updatedAt, `${product.updated}T00:00:00Z`);
   assert(catalog.entries.every((entry) => entry.identifier.startsWith('urn:air:design.simt.app:')));
   assert(catalog.entries.every((entry) => entry.version === product.version));
+  assert(catalog.entries.every((entry) => entry.majorVersion === 2));
+  assert(catalog.entries.every((entry) => entry.versionName === 'Cosmos'));
   assert(catalog.entries.every((entry) => entry.updatedAt === `${product.updated}T00:00:00Z`));
+});
+
+test('major version names stay consistent across pages, documents and release surfaces', () => {
+  for (const p of products) {
+    const prefix = p.basePath ? `${p.basePath.slice(1)}/` : '';
+    const versionTitle = `${p.versionName} ${p.version}`;
+    for (const route of p.routes) {
+      const file = route.path ? `${route.path}/index.html` : 'index.html';
+      const html = outputs.get(file);
+      const title = html.match(/<title>([^<]+)<\/title>/)?.[1];
+      assert(title?.includes(p.versionName), `${file}: title name`);
+      assert(title?.includes(p.version), `${file}: title version`);
+      assert(html.includes(`SPECIFICATION ${versionTitle}`), `${file}: header`);
+      assert(html.includes(`>${versionTitle}${p.version === product.version ? ' (latest)' : ''}</option>`), `${file}: selector`);
+      assert(html.includes(`Specification ${versionTitle} · ${p.updated}`), `${file}: footer`);
+      const system = graphOf(html).find((node) => node['@type'] === 'CreativeWork');
+      assert.equal(system.name, `SIMT Design ${p.versionName}`, file);
+      assert.equal(system.alternateName, p.versionName, file);
+      assert.equal(system.version, p.version, file);
+    }
+    assert.equal(
+      meta(outputs.get(prefix ? `${prefix}index.html` : 'index.html'), 'description'),
+      `SIMT Design ${versionTitle}: a shared foundation and four production design specifications for public websites, social web apps, native mobile instruments and simplified watches.${p.isLatest ? '' : ' Versioned permalink.'}`,
+    );
+    const manifest = JSON.parse(outputs.get(`${prefix}manifest.json`));
+    const specification = JSON.parse(outputs.get(`${prefix}specification.json`));
+    const rules = JSON.parse(outputs.get(`${prefix}rules.json`));
+    const tokens = JSON.parse(outputs.get(`${prefix}tokens.json`));
+    for (const document of [manifest, specification, rules]) {
+      assert.equal(document.version, p.version);
+      assert.equal(document.majorVersion, p.majorVersion);
+      assert.equal(document.versionName, p.versionName);
+    }
+    assert.equal(manifest.name, `SIMT Design ${p.versionName}`);
+    assert.equal(tokens.$extensions['app.simt.cosmos'].versionName, p.versionName);
+    assert.equal(tokens.$extensions['app.simt.cosmos'].majorVersion, p.majorVersion);
+    for (const page of p.spec.pages.filter((entry) => entry.slug !== 'common')) {
+      const partRules = JSON.parse(outputs.get(`${prefix}${page.slug}/rules.json`));
+      const partTokens = JSON.parse(outputs.get(`${prefix}${page.slug}/tokens.json`));
+      assert.equal(partRules.versionName, p.versionName);
+      assert.equal(partRules.majorVersion, p.majorVersion);
+      assert.equal(partTokens.$extensions['app.simt.cosmos'].document.versionName, p.versionName);
+      assert.equal(partTokens.$extensions['app.simt.cosmos'].document.majorVersion, p.majorVersion);
+    }
+    const template = JSON.parse(outputs.get(`${prefix}release-template.json`));
+    assert.equal(template.specificationVersionName, p.versionName);
+    assert.equal(template.specificationMajorVersion, p.majorVersion);
+    const skill = outputs.get(`${prefix}simt-design-skill.md`);
+    assert(skill.includes(`versionName: ${p.versionName}`));
+    assert(skill.includes(`majorVersion: ${p.majorVersion}`));
+    assert(skill.includes(`# SIMT Design ${versionTitle}`));
+    assert(outputs.get(`${prefix}specification.md`).includes(`# SIMT Design ${versionTitle}`));
+    const changelog = outputs.get(`${prefix}changelog.md`);
+    for (const entry of p.releases) assert(changelog.includes(`## ${entry.versionName} ${entry.version}`));
+  }
+  const feed = outputs.get('releases.xml');
+  for (const entry of product.releases) {
+    assert(feed.includes(`<title>SIMT Design ${entry.versionName} ${entry.version}</title>`));
+  }
 });
 
 test('sitemap lists exactly canonical HTML routes', () => {

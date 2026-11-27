@@ -54,6 +54,7 @@ export const skillRuleIds = FAILURES.map(([id]) => id);
 
 export function createSkill(spec, budgets) {
   const { release, pages } = spec;
+  const versionTitle = `${release.versionName} ${release.version}`;
   const {
     colors,
     cssRolePrefix,
@@ -163,14 +164,16 @@ function skillMarkdown() {
 
   return `---
 name: simt-design
-description: Apply SIMT Design ${release.version} when building or reviewing SIMT interfaces — marketing pages, the social web app, the Android app or the Wear OS app.
+description: Apply SIMT Design ${versionTitle} when building or reviewing SIMT interfaces — marketing pages, the social web app, the Android app or the Wear OS app.
 version: ${release.version}
+majorVersion: ${release.majorVersion}
+versionName: ${release.versionName}
 updated: ${release.updated}
 ---
 
-# SIMT Design ${release.version}
+# SIMT Design ${versionTitle}
 
-SIMT Design ${release.version} is SIMT's normative design target, updated ${release.updated}. It carries ${byId.size} rules across five pages: one set of common foundations that every platform inherits, plus four platform parts. Platform rules are additive to the common rules, and product safety, privacy and accessibility take precedence over both.
+SIMT Design ${versionTitle} is SIMT's normative design target, updated ${release.updated}. It carries ${byId.size} rules across five pages: one set of common foundations that every platform inherits, plus four platform parts. Platform rules are additive to the common rules, and product safety, privacy and accessibility take precedence over both.
 
 Use this brief when you are about to write or change a SIMT interface. It names the ${rules.length} failures that generated interfaces produce most often. It is not the specification: read [${byId.size} rules](${release.base}/rules.json) when you need the rest, and cite the rule IDs you actually applied in your implementation notes (C02).
 

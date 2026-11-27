@@ -1,5 +1,6 @@
 import { esc, siteOutputs } from './site.js';
 import { budgetOf, latest, products, versions } from '../src/site/product.js';
+import { majorVersion, versionName } from '../../design-spec/registry.js';
 import { authority as space } from '../src/site/authority.js';
 import { mkdirSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
 import { resolve, dirname } from 'node:path';
@@ -112,6 +113,8 @@ export function releaseRecord(sizes, release = products[0].spec.release) {
   return [...release.history, { version: release.version, updated: release.updated, notes: release.notes }].map(
     (entry) => ({
       version: entry.version,
+      majorVersion: majorVersion(entry.version),
+      versionName: versionName(entry.version),
       updated: entry.updated,
       notes: entry.notes.map((note) =>
         note.replace(NOTE_SIZE, (placeholder, name) => {
@@ -138,8 +141,8 @@ function changelogMarkdown(sizes, release) {
   )
     .reverse()
     .map(
-      ({ version, updated, notes }, index) =>
-        `## ${version}${index === 0 ? ' · current' : ''} · ${updated}\n\n${notes.map((note) => `- ${note}`).join('\n')}\n`,
+      ({ version, versionName, updated, notes }, index) =>
+        `## ${versionName} ${version}${index === 0 ? ' · current' : ''} · ${updated}\n\n${notes.map((note) => `- ${note}`).join('\n')}\n`,
     )
     .join('\n')}`;
 }
@@ -155,7 +158,7 @@ function generateProductCss(PRODUCT) {
   } = spec.tokens;
   const brandOnlyAnchors = colors.filter(([name]) => !(name in cssRoleAliases));
   const scaleTokens = (group) => Object.entries(group).filter(([key]) => !key.startsWith('$'));
-  return `/* Generated Design ${spec.release.version}. CSS px map to dp in native adapters. */\n:root {\n${brandOnlyAnchors.map(([name, value]) => `  --${name}: ${value};`).join('\n')}\n${scaleTokens(
+  return `/* Generated SIMT Design ${spec.release.versionName} ${spec.release.version}. CSS px map to dp in native adapters. */\n:root {\n${brandOnlyAnchors.map(([name, value]) => `  --${name}: ${value};`).join('\n')}\n${scaleTokens(
     tokens.space,
   )
     .map(([k, v]) => `  --space-${k}: ${v.$value.value}px;`)
@@ -236,7 +239,8 @@ function generateProductOutputs(PRODUCT) {
   const productFile = (path) => (PRODUCT_DIR ? `${PRODUCT_DIR}/${path}` : path);
   const pathFor = (slug) => (slug ? (PRODUCT_BASE ? `${PRODUCT_BASE}/${slug}` : `/${slug}`) : PRODUCT_BASE || '/');
   const urlFor = (slug) => (slug ? `${PRODUCT.base}/${slug}` : PRODUCT.base);
-  const versionSuffix = PRODUCT.isLatest ? '' : ` (v${release.version})`;
+  const versionTitle = `${release.versionName} ${release.version}`;
+  const titleVersionName = `${space.name} ${release.versionName} ${PRODUCT.isLatest ? release.version : `v${release.version}`}`;
 
   const PROFILE_NAMES = Object.keys(themeProfiles);
   for (const name of PROFILE_NAMES) {
@@ -271,10 +275,10 @@ function generateProductOutputs(PRODUCT) {
   }
 
   function navigation(slug, versionSlug = slug) {
-    return `<header class="design-header"><div class="header-inner"><a class="brand" href="${pathFor('')}" aria-label="Design home"><img src="${space.logo}" width="32" height="32" alt=""><span>SIMT <b>Design</b></span></a><div class="header-controls"><span class="version-label">SPECIFICATION ${release.version}</span><label class="version-picker"><select data-version-select aria-label="Specification version">${versions
+    return `<header class="design-header"><div class="header-inner"><a class="brand" href="${pathFor('')}" aria-label="Design home"><img src="${space.logo}" width="32" height="32" alt=""><span>SIMT <b>Design</b></span></a><div class="header-controls"><span class="version-label">SPECIFICATION ${esc(versionTitle)}</span><label class="version-picker"><select data-version-select aria-label="Specification version">${versions
       .map(
         (v) =>
-          `<option value="${versionHref(v, versionSlug)}"${v === release.version ? ' selected' : ''}>v${v}${v === latest ? ' (latest)' : ''}</option>`,
+          `<option value="${versionHref(v, versionSlug)}"${v === release.version ? ' selected' : ''}>${esc(versionName(v))} ${v}${v === latest ? ' (latest)' : ''}</option>`,
       )
       .join('')}</select></label><label class="theme-picker"><select data-theme-select aria-label="Theme profile"><option value="">Follow system</option>${Object.keys(
       themeProfiles,
@@ -301,7 +305,7 @@ function generateProductOutputs(PRODUCT) {
 
   function overview() {
     return `<main id="main-content"><section class="overview-hero">${sky}<div class="hero-copy"><p class="eyebrow">A DESIGN LANGUAGE BY SIMT</p><h1>A universe<br>around <em>you.</em></h1><p class="hero-lede">Warm depth. Clear signals. A little wonder.<br>Interfaces that make the next step feel natural.</p><div class="hero-actions"><a class="button button-primary" href="${PRODUCT_BASE}/common">Start with the foundations <span aria-hidden="true">↗</span></a><a class="button button-secondary" href="#observatory">Open live observatory <span aria-hidden="true">↓</span></a><a class="text-link" href="#platforms">Four platforms <span aria-hidden="true">↓</span></a></div><div class="hero-meta"><span>Deep Space palette</span><span>Light with a job</span><span>One deterministic sky</span></div></div><div class="hero-art">${orbit}<span class="art-note">DESIGN THAT ORIENTS, REVEALS & RESPONDS</span></div></section>
-  <div class="status-strip"><span class="status-indicator" aria-hidden="true"></span><p><strong>v${release.version} · ${esc(release.status)}</strong> Shared foundation + four platform parts. Updated <time datetime="${release.updated}">${longDate(release.updated)}</time>.</p></div>
+  <div class="status-strip"><span class="status-indicator" aria-hidden="true"></span><p><strong>${esc(versionTitle)} · ${esc(release.status)}</strong> Shared foundation + four platform parts. Updated <time datetime="${release.updated}">${longDate(release.updated)}</time>.</p></div>
   ${observatory()}
   <section class="identity-intro" id="foundations"><p class="eyebrow">SAME COLORS. A RICHER COMPOSITION.</p><div><h2>Clarity is the center.<br>Wonder follows.</h2><p>The Design idea stays: you are the center of your universe. The new system gives it a precise visual grammar—an aperture for attention, a spine for context, a horizon for time. It creates continuity without making every screen look the same.</p><p>One common contract governs color, type, accessibility and meaning. Four platform parts translate it into distinct experiences.</p></div>${specimen('common')}<a class="text-link" href="${PRODUCT_BASE}/common">Read the shared contract <span aria-hidden="true">↗</span></a></section>
   <section class="light-showcase" id="light" aria-labelledby="light-title"><div class="section-heading"><span class="section-number">+</span><div><h2 id="light-title">Light with a job.</h2><p>Eight gradients drawn only from the Deep Space anchors. Each has one job, so depth reads as meaning instead of decoration.</p></div></div>${lightGrammar()}<a class="text-link" href="${PRODUCT_BASE}/common#light">Read the gradient grammar <span aria-hidden="true">↗</span></a></section>
@@ -330,7 +334,7 @@ function generateProductOutputs(PRODUCT) {
         : []),
     ];
     return `<main id="main-content"><div class="breadcrumb"><a href="${pathFor('')}">Design</a><span aria-hidden="true">/</span><span>${esc(p.label)}</span></div><section class="part-hero">${sky}<div><p class="eyebrow">${p.number} / ${esc(p.label.toUpperCase())}</p><h1>${esc(p.title).replace('\n', '<br>')}</h1><p class="hero-lede">${esc(p.intro)}</p><p class="signature">${esc(p.signature)}</p></div><figure class="specimen specimen-${p.specimen}">${specimen(p.specimen)}<figcaption>Design specimen · illustrative data · static composition</figcaption></figure></section>
-  <div class="status-strip"><span class="status-indicator" aria-hidden="true"></span><p><strong>${esc(release.status)} · v${release.version}</strong> ${p.slug === 'common' ? 'Inherited by all four platform parts.' : `Inherits the <a href="${PRODUCT_BASE}/common">common foundations</a>.`} Conformance is recorded rule by rule in a release record.</p></div>
+  <div class="status-strip"><span class="status-indicator" aria-hidden="true"></span><p><strong>${esc(release.status)} · ${esc(versionTitle)}</strong> ${p.slug === 'common' ? 'Inherited by all four platform parts.' : `Inherits the <a href="${PRODUCT_BASE}/common">common foundations</a>.`} Conformance is recorded rule by rule in a release record.</p></div>
   <div class="spec-layout"><nav class="local-nav" aria-label="On this page"><p>ON THIS PAGE</p><ol>${contents.map((s, i) => `<li><a href="#${s.id}"><span>${String(i + 1).padStart(2, '0')}</span>${esc(s.title)}</a></li>`).join('')}</ol><a class="local-export" href="${PRODUCT_BASE}/${p.slug}.md">This part as Markdown ↗</a></nav><article class="spec-content" aria-label="${esc(p.label)} specification">${p.sections.map(renderSection).join('')}${p.slug === 'common' ? workbench() + starfieldSection() + adaptersSection() + referencesSection() : ''}${PART_ADAPTERS[p.slug] ? `<section class="part-downloads"><p class="eyebrow">BUILD THIS PART</p><h2>Two files, this part only.</h2><p>The common foundations plus the ${esc(p.label)} mapping, with no other platform's geometry, easing or colour notation. Use these when you are building this part; the union of every part is at the canonical URLs.</p><ul><li><a href="${PRODUCT_BASE}/${p.slug}/tokens.json">This part's tokens <span>JSON · scoped to ${esc(p.label)}</span></a></li><li><a href="${PRODUCT_BASE}/${p.slug}/rules.json">This part's rules <span>JSON · common plus ${esc(p.label)}</span></a></li></ul></section>` : ''}<section class="part-release"><p class="eyebrow">CONFORMANCE RECORD</p><h2>From specification to evidence.</h2><p>Record the product build, applicable rule IDs, owner, fixtures, environment and results. Attach visual, accessibility and performance evidence before calling the implementation production-ready.</p><a class="text-link" href="${PRODUCT_BASE}/release-template.json">Download the release record template ↗</a></section></article></div>
   <div class="next-part"><span>Continue through the system</span><a href="${pathFor(next.slug)}">${next.number} / ${esc(next.label)} <span aria-hidden="true">↗</span></a></div></main>`;
   }
@@ -358,7 +362,7 @@ function generateProductOutputs(PRODUCT) {
     return `<!DOCTYPE html>
 <!-- Generated by scripts/build.js. Edit design-spec/ or src/design/, never this file. -->
 <html lang="en" data-motion="system"><head><meta charset="UTF-8"><script>(function(){var r=document.documentElement;r.classList.add('js');var s=null,m=null;try{s=localStorage.getItem('simt:design-theme');m=localStorage.getItem('simt:design-motion')}catch(e){}if(${PROFILE_GUARD}){r.dataset.cosmosTheme=s}if(${MOTION_GUARD}){r.dataset.motion=m}})();</script><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="color-scheme" content="dark light"><title>${esc(title)}</title><meta name="description" content="${esc(description)}"><meta name="author" content="SIMT"><meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1"><link rel="canonical" href="${canonical}"><link rel="alternate" type="application/atom+xml" title="${esc(space.name)} releases" href="${space.origin}${space.feed}"><link rel="sitemap" type="application/xml" href="/sitemap.xml"><link rel="describedby" type="text/plain" title="Agent discovery" href="${space.origin}/llms.txt"><link rel="describedby" type="text/plain" title="${esc(space.name)}, in full" href="${space.origin}${space.discovery.fullText}"><meta property="og:type" content="article"><meta property="og:site_name" content="${esc(space.name)}"><meta property="og:locale" content="en_US"><meta property="og:url" content="${canonical}"><meta property="og:title" content="${esc(title)}"><meta property="og:description" content="${esc(description)}"><meta property="og:image" content="${space.origin}/images/simt-design-system.png"><meta property="og:image:width" content="1200"><meta property="og:image:height" content="630"><meta property="og:image:type" content="image/png"><meta property="og:image:secure_url" content="${space.origin}/images/simt-design-system.png"><meta property="og:image:alt" content="SIMT Design with Deep Space colors and an orbital instrument"><meta property="article:modified_time" content="${release.updated}T00:00:00Z"><meta name="twitter:card" content="summary_large_image"><meta name="twitter:title" content="${esc(title)}"><meta name="twitter:description" content="${esc(description)}"><meta name="twitter:image" content="${space.origin}/images/simt-design-system.png"><meta name="twitter:image:alt" content="SIMT Design with Deep Space colors and an orbital instrument"><meta name="theme-color" content="${chromeColor('deepSpace')}" data-color="${chromeColor('deepSpace')}" media="(prefers-color-scheme: dark)"><meta name="theme-color" content="${chromeColor('daylight')}" data-color="${chromeColor('daylight')}" media="(prefers-color-scheme: light)"><link rel="icon" href="/favicon.ico"><link rel="preload" href="/fonts/space-grotesk-latin-wght-normal.woff2" as="font" type="font/woff2" crossorigin><link rel="preload" href="/fonts/source-sans-3-latin-wght-normal.woff2" as="font" type="font/woff2" crossorigin>${alternate}<link rel="stylesheet" href="${PRODUCT.stylesheet}"><script type="application/ld+json">${JSON.stringify({ '@context': 'https://schema.org', '@graph': graph }, null, 2).replaceAll('<', '\\u003c')}</script></head>
-<body class="design-page"><a class="skip-link" href="#main-content">${esc(skip)}</a>${navigation(active, versionPath)}${body}<footer class="design-footer"><div><a class="footer-brand" href="${pathFor('')}">SIMT / Design</a><p>You are the center of your universe.</p></div><div><span>Specification ${release.version} · ${release.updated}</span><a href="/v/${release.version}">Version ${release.version} permalink</a><a href="${PRODUCT_BASE}/manifest.json">Agent resources ↗</a><a href="${space.parent}">Legacy reference ↗</a></div></footer><div class="design-toast" role="status" aria-live="polite" data-design-toast hidden></div><script type="module" src="/assets/site.js"></script></body></html>\n`;
+<body class="design-page"><a class="skip-link" href="#main-content">${esc(skip)}</a>${navigation(active, versionPath)}${body}<footer class="design-footer"><div><a class="footer-brand" href="${pathFor('')}">SIMT / Design</a><p>You are the center of your universe.</p></div><div><span>Specification ${esc(versionTitle)} · ${release.updated}</span><a href="/v/${release.version}">${esc(versionTitle)} permalink</a><a href="${PRODUCT_BASE}/manifest.json">Agent resources ↗</a><a href="${space.parent}">Legacy reference ↗</a></div></footer><div class="design-toast" role="status" aria-live="polite" data-design-toast hidden></div><script type="module" src="/assets/site.js"></script></body></html>\n`;
   }
 
   const REFERENCE_LINKS = [
@@ -410,7 +414,8 @@ function generateProductOutputs(PRODUCT) {
       {
         '@type': 'CreativeWork',
         '@id': `${release.base}#system`,
-        name: 'SIMT Design',
+        name: `${space.name} ${release.versionName}`,
+        alternateName: release.versionName,
         version: release.version,
         url: release.base,
       },
@@ -430,8 +435,8 @@ function generateProductOutputs(PRODUCT) {
       },
     ];
     return pageShell({
-      title: `${title}${versionSuffix} | SIMT Design`,
-      description: `${description}${PRODUCT.isLatest ? '' : ` (Design v${release.version})`}`,
+      title: `${title} | ${titleVersionName}`,
+      description: `${description}${PRODUCT.isLatest ? '' : ` (${space.name} ${versionTitle})`}`,
       canonical,
       graph,
       body,
@@ -446,8 +451,8 @@ function generateProductOutputs(PRODUCT) {
     const overview = library === null;
     const canonical = urlFor(overview ? 'libraries' : library.route);
     const title = overview
-      ? 'SIMT UI libraries | SIMT Design'
-      : `${library.manifest.title} | SIMT Design`;
+      ? `SIMT UI libraries | ${titleVersionName}`
+      : `${library.manifest.title} | ${titleVersionName}`;
     const description = overview
       ? 'Published SIMT UI libraries with package-owned preview manifests, automatic source coverage, live web playgrounds and native preview catalogs.'
       : library.manifest.description;
@@ -495,7 +500,8 @@ function generateProductOutputs(PRODUCT) {
       {
         '@type': 'CreativeWork',
         '@id': `${release.base}#system`,
-        name: 'SIMT Design',
+        name: `${space.name} ${release.versionName}`,
+        alternateName: release.versionName,
         version: release.version,
         url: release.base,
       },
@@ -526,12 +532,16 @@ function generateProductOutputs(PRODUCT) {
 
   function document(p = null) {
     const title = p
-      ? `${p.label}${versionSuffix} | SIMT Design`
-      : `SIMT Design${versionSuffix} | Cross-platform UI specification`;
+      ? `${p.label} | ${titleVersionName}`
+      : `${titleVersionName} | Cross-platform UI specification`;
     const baseDescription =
       p?.description ||
-      'Design v2: a shared foundation and four production design specifications for public websites, social web apps, native mobile instruments and simplified watches.';
-    const description = PRODUCT.isLatest ? baseDescription : `${baseDescription} (Design v${release.version})`;
+      `${space.name} ${versionTitle}: a shared foundation and four production design specifications for public websites, social web apps, native mobile instruments and simplified watches.`;
+    const description = p
+      ? PRODUCT.isLatest
+        ? baseDescription
+        : `${baseDescription} (${space.name} ${versionTitle})`
+      : `${baseDescription}${PRODUCT.isLatest ? '' : ' Versioned permalink.'}`;
     const canonical = urlFor(p?.slug);
     const graph = [
       {
@@ -568,7 +578,8 @@ function generateProductOutputs(PRODUCT) {
       {
         '@type': 'CreativeWork',
         '@id': `${release.base}#system`,
-        name: 'SIMT Design',
+        name: `${space.name} ${release.versionName}`,
+        alternateName: release.versionName,
         version: release.version,
         url: release.base,
       },
@@ -606,7 +617,7 @@ function generateProductOutputs(PRODUCT) {
   }
 
   function markdown(p) {
-    return `# ${p.label} — Design ${release.version}\n\nStatus: ${release.status}. Updated: ${release.updated}.\n\nCanonical: ${urlFor(p.slug)}\n\n${p.intro}\n\n${p.slug === 'common' ? 'Inherited by all four platform parts.' : `Inherits [Common foundations](${urlFor('common')}).`}\n\n${p.sections
+    return `# ${p.label} — ${space.name} ${versionTitle}\n\nStatus: ${release.status}. Updated: ${release.updated}.\n\nCanonical: ${urlFor(p.slug)}\n\n${p.intro}\n\n${p.slug === 'common' ? 'Inherited by all four platform parts.' : `Inherits [Common foundations](${urlFor('common')}).`}\n\n${p.sections
       .map(
         (s) =>
           `## ${s.title}\n\nSection: ${urlFor(p.slug)}#${s.id}\n\n${s.summary}\n\n${s.rules.map((r) => `### ${r.id} — ${r.title} [${r.level.toUpperCase()}]\n\n${r.requirement}\n\nAcceptance: ${r.acceptance}\n\nRule: ${urlFor(p.slug)}#${r.id.toLowerCase()}\n`).join('\n')}\n${tablesOf(
@@ -636,6 +647,8 @@ function generateProductOutputs(PRODUCT) {
     $extensions: {
       'app.simt.cosmos': {
         version: release.version,
+        majorVersion: release.majorVersion,
+        versionName: release.versionName,
         defaultProfile,
         profiles: PROFILE_NAMES,
         cssThemeAttribute,
@@ -659,6 +672,8 @@ function generateProductOutputs(PRODUCT) {
   const rules = {
     $schema: `${release.base}/rules.schema.json`,
     version: release.version,
+    majorVersion: release.majorVersion,
+    versionName: release.versionName,
     updated: release.updated,
     status: release.status,
     inheritance: 'Platform rules are additive to common; product safety, privacy and accessibility take precedence.',
@@ -705,7 +720,10 @@ function generateProductOutputs(PRODUCT) {
     sources,
   };
   const manifest = {
+    name: `${PRODUCT.label} ${release.versionName}`,
     version: release.version,
+    majorVersion: release.majorVersion,
+    versionName: release.versionName,
     updated: release.updated,
     status: release.status,
     canonical: release.base,
@@ -758,6 +776,8 @@ function generateProductOutputs(PRODUCT) {
     type: 'object',
     required: [
       'version',
+      'majorVersion',
+      'versionName',
       'updated',
       'status',
       'implementationStatus',
@@ -772,6 +792,8 @@ function generateProductOutputs(PRODUCT) {
     ],
     properties: {
       version: { type: 'string', pattern: '^\\d+\\.\\d+\\.\\d+$' },
+      majorVersion: { const: release.majorVersion },
+      versionName: { const: release.versionName },
       updated: { type: 'string', format: 'date' },
       status: { const: release.status },
       normativeLanguage: { type: 'object' },
@@ -840,9 +862,11 @@ function generateProductOutputs(PRODUCT) {
     title: 'Design rules',
     description: 'Every normative Design rule with its acceptance criterion, grouped by platform section.',
     type: 'object',
-    required: ['version', 'updated', 'status', 'ruleCount', 'sections'],
+    required: ['version', 'majorVersion', 'versionName', 'updated', 'status', 'ruleCount', 'sections'],
     properties: {
       version: { type: 'string', pattern: '^\\d+\\.\\d+\\.\\d+$' },
+      majorVersion: { const: release.majorVersion },
+      versionName: { const: release.versionName },
       updated: { type: 'string', format: 'date' },
       status: { const: release.status },
       normativeLanguage: { type: 'object' },
@@ -934,7 +958,7 @@ function generateProductOutputs(PRODUCT) {
         scope.gradients.includes(gradient.name) &&
         gradient.profiles.some((profile) => scope.profiles.includes(profile));
       const partTokens = {
-        $description: `Design ${release.version} tokens for the ${p.label} part: the common foundations, the ${p.label} mapping (platformAdapters.${adapterKey}), and only the ${scope.profiles.join(', ')} profile${scope.profiles.length === 1 ? '' : 's'} this part runs. The union of every adapter and profile is tokens.json.`,
+        $description: `${space.name} ${versionTitle} tokens for the ${p.label} part: the common foundations, the ${p.label} mapping (platformAdapters.${adapterKey}), and only the ${scope.profiles.join(', ')} profile${scope.profiles.length === 1 ? '' : 's'} this part runs. The union of every adapter and profile is tokens.json.`,
         color: exportedTokens.color,
         gradient: Object.fromEntries(
           Object.entries(exportedTokens.gradient).filter(([name]) =>
@@ -958,7 +982,13 @@ function generateProductOutputs(PRODUCT) {
         components: componentsPointer(),
         $extensions: {
           'app.simt.cosmos': {
-            document: { version: release.version, updated: release.updated, status: release.status },
+            document: {
+              version: release.version,
+              majorVersion: release.majorVersion,
+              versionName: release.versionName,
+              updated: release.updated,
+              status: release.status,
+            },
             part: { id: p.slug, label: p.label, adapter: adapterKey },
             scope: { ...scope, colorSpace, starfield: scope.stars },
           },
@@ -968,8 +998,10 @@ function generateProductOutputs(PRODUCT) {
       const sections = ruleSections.filter((s) => s.platform === 'common' || s.platform === p.slug);
       const partRules = {
         $schema: `${release.base}/rules.schema.json`,
-        $description: `Design ${release.version} rules for the ${p.label} part: the common foundations and this part's own sections. Every part is in rules.json.`,
+        $description: `${space.name} ${versionTitle} rules for the ${p.label} part: the common foundations and this part's own sections. Every part is in rules.json.`,
         version: release.version,
+        majorVersion: release.majorVersion,
+        versionName: release.versionName,
         updated: release.updated,
         status: release.status,
         platform: { id: p.slug, label: p.label },
@@ -1014,6 +1046,8 @@ function generateProductOutputs(PRODUCT) {
   }
   const template = {
     specificationVersion: release.version,
+    specificationMajorVersion: release.majorVersion,
+    specificationVersionName: release.versionName,
     product: '',
     build: '',
     owner: '',
@@ -1041,22 +1075,24 @@ function generateProductOutputs(PRODUCT) {
     [
       productFile('tokens.json'),
       json({
-        $description: `Design ${release.version} base tokens, theme adapters and contrast pairs`,
+        $description: `${space.name} ${versionTitle} base tokens, theme adapters and contrast pairs`,
         ...exportedTokens,
       }),
     ],
     [
       productFile('rules.json'),
       json({
-        $description: `Design ${release.version} normative rules with acceptance criteria, grouped by platform section`,
+        $description: `${space.name} ${versionTitle} normative rules with acceptance criteria, grouped by platform section`,
         ...rules,
       }),
     ],
     [
       productFile('contrast-pairs.json'),
       json({
-        $description: `Design ${release.version} composited contrast for every role pair in every theme profile`,
+        $description: `${space.name} ${versionTitle} composited contrast for every role pair in every theme profile`,
         version: release.version,
+        majorVersion: release.majorVersion,
+        versionName: release.versionName,
         updated: release.updated,
         status: release.status,
         ratioField: '$value',
@@ -1069,8 +1105,10 @@ function generateProductOutputs(PRODUCT) {
     [
       productFile('components.json'),
       json({
-        $description: `Design ${release.version} component index: for every component the rules it inherits, the theme roles, layer and corner role it consumes, the states it can be in, the motif that animates it and the counterpart that already exists in each product. References only — every treatment stays in the rules the entries name. Sliced by platform part under parts.`,
+        $description: `${space.name} ${versionTitle} component index: for every component the rules it inherits, the theme roles, layer and corner role it consumes, the states it can be in, the motif that animates it and the counterpart that already exists in each product. References only — every treatment stays in the rules the entries name. Sliced by platform part under parts.`,
         version: release.version,
+        majorVersion: release.majorVersion,
+        versionName: release.versionName,
         updated: release.updated,
         status: release.status,
         fetchWhen: COMPONENTS_FETCH_WHEN,
@@ -1099,8 +1137,10 @@ function generateProductOutputs(PRODUCT) {
     [
       productFile('motion.json'),
       json({
-        $description: `Design ${release.version} named motion motifs: the trigger, steps, allowed properties, duration, easing and per-tier and per-platform behaviour of every state change the system animates, with the sampled curve values a native port reproduces.`,
+        $description: `${space.name} ${versionTitle} named motion motifs: the trigger, steps, allowed properties, duration, easing and per-tier and per-platform behaviour of every state change the system animates, with the sampled curve values a native port reproduces.`,
         version: release.version,
+        majorVersion: release.majorVersion,
+        versionName: release.versionName,
         updated: release.updated,
         status: release.status,
         fetchWhen: MOTION_FETCH_WHEN,
@@ -1207,7 +1247,7 @@ function generateProductOutputs(PRODUCT) {
   );
   put(
     productFile('specification.md'),
-    `# SIMT Design ${release.version}\n\n${release.scope}\n\n${release.implementationStatus}\n\n## What changed in ${release.version}\n\nThe ${currentNotes.length} changes in this release are listed in [changelog.md](${release.base}/changelog.md), which carries every published release newest first.\n\n${pages.map((p) => partMarkdown.get(p.slug)).join('\n---\n\n')}\n${referenceTail()}\n## Repository provenance\n\n${provenance.map((p) => `- ${p.repository}: ${p.paths.join(', ')}. Observed: ${p.observed} Target: ${p.direction}`).join('\n')}\n`,
+    `# ${space.name} ${versionTitle}\n\n${release.scope}\n\n${release.implementationStatus}\n\n## What changed in ${release.version}\n\nThe ${currentNotes.length} changes in this release are listed in [changelog.md](${release.base}/changelog.md), which carries every published release newest first.\n\n${pages.map((p) => partMarkdown.get(p.slug)).join('\n---\n\n')}\n${referenceTail()}\n## Repository provenance\n\n${provenance.map((p) => `- ${p.repository}: ${p.paths.join(', ')}. Observed: ${p.observed} Target: ${p.direction}`).join('\n')}\n`,
   );
   put(productFile('changelog.md'), changelogMarkdown(sizes, release));
   return { outputs, ruleCount: rules.ruleCount };

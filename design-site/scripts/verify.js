@@ -158,11 +158,21 @@ function checkResources(outputs) {
     const rules = JSON.parse(outputs.get(`${prefix}rules.json`));
     assert.equal(manifest.canonical, p.base);
     assert.equal(manifest.version, p.version);
+    assert.equal(manifest.majorVersion, p.majorVersion);
+    assert.equal(manifest.versionName, p.versionName);
+    assert.equal(manifest.name, `${p.label} ${p.versionName}`);
     assert.equal(manifest.updated, release.updated);
     assert.equal(specification.base, p.base);
     assert.equal(specification.version, p.version);
+    assert.equal(specification.majorVersion, p.majorVersion);
+    assert.equal(specification.versionName, p.versionName);
     assert.equal(specification.updated, release.updated);
+    assert.equal(rules.version, p.version);
+    assert.equal(rules.majorVersion, p.majorVersion);
+    assert.equal(rules.versionName, p.versionName);
     assert.equal(release.version, p.version);
+    assert.equal(release.majorVersion, p.majorVersion);
+    assert.equal(release.versionName, p.versionName);
     if (p.isLatest) {
       assert.equal(p.version, latest);
       assert.equal(p.updated, authority.updated);
@@ -171,6 +181,8 @@ function checkResources(outputs) {
     assert.equal(rules.sections.length, 36, 'union section contract');
     for (const page of pages.filter((entry) => entry.slug !== 'common')) {
       const scoped = JSON.parse(outputs.get(`${prefix}${page.slug}/rules.json`));
+      assert.equal(scoped.majorVersion, p.majorVersion);
+      assert.equal(scoped.versionName, p.versionName);
       assert(scoped.sections.every((section) => section.platform === 'common' || section.platform === page.slug));
       assert(scoped.ruleCount < rules.ruleCount);
     }
@@ -231,14 +243,18 @@ function checkEnvelope(outputs) {
   assert.equal(catalog.host.documentationUrl, authority.origin);
   assert.equal(catalog.products[0].url, authority.origin);
   assert.equal(catalog.products[0].version, product.version);
+  assert.equal(catalog.products[0].majorVersion, product.majorVersion);
+  assert.equal(catalog.products[0].versionName, product.versionName);
   assert.equal(catalog.products[0].updatedAt, `${product.updated}T00:00:00Z`);
   for (const entry of catalog.entries) {
     assert.equal(entry.version, product.version);
+    assert.equal(entry.majorVersion, product.majorVersion);
+    assert.equal(entry.versionName, product.versionName);
     assert.equal(entry.updatedAt, `${product.updated}T00:00:00Z`);
     assert(entry.url.startsWith(`${authority.origin}/`));
   }
   const feed = outputs.get('releases.xml');
-  assert(feed.includes(`<title>${product.label} ${product.version}</title>`));
+  assert(feed.includes(`<title>${product.label} ${product.versionName} ${product.version}</title>`));
   assert(feed.includes(`<updated>${product.updated}T00:00:00Z</updated>`));
   assert(feed.indexOf(product.version) < feed.indexOf('2.3.0'));
   const headers = outputs.get('_headers');

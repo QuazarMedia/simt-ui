@@ -6,6 +6,27 @@ import { fileURLToPath, pathToFileURL } from 'node:url';
 const SPEC_ROOT = dirname(fileURLToPath(import.meta.url));
 const SEMVER_RE = /^(\d+)\.(\d+)\.(\d+)$/;
 
+export const MAJOR_VERSION_NAMES = Object.freeze({
+  2: 'Cosmos',
+});
+
+export function majorVersion(version) {
+  const match = String(version).match(SEMVER_RE);
+  if (!match) throw new Error(`Invalid Design specification version: ${version}`);
+  return Number(match[1]);
+}
+
+export function versionName(version) {
+  const major = majorVersion(version);
+  const name = MAJOR_VERSION_NAMES[major];
+  if (!name) {
+    throw new Error(
+      `Design specification ${version} has no name for major version ${major}. Add ${major}: "<name>" to MAJOR_VERSION_NAMES in design-spec/registry.js.`,
+    );
+  }
+  return name;
+}
+
 function compareSemverDesc(a, b) {
   const pa = a.match(SEMVER_RE);
   const pb = b.match(SEMVER_RE);
@@ -80,7 +101,9 @@ export function listVersions() {
       }
     }
   }
-  return [...versions].sort(compareSemverDesc);
+  const sorted = [...versions].sort(compareSemverDesc);
+  for (const version of sorted) versionName(version);
+  return sorted;
 }
 
 export function latestVersion() {
@@ -139,14 +162,20 @@ export async function loadSpec(
   const base = normalizedBasePath ? `${origin}${normalizedBasePath}` : origin;
   const raw = await importVersionModules(version);
   const { specification } = raw;
+  const identity = {
+    majorVersion: majorVersion(version),
+    versionName: versionName(version),
+  };
 
   return {
     version,
+    ...identity,
     origin,
     basePath: normalizedBasePath,
     releasePath: normalizedBasePath,
     release: {
       ...specification.release,
+      ...identity,
       base,
       ...(owner ? { owner } : {}),
     },
