@@ -288,11 +288,26 @@ public final class app/simt/ui/components/forms/ComposableSingletons$AppSelectFi
 	public final fun getLambda$787072084$app_simt_app_ui ()Lkotlin/jvm/functions/Function2;
 }
 
+public final class app/simt/ui/components/forms/ComposableSingletons$IconColorNameRowKt {
+	public static final field INSTANCE Lapp/simt/ui/components/forms/ComposableSingletons$IconColorNameRowKt;
+	public fun <init> ()V
+	public final fun getLambda$909911990$app_simt_app_ui ()Lkotlin/jvm/functions/Function4;
+}
+
 public final class app/simt/ui/components/forms/ComposableSingletons$NumberStepperFieldKt {
 	public static final field INSTANCE Lapp/simt/ui/components/forms/ComposableSingletons$NumberStepperFieldKt;
 	public fun <init> ()V
 	public final fun getLambda$-2083678073$app_simt_app_ui ()Lkotlin/jvm/functions/Function2;
 	public final fun getLambda$1429426224$app_simt_app_ui ()Lkotlin/jvm/functions/Function2;
+}
+
+public final class app/simt/ui/components/forms/ComposableSingletons$TLEFieldKt {
+	public static final field INSTANCE Lapp/simt/ui/components/forms/ComposableSingletons$TLEFieldKt;
+	public fun <init> ()V
+	public final fun getLambda$-1356598105$app_simt_app_ui ()Lkotlin/jvm/functions/Function2;
+	public final fun getLambda$-1662232634$app_simt_app_ui ()Lkotlin/jvm/functions/Function2;
+	public final fun getLambda$-2024634174$app_simt_app_ui ()Lkotlin/jvm/functions/Function2;
+	public final fun getLambda$1113482603$app_simt_app_ui ()Lkotlin/jvm/functions/Function2;
 }
 
 public final class app/simt/ui/components/forms/DataFieldKt {
@@ -307,6 +322,25 @@ public final class app/simt/ui/components/forms/DoubleLabelSwitchKt {
 	public static final fun DoubleLabelSwitch (Ljava/lang/String;Ljava/lang/String;ILkotlin/jvm/functions/Function1;Landroidx/compose/ui/Modifier;ZLjava/lang/String;Ljava/lang/String;Landroidx/compose/runtime/Composer;II)V
 }
 
+public final class app/simt/ui/components/forms/EpochFreshness : java/lang/Enum {
+	public static final field FRESH Lapp/simt/ui/components/forms/EpochFreshness;
+	public static final field OLD Lapp/simt/ui/components/forms/EpochFreshness;
+	public static final field STALE Lapp/simt/ui/components/forms/EpochFreshness;
+	public static final field UNKNOWN Lapp/simt/ui/components/forms/EpochFreshness;
+	public static fun getEntries ()Lkotlin/enums/EnumEntries;
+	public static fun valueOf (Ljava/lang/String;)Lapp/simt/ui/components/forms/EpochFreshness;
+	public static fun values ()[Lapp/simt/ui/components/forms/EpochFreshness;
+}
+
+public final class app/simt/ui/components/forms/IconColorNameRowKt {
+	public static final fun IconColorNameRow-Xk4PtAU (Ljava/lang/String;Lkotlin/jvm/functions/Function1;Ljava/lang/Object;Lkotlin/jvm/functions/Function1;JLkotlin/jvm/functions/Function1;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Landroidx/compose/ui/Modifier;Landroidx/compose/ui/Modifier;Landroidx/compose/ui/Modifier;IZLkotlin/jvm/functions/Function2;Ljava/util/List;Ljava/util/List;Lkotlin/jvm/functions/Function1;Ljava/lang/String;Ljava/lang/Boolean;Lkotlin/jvm/functions/Function1;ZLkotlin/jvm/functions/Function4;Landroidx/compose/runtime/Composer;IIII)V
+}
+
+public final class app/simt/ui/components/forms/IconPickerKt {
+	public static final fun IconPickerChip (ZLkotlin/jvm/functions/Function0;Ljava/lang/String;Landroidx/compose/ui/Modifier;ZLkotlin/jvm/functions/Function2;Landroidx/compose/runtime/Composer;II)V
+	public static final fun IconPickerPalette-GHTll3U (Ljava/util/List;Ljava/lang/Object;Lkotlin/jvm/functions/Function1;Landroidx/compose/ui/Modifier;FZLkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function4;Landroidx/compose/runtime/Composer;II)V
+}
+
 public final class app/simt/ui/components/forms/NumberStepperFieldKt {
 	public static final fun NumberStepperField (Ljava/lang/String;ILkotlin/jvm/functions/Function1;Ljava/lang/Integer;Ljava/lang/Integer;Landroidx/compose/ui/Modifier;Ljava/lang/String;ILkotlin/jvm/functions/Function2;ZJZZLandroidx/compose/runtime/Composer;III)V
 }
@@ -319,8 +353,48 @@ public final class app/simt/ui/components/forms/SettingLineKt {
 	public static final fun SettingLine (Ljava/lang/String;ZLkotlin/jvm/functions/Function1;Landroidx/compose/ui/Modifier;ZLjava/lang/String;Lkotlin/jvm/functions/Function2;ZLkotlin/jvm/functions/Function0;Ljava/lang/String;Landroidx/compose/runtime/Composer;II)V
 }
 
+public final class app/simt/ui/components/forms/TLEFieldKt {
+	public static final fun TLEField (Ljava/lang/String;Lkotlin/jvm/functions/Function1;Landroidx/compose/ui/Modifier;ZLkotlin/jvm/functions/Function1;Ljava/time/ZonedDateTime;ILandroidx/compose/runtime/Composer;II)V
+	public static final fun sanitizeTleText (Ljava/lang/String;I)Ljava/lang/String;
+	public static synthetic fun sanitizeTleText$default (Ljava/lang/String;IILjava/lang/Object;)Ljava/lang/String;
+	public static final fun validateTleText (Ljava/lang/String;Ljava/time/ZonedDateTime;)Lapp/simt/ui/components/forms/TleValidation;
+	public static synthetic fun validateTleText$default (Ljava/lang/String;Ljava/time/ZonedDateTime;ILjava/lang/Object;)Lapp/simt/ui/components/forms/TleValidation;
+}
+
 public final class app/simt/ui/components/forms/TimePickerFieldKt {
 	public static final fun TimePickerField (Ljava/lang/String;Lkotlin/jvm/functions/Function1;Ljava/lang/String;Landroidx/compose/ui/Modifier;Landroidx/compose/ui/graphics/vector/ImageVector;Ljava/lang/String;Landroidx/compose/runtime/Composer;II)V
+}
+
+public final class app/simt/ui/components/forms/TleValidation {
+	public static final field $stable I
+	public fun <init> (ZLapp/simt/ui/components/forms/TleValidationError;Ljava/time/ZonedDateTime;Ljava/lang/Long;Lapp/simt/ui/components/forms/EpochFreshness;)V
+	public synthetic fun <init> (ZLapp/simt/ui/components/forms/TleValidationError;Ljava/time/ZonedDateTime;Ljava/lang/Long;Lapp/simt/ui/components/forms/EpochFreshness;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public final fun component1 ()Z
+	public final fun component2 ()Lapp/simt/ui/components/forms/TleValidationError;
+	public final fun component3 ()Ljava/time/ZonedDateTime;
+	public final fun component4 ()Ljava/lang/Long;
+	public final fun component5 ()Lapp/simt/ui/components/forms/EpochFreshness;
+	public final fun copy (ZLapp/simt/ui/components/forms/TleValidationError;Ljava/time/ZonedDateTime;Ljava/lang/Long;Lapp/simt/ui/components/forms/EpochFreshness;)Lapp/simt/ui/components/forms/TleValidation;
+	public static synthetic fun copy$default (Lapp/simt/ui/components/forms/TleValidation;ZLapp/simt/ui/components/forms/TleValidationError;Ljava/time/ZonedDateTime;Ljava/lang/Long;Lapp/simt/ui/components/forms/EpochFreshness;ILjava/lang/Object;)Lapp/simt/ui/components/forms/TleValidation;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getEpoch ()Ljava/time/ZonedDateTime;
+	public final fun getEpochAgeDays ()Ljava/lang/Long;
+	public final fun getEpochFreshness ()Lapp/simt/ui/components/forms/EpochFreshness;
+	public final fun getError ()Lapp/simt/ui/components/forms/TleValidationError;
+	public fun hashCode ()I
+	public final fun isValid ()Z
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class app/simt/ui/components/forms/TleValidationError : java/lang/Enum {
+	public static final field CHECKSUM_FORMAT Lapp/simt/ui/components/forms/TleValidationError;
+	public static final field CHECKSUM_INVALID Lapp/simt/ui/components/forms/TleValidationError;
+	public static final field FORMAT Lapp/simt/ui/components/forms/TleValidationError;
+	public static final field LINE_COUNT Lapp/simt/ui/components/forms/TleValidationError;
+	public static final field REQUIRED Lapp/simt/ui/components/forms/TleValidationError;
+	public static fun getEntries ()Lkotlin/enums/EnumEntries;
+	public static fun valueOf (Ljava/lang/String;)Lapp/simt/ui/components/forms/TleValidationError;
+	public static fun values ()[Lapp/simt/ui/components/forms/TleValidationError;
 }
 
 public abstract interface class app/simt/ui/components/loader/BlockingLoaderController {

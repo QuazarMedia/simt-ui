@@ -2,6 +2,7 @@
 <resources>
     <string name="simt_ui_close">Fermer</string>
     <string name="simt_ui_cd_clear">Effacer le texte</string>
+    <string name="simt_ui_cd_paste">Coller</string>
     <string name="simt_ui_cd_selected">Sélectionné</string>
     <string name="simt_ui_city_name">Nom de la ville</string>
     <string name="simt_ui_enter_city_name">Entrez le nom de la ville</string>
@@ -44,4 +45,15 @@
     <string name="simt_ui_qr_scanner_prompt">Pointez la caméra vers un code QR</string>
     <string name="simt_ui_stepper_increment">Ajouter</string>
     <string name="simt_ui_stepper_decrement">Supprimer</string>
+    <string name="simt_ui_tle_label">TLE</string>
+    <string name="simt_ui_tle_placeholder">Collez 2 lignes (ou 3 avec une ligne de nom)</string>
+    <string name="simt_ui_tle_hint_typing">Éléments orbitaux à deux lignes (TLE)</string>
+    <string name="simt_ui_tle_ok">Le TLE semble valide</string>
+    <string name="simt_ui_tle_epoch_unknown">Époque : inconnue</string>
+    <string name="simt_ui_tle_epoch_status_fmt">Époque : %1$s (il y a %2$d jours)</string>
+    <string name="simt_ui_tle_error_required">Veuillez saisir un TLE.</string>
+    <string name="simt_ui_tle_error_line_count">Le TLE doit comporter 2 lignes (ou 3 avec une ligne de nom).</string>
+    <string name="simt_ui_tle_error_format">Format TLE invalide (lignes commençant par 1 et 2).</string>
+    <string name="simt_ui_tle_error_checksum_format">Format de checksum TLE invalide.</string>
+    <string name="simt_ui_tle_error_checksum_invalid">Checksum TLE invalide.</string>
 </resources>

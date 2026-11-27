@@ -2,6 +2,7 @@
 <resources>
     <string name="simt_ui_close">إغلاق</string>
     <string name="simt_ui_cd_clear">مسح النص</string>
+    <string name="simt_ui_cd_paste">لصق</string>
     <string name="simt_ui_cd_selected">محدد</string>
     <string name="simt_ui_city_name">اسم المدينة</string>
     <string name="simt_ui_enter_city_name">أدخل اسم المدينة</string>
@@ -44,4 +45,15 @@
     <string name="simt_ui_qr_scanner_prompt">وجّه الكاميرا نحو رمز QR</string>
     <string name="simt_ui_stepper_increment">إضافة</string>
     <string name="simt_ui_stepper_decrement">حذف</string>
+    <string name="simt_ui_tle_label">TLE</string>
+    <string name="simt_ui_tle_placeholder">الصق سطرين (أو ثلاثة مع سطر اسم)</string>
+    <string name="simt_ui_tle_hint_typing">عنصر ثنائي السطر (TLE)</string>
+    <string name="simt_ui_tle_ok">يبدو أن TLE صالح</string>
+    <string name="simt_ui_tle_epoch_unknown">العصر: غير معروف</string>
+    <string name="simt_ui_tle_epoch_status_fmt">العصر: %1$s (قبل %2$d يومًا)</string>
+    <string name="simt_ui_tle_error_required">يرجى إدخال TLE.</string>
+    <string name="simt_ui_tle_error_line_count">يجب أن يتكوّن TLE من سطرين (أو ثلاثة مع سطر اسم).</string>
+    <string name="simt_ui_tle_error_format">تنسيق TLE غير صالح (يجب أن تبدأ الأسطر بـ 1 و2).</string>
+    <string name="simt_ui_tle_error_checksum_format">تنسيق التحقق (checksum) في TLE غير صالح.</string>
+    <string name="simt_ui_tle_error_checksum_invalid">قيمة التحقق (checksum) في TLE غير صحيحة.</string>
 </resources>

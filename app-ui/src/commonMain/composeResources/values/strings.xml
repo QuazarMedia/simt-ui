@@ -2,6 +2,7 @@
 <resources>
     <string name="simt_ui_close">Close</string>
     <string name="simt_ui_cd_clear">Clear text</string>
+    <string name="simt_ui_cd_paste">Paste</string>
     <string name="simt_ui_cd_selected">Selected</string>
     <string name="simt_ui_city_name">City name</string>
     <string name="simt_ui_enter_city_name">Enter city name</string>
@@ -45,4 +46,15 @@
     <string name="simt_ui_qr_scanner_prompt">Point camera at a QR code</string>
     <string name="simt_ui_stepper_increment">Add</string>
     <string name="simt_ui_stepper_decrement">Delete</string>
+    <string name="simt_ui_tle_label">TLE</string>
+    <string name="simt_ui_tle_placeholder">Paste 2 lines (or 3 with a name line)</string>
+    <string name="simt_ui_tle_hint_typing">Two-Line Element (TLE)</string>
+    <string name="simt_ui_tle_ok">TLE looks valid</string>
+    <string name="simt_ui_tle_epoch_unknown">Epoch: unknown</string>
+    <string name="simt_ui_tle_epoch_status_fmt">Epoch: %1$s (%2$d days ago)</string>
+    <string name="simt_ui_tle_error_required">Please enter a TLE.</string>
+    <string name="simt_ui_tle_error_line_count">TLE must be 2 lines (or 3 with a name line).</string>
+    <string name="simt_ui_tle_error_format">TLE format invalid (expected lines starting with 1 and 2).</string>
+    <string name="simt_ui_tle_error_checksum_format">TLE checksum format invalid.</string>
+    <string name="simt_ui_tle_error_checksum_invalid">TLE checksum invalid.</string>
 </resources>
