@@ -45,6 +45,7 @@ class PublishWorkflowTests(unittest.TestCase):
         releases = (
             ('app-ui', '0.1.0', 'Maven Central publication'),
             ('web-ui', '0.1.0', 'Published `@simt-dev/web-ui`'),
+            ('web-ui', '0.1.1', 'Reusable marquee and finale sections'),
         )
         for library, version, marker in releases:
             with self.subTest(library=library, version=version):

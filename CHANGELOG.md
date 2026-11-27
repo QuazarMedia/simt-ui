@@ -115,6 +115,18 @@
 
 - Maven Central publication and the GitHub Release completed on 2026-11-18. Later additions are tracked under `app-ui Unreleased` and are not part of the published `0.1.0` bytes.
 
+## web-ui 0.1.1 — 2026-11-27
+
+### Added
+
+- Reusable marquee and finale sections with full-width tracks, responsive layouts, motion-tier gating and native reduced-motion fallbacks.
+- Reusable native FAQ accordions with sticky desktop headings, rounded disclosure cards, animated plus icons, `::details-content` height transitions, forced-colors support and no-JavaScript fallbacks.
+- Live component previews and CSS contract tests for both section families.
+
+### Notes
+
+- Accordion animation runs only with full motion outside lite performance mode; native `<details>` disclosure remains available in every other context.
+
 ## web-ui 0.1.0 — 2026-11-27
 
 ### Added
