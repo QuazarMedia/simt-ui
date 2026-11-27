@@ -100,6 +100,8 @@ Layer-2 presets built on it: `ConfirmDialog` (confirm/cancel callbacks, destruct
 
 `OverlayIconButton`, `QuickActionButton`, `LockButton`, `FavoriteToggleButton`, `VisibilityToggleButton` and `BetaChip` retain caller-owned state, callbacks and Material3 styling. Toggle and lock descriptions are localized; favorite and visibility controls combine tap and long-press tooltip behavior without changing the caller's value directly.
 
+`IconLabelButton` and `PremiumIconLabelButton` render uppercase captions with caller-provided glyphs, colors and callbacks; disabled controls do not publish actions. Both honor compact sizing, including the premium red-mode fallback. `IconLabelButtonRow` uses a centered row while its caller-supplied `IconLabelAction` list fits and switches to a lazy horizontal scroller with edge effects on overflow. It publishes caller-owned selection semantics, keeps measurement-only items out of accessibility and positioning callbacks, defaults null tooltip text to the label, and suppresses the tooltip for explicit blank text. A tooltip long press never invokes the action. `IconLabelActionsToolbar` adds caller-owned prefix/suffix slots, theme-derived edge/divider colors, a caller-selected shape and configurable overflow behavior; red-mode presentation remains an explicit caller choice.
+
 ### Motion and tier (`app.simt.ui.effects`)
 
 `SimtMotion` is the central Cosmos motion spec (FAST 150 ms / MEDIUM 300 ms, enter/exit/transform easings, `enterSpec`/`exitSpec`). `CosmosTier` (`FULL` / `REDUCED` / `STATIC`) with `LocalCosmosTier` (default `FULL`) lets shared UI degrade ambient animation on lower-performance devices; app roots should provide the tier from their device performance level.
