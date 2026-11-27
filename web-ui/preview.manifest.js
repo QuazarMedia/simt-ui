@@ -132,6 +132,48 @@ initPointerScene({ area: document.querySelector('[data-pointer-area]') });`,
 </section>`,
     },
     {
+      id: 'faq',
+      title: 'Native animated accordions',
+      description:
+        'Semantic details and summary cards animate their disclosure height where supported. Reduced motion, Lite mode and unsupported browsers keep native instant disclosure.',
+      source: ['src/styles.css'],
+      contracts: ['.faq__grid', '.faq__heading', '.faq__list', '.faq-item', '.faq-item__icon', '.faq-item__a'],
+      usage: `<section class="faq" aria-labelledby="faq-title">
+  <div class="container faq__grid">
+    <header class="faq__heading"><h2 id="faq-title">Questions</h2></header>
+    <div class="faq__list">
+      <details class="faq-item">
+        <summary><span class="faq-item__q">Question</span><span class="faq-item__icon" aria-hidden="true">+</span></summary>
+        <div class="faq-item__a"><p>Answer</p></div>
+      </details>
+    </div>
+  </div>
+</section>`,
+      markup: `<section class="preview-section preview-section--flush" id="faq" data-preview-component="faq" aria-labelledby="faq-title">
+  <div class="container faq__grid">
+    <header class="preview-section-heading faq__heading" data-reveal>
+      <p class="preview-kicker">04 / QUESTIONS</p>
+      <h2 id="faq-title">Open only what you need.</h2>
+      <p>Use Tab and Enter or Space. Native disclosure still works without JavaScript.</p>
+    </header>
+    <div class="faq__list stagger">
+      <details class="faq-item" data-reveal>
+        <summary><span class="faq-item__q">Is accordion behavior scripted?</span><span class="faq-item__icon" aria-hidden="true"><svg class="icon" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg></span></summary>
+        <div class="faq-item__a"><p>No. The browser owns keyboard operation, focus and the open state.</p></div>
+      </details>
+      <details class="faq-item" data-reveal>
+        <summary><span class="faq-item__q">What changes in Reduced or Lite mode?</span><span class="faq-item__icon" aria-hidden="true"><svg class="icon" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg></span></summary>
+        <div class="faq-item__a"><p>Transitions stop. Questions and answers remain immediately available.</p></div>
+      </details>
+      <details class="faq-item" data-reveal>
+        <summary><span class="faq-item__q">What if height animation is unsupported?</span><span class="faq-item__icon" aria-hidden="true"><svg class="icon" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg></span></summary>
+        <div class="faq-item__a"><p>The native details element opens and closes without an animation.</p></div>
+      </details>
+    </div>
+  </div>
+</section>`,
+    },
+    {
       id: 'pointer',
       title: 'Pointer scene',
       description:
@@ -146,7 +188,7 @@ initPointerScene({ area: document.querySelector('[data-pointer-area]') });`,
 });`,
       markup: `<section class="preview-section" id="pointer" data-preview-component="pointer" aria-labelledby="pointer-title">
   <header class="preview-section-heading">
-    <p class="preview-kicker">04 / POINTER</p>
+    <p class="preview-kicker">05 / POINTER</p>
     <h2 id="pointer-title">Depth that follows attention.</h2>
     <p>Move a fine pointer across the stage. The effect is decorative and never required to understand the content.</p>
   </header>
@@ -175,7 +217,7 @@ trackHeader(document.querySelector('[data-header]'));
 trackSections(document.querySelectorAll('[data-nav-link]'));`,
       markup: `<section class="preview-section" id="runtime" data-preview-component="runtime" aria-labelledby="runtime-title">
   <header class="preview-section-heading">
-    <p class="preview-kicker">05 / RUNTIME</p>
+    <p class="preview-kicker">06 / RUNTIME</p>
     <h2 id="runtime-title">Visible state, not hidden policy.</h2>
     <p>The header controls call the real package functions. This playground does not persist the choices.</p>
   </header>
