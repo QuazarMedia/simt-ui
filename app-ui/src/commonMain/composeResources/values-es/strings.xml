@@ -2,6 +2,7 @@
 <resources>
     <string name="simt_ui_close">Cerrar</string>
     <string name="simt_ui_cd_clear">Borrar texto</string>
+    <string name="simt_ui_cd_selected">Seleccionado</string>
     <string name="simt_ui_city_name">Nombre de la ciudad</string>
     <string name="simt_ui_enter_city_name">Introduce el nombre de la ciudad</string>
     <string name="simt_ui_country_code_label">Código de país (2 letras)</string>

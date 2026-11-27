@@ -6,6 +6,40 @@
 // - Show declarations: true
 
 // Library unique name: <app.simt:app-ui>
+final enum class app.simt.ui.components.forms/AppMultiChoiceColor : kotlin/Enum<app.simt.ui.components.forms/AppMultiChoiceColor> { // app.simt.ui.components.forms/AppMultiChoiceColor|null[0]
+    enum entry Primary // app.simt.ui.components.forms/AppMultiChoiceColor.Primary|null[0]
+    enum entry Secondary // app.simt.ui.components.forms/AppMultiChoiceColor.Secondary|null[0]
+    enum entry Tertiary // app.simt.ui.components.forms/AppMultiChoiceColor.Tertiary|null[0]
+
+    final val entries // app.simt.ui.components.forms/AppMultiChoiceColor.entries|#static{}entries[0]
+        final fun <get-entries>(): kotlin.enums/EnumEntries<app.simt.ui.components.forms/AppMultiChoiceColor> // app.simt.ui.components.forms/AppMultiChoiceColor.entries.<get-entries>|<get-entries>#static(){}[0]
+
+    final fun valueOf(kotlin/String): app.simt.ui.components.forms/AppMultiChoiceColor // app.simt.ui.components.forms/AppMultiChoiceColor.valueOf|valueOf#static(kotlin.String){}[0]
+    final fun values(): kotlin/Array<app.simt.ui.components.forms/AppMultiChoiceColor> // app.simt.ui.components.forms/AppMultiChoiceColor.values|values#static(){}[0]
+}
+
+final enum class app.simt.ui.components.forms/AppMultiChoiceIconDisplay : kotlin/Enum<app.simt.ui.components.forms/AppMultiChoiceIconDisplay> { // app.simt.ui.components.forms/AppMultiChoiceIconDisplay|null[0]
+    enum entry Always // app.simt.ui.components.forms/AppMultiChoiceIconDisplay.Always|null[0]
+    enum entry WhenSelected // app.simt.ui.components.forms/AppMultiChoiceIconDisplay.WhenSelected|null[0]
+
+    final val entries // app.simt.ui.components.forms/AppMultiChoiceIconDisplay.entries|#static{}entries[0]
+        final fun <get-entries>(): kotlin.enums/EnumEntries<app.simt.ui.components.forms/AppMultiChoiceIconDisplay> // app.simt.ui.components.forms/AppMultiChoiceIconDisplay.entries.<get-entries>|<get-entries>#static(){}[0]
+
+    final fun valueOf(kotlin/String): app.simt.ui.components.forms/AppMultiChoiceIconDisplay // app.simt.ui.components.forms/AppMultiChoiceIconDisplay.valueOf|valueOf#static(kotlin.String){}[0]
+    final fun values(): kotlin/Array<app.simt.ui.components.forms/AppMultiChoiceIconDisplay> // app.simt.ui.components.forms/AppMultiChoiceIconDisplay.values|values#static(){}[0]
+}
+
+final enum class app.simt.ui.components.forms/AppMultiChoiceLayout : kotlin/Enum<app.simt.ui.components.forms/AppMultiChoiceLayout> { // app.simt.ui.components.forms/AppMultiChoiceLayout|null[0]
+    enum entry Scroll // app.simt.ui.components.forms/AppMultiChoiceLayout.Scroll|null[0]
+    enum entry Wrap // app.simt.ui.components.forms/AppMultiChoiceLayout.Wrap|null[0]
+
+    final val entries // app.simt.ui.components.forms/AppMultiChoiceLayout.entries|#static{}entries[0]
+        final fun <get-entries>(): kotlin.enums/EnumEntries<app.simt.ui.components.forms/AppMultiChoiceLayout> // app.simt.ui.components.forms/AppMultiChoiceLayout.entries.<get-entries>|<get-entries>#static(){}[0]
+
+    final fun valueOf(kotlin/String): app.simt.ui.components.forms/AppMultiChoiceLayout // app.simt.ui.components.forms/AppMultiChoiceLayout.valueOf|valueOf#static(kotlin.String){}[0]
+    final fun values(): kotlin/Array<app.simt.ui.components.forms/AppMultiChoiceLayout> // app.simt.ui.components.forms/AppMultiChoiceLayout.values|values#static(){}[0]
+}
+
 final enum class app.simt.ui.effects/CosmosTier : kotlin/Enum<app.simt.ui.effects/CosmosTier> { // app.simt.ui.effects/CosmosTier|null[0]
     enum entry FULL // app.simt.ui.effects/CosmosTier.FULL|null[0]
     enum entry REDUCED // app.simt.ui.effects/CosmosTier.REDUCED|null[0]
@@ -41,6 +75,84 @@ sealed interface app.simt.ui.features.update/UpdateCheckResult { // app.simt.ui.
         final fun hashCode(): kotlin/Int // app.simt.ui.features.update/UpdateCheckResult.Unavailable.hashCode|hashCode(){}[0]
         final fun toString(): kotlin/String // app.simt.ui.features.update/UpdateCheckResult.Unavailable.toString|toString(){}[0]
     }
+}
+
+final class <#A: kotlin/Any?> app.simt.ui.components.forms/AppMultiChoiceOption { // app.simt.ui.components.forms/AppMultiChoiceOption|null[0]
+    constructor <init>(#A, kotlin/String, kotlin/String? = ..., androidx.compose.ui.graphics.vector/ImageVector? = ..., androidx.compose.ui.graphics/Color? = ..., kotlin/Boolean = ..., kotlin/Boolean = ...) // app.simt.ui.components.forms/AppMultiChoiceOption.<init>|<init>(1:0;kotlin.String;kotlin.String?;androidx.compose.ui.graphics.vector.ImageVector?;androidx.compose.ui.graphics.Color?;kotlin.Boolean;kotlin.Boolean){}[0]
+
+    final val enabled // app.simt.ui.components.forms/AppMultiChoiceOption.enabled|{}enabled[0]
+        final fun <get-enabled>(): kotlin/Boolean // app.simt.ui.components.forms/AppMultiChoiceOption.enabled.<get-enabled>|<get-enabled>(){}[0]
+    final val highlighted // app.simt.ui.components.forms/AppMultiChoiceOption.highlighted|{}highlighted[0]
+        final fun <get-highlighted>(): kotlin/Boolean // app.simt.ui.components.forms/AppMultiChoiceOption.highlighted.<get-highlighted>|<get-highlighted>(){}[0]
+    final val icon // app.simt.ui.components.forms/AppMultiChoiceOption.icon|{}icon[0]
+        final fun <get-icon>(): androidx.compose.ui.graphics.vector/ImageVector? // app.simt.ui.components.forms/AppMultiChoiceOption.icon.<get-icon>|<get-icon>(){}[0]
+    final val iconColor // app.simt.ui.components.forms/AppMultiChoiceOption.iconColor|{}iconColor[0]
+        final fun <get-iconColor>(): androidx.compose.ui.graphics/Color? // app.simt.ui.components.forms/AppMultiChoiceOption.iconColor.<get-iconColor>|<get-iconColor>(){}[0]
+    final val label // app.simt.ui.components.forms/AppMultiChoiceOption.label|{}label[0]
+        final fun <get-label>(): kotlin/String // app.simt.ui.components.forms/AppMultiChoiceOption.label.<get-label>|<get-label>(){}[0]
+    final val tooltip // app.simt.ui.components.forms/AppMultiChoiceOption.tooltip|{}tooltip[0]
+        final fun <get-tooltip>(): kotlin/String? // app.simt.ui.components.forms/AppMultiChoiceOption.tooltip.<get-tooltip>|<get-tooltip>(){}[0]
+    final val value // app.simt.ui.components.forms/AppMultiChoiceOption.value|{}value[0]
+        final fun <get-value>(): #A // app.simt.ui.components.forms/AppMultiChoiceOption.value.<get-value>|<get-value>(){}[0]
+
+    final fun component1(): #A // app.simt.ui.components.forms/AppMultiChoiceOption.component1|component1(){}[0]
+    final fun component2(): kotlin/String // app.simt.ui.components.forms/AppMultiChoiceOption.component2|component2(){}[0]
+    final fun component3(): kotlin/String? // app.simt.ui.components.forms/AppMultiChoiceOption.component3|component3(){}[0]
+    final fun component4(): androidx.compose.ui.graphics.vector/ImageVector? // app.simt.ui.components.forms/AppMultiChoiceOption.component4|component4(){}[0]
+    final fun component5(): androidx.compose.ui.graphics/Color? // app.simt.ui.components.forms/AppMultiChoiceOption.component5|component5(){}[0]
+    final fun component6(): kotlin/Boolean // app.simt.ui.components.forms/AppMultiChoiceOption.component6|component6(){}[0]
+    final fun component7(): kotlin/Boolean // app.simt.ui.components.forms/AppMultiChoiceOption.component7|component7(){}[0]
+    final fun copy(#A = ..., kotlin/String = ..., kotlin/String? = ..., androidx.compose.ui.graphics.vector/ImageVector? = ..., androidx.compose.ui.graphics/Color? = ..., kotlin/Boolean = ..., kotlin/Boolean = ...): app.simt.ui.components.forms/AppMultiChoiceOption<#A> // app.simt.ui.components.forms/AppMultiChoiceOption.copy|copy(1:0;kotlin.String;kotlin.String?;androidx.compose.ui.graphics.vector.ImageVector?;androidx.compose.ui.graphics.Color?;kotlin.Boolean;kotlin.Boolean){}[0]
+    final fun equals(kotlin/Any?): kotlin/Boolean // app.simt.ui.components.forms/AppMultiChoiceOption.equals|equals(kotlin.Any?){}[0]
+    final fun hashCode(): kotlin/Int // app.simt.ui.components.forms/AppMultiChoiceOption.hashCode|hashCode(){}[0]
+    final fun toString(): kotlin/String // app.simt.ui.components.forms/AppMultiChoiceOption.toString|toString(){}[0]
+}
+
+final class <#A: kotlin/Any?> app.simt.ui.components.forms/AppMultiChoiceState { // app.simt.ui.components.forms/AppMultiChoiceState|null[0]
+    constructor <init>(kotlin.collections/Set<#A>, kotlin/Int = ...) // app.simt.ui.components.forms/AppMultiChoiceState.<init>|<init>(kotlin.collections.Set<1:0>;kotlin.Int){}[0]
+
+    final val minSelected // app.simt.ui.components.forms/AppMultiChoiceState.minSelected|{}minSelected[0]
+        final fun <get-minSelected>(): kotlin/Int // app.simt.ui.components.forms/AppMultiChoiceState.minSelected.<get-minSelected>|<get-minSelected>(){}[0]
+
+    final var selected // app.simt.ui.components.forms/AppMultiChoiceState.selected|{}selected[0]
+        final fun <get-selected>(): kotlin.collections/Set<#A> // app.simt.ui.components.forms/AppMultiChoiceState.selected.<get-selected>|<get-selected>(){}[0]
+
+    final fun select(#A) // app.simt.ui.components.forms/AppMultiChoiceState.select|select(1:0){}[0]
+    final fun toggle(#A) // app.simt.ui.components.forms/AppMultiChoiceState.toggle|toggle(1:0){}[0]
+}
+
+final class <#A: kotlin/Any?> app.simt.ui.components.forms/AppSelectOption { // app.simt.ui.components.forms/AppSelectOption|null[0]
+    constructor <init>(#A, kotlin/String, kotlin/String? = ..., androidx.compose.ui.graphics.vector/ImageVector? = ...) // app.simt.ui.components.forms/AppSelectOption.<init>|<init>(1:0;kotlin.String;kotlin.String?;androidx.compose.ui.graphics.vector.ImageVector?){}[0]
+
+    final val icon // app.simt.ui.components.forms/AppSelectOption.icon|{}icon[0]
+        final fun <get-icon>(): androidx.compose.ui.graphics.vector/ImageVector? // app.simt.ui.components.forms/AppSelectOption.icon.<get-icon>|<get-icon>(){}[0]
+    final val label // app.simt.ui.components.forms/AppSelectOption.label|{}label[0]
+        final fun <get-label>(): kotlin/String // app.simt.ui.components.forms/AppSelectOption.label.<get-label>|<get-label>(){}[0]
+    final val supportingText // app.simt.ui.components.forms/AppSelectOption.supportingText|{}supportingText[0]
+        final fun <get-supportingText>(): kotlin/String? // app.simt.ui.components.forms/AppSelectOption.supportingText.<get-supportingText>|<get-supportingText>(){}[0]
+    final val value // app.simt.ui.components.forms/AppSelectOption.value|{}value[0]
+        final fun <get-value>(): #A // app.simt.ui.components.forms/AppSelectOption.value.<get-value>|<get-value>(){}[0]
+
+    final fun component1(): #A // app.simt.ui.components.forms/AppSelectOption.component1|component1(){}[0]
+    final fun component2(): kotlin/String // app.simt.ui.components.forms/AppSelectOption.component2|component2(){}[0]
+    final fun component3(): kotlin/String? // app.simt.ui.components.forms/AppSelectOption.component3|component3(){}[0]
+    final fun component4(): androidx.compose.ui.graphics.vector/ImageVector? // app.simt.ui.components.forms/AppSelectOption.component4|component4(){}[0]
+    final fun copy(#A = ..., kotlin/String = ..., kotlin/String? = ..., androidx.compose.ui.graphics.vector/ImageVector? = ...): app.simt.ui.components.forms/AppSelectOption<#A> // app.simt.ui.components.forms/AppSelectOption.copy|copy(1:0;kotlin.String;kotlin.String?;androidx.compose.ui.graphics.vector.ImageVector?){}[0]
+    final fun equals(kotlin/Any?): kotlin/Boolean // app.simt.ui.components.forms/AppSelectOption.equals|equals(kotlin.Any?){}[0]
+    final fun hashCode(): kotlin/Int // app.simt.ui.components.forms/AppSelectOption.hashCode|hashCode(){}[0]
+    final fun toString(): kotlin/String // app.simt.ui.components.forms/AppSelectOption.toString|toString(){}[0]
+}
+
+final class <#A: kotlin/Any?> app.simt.ui.components.forms/AppSingleChoiceState { // app.simt.ui.components.forms/AppSingleChoiceState|null[0]
+    constructor <init>(#A?, kotlin/Boolean = ...) // app.simt.ui.components.forms/AppSingleChoiceState.<init>|<init>(1:0?;kotlin.Boolean){}[0]
+
+    final val required // app.simt.ui.components.forms/AppSingleChoiceState.required|{}required[0]
+        final fun <get-required>(): kotlin/Boolean // app.simt.ui.components.forms/AppSingleChoiceState.required.<get-required>|<get-required>(){}[0]
+
+    final var selected // app.simt.ui.components.forms/AppSingleChoiceState.selected|{}selected[0]
+        final fun <get-selected>(): #A? // app.simt.ui.components.forms/AppSingleChoiceState.selected.<get-selected>|<get-selected>(){}[0]
+
+    final fun select(#A) // app.simt.ui.components.forms/AppSingleChoiceState.select|select(1:0){}[0]
 }
 
 final class app.simt.ui.components/TopOverlayToolToggle { // app.simt.ui.components/TopOverlayToolToggle|null[0]
@@ -113,6 +225,10 @@ final const val app.simt.ui.components.forms/CITY_NAME_MAX_LENGTH // app.simt.ui
 final const val app.simt.ui.components.forms/COUNTRY_CODE_LENGTH // app.simt.ui.components.forms/COUNTRY_CODE_LENGTH|{}COUNTRY_CODE_LENGTH[0]
     final fun <get-COUNTRY_CODE_LENGTH>(): kotlin/Int // app.simt.ui.components.forms/COUNTRY_CODE_LENGTH.<get-COUNTRY_CODE_LENGTH>|<get-COUNTRY_CODE_LENGTH>(){}[0]
 
+final val app.simt.ui.components.forms/app_simt_ui_components_forms_AppMultiChoiceOption$stableprop // app.simt.ui.components.forms/app_simt_ui_components_forms_AppMultiChoiceOption$stableprop|#static{}app_simt_ui_components_forms_AppMultiChoiceOption$stableprop[0]
+final val app.simt.ui.components.forms/app_simt_ui_components_forms_AppMultiChoiceState$stableprop // app.simt.ui.components.forms/app_simt_ui_components_forms_AppMultiChoiceState$stableprop|#static{}app_simt_ui_components_forms_AppMultiChoiceState$stableprop[0]
+final val app.simt.ui.components.forms/app_simt_ui_components_forms_AppSelectOption$stableprop // app.simt.ui.components.forms/app_simt_ui_components_forms_AppSelectOption$stableprop|#static{}app_simt_ui_components_forms_AppSelectOption$stableprop[0]
+final val app.simt.ui.components.forms/app_simt_ui_components_forms_AppSingleChoiceState$stableprop // app.simt.ui.components.forms/app_simt_ui_components_forms_AppSingleChoiceState$stableprop|#static{}app_simt_ui_components_forms_AppSingleChoiceState$stableprop[0]
 final val app.simt.ui.components/app_simt_ui_components_TopOverlayToolToggle$stableprop // app.simt.ui.components/app_simt_ui_components_TopOverlayToolToggle$stableprop|#static{}app_simt_ui_components_TopOverlayToolToggle$stableprop[0]
 final val app.simt.ui.effects/LocalCosmosTier // app.simt.ui.effects/LocalCosmosTier|{}LocalCosmosTier[0]
     final fun <get-LocalCosmosTier>(): androidx.compose.runtime/ProvidableCompositionLocal<app.simt.ui.effects/CosmosTier> // app.simt.ui.effects/LocalCosmosTier.<get-LocalCosmosTier>|<get-LocalCosmosTier>(){}[0]
@@ -133,6 +249,11 @@ final val app.simt.ui.resources/app_simt_ui_resources_Res_string$stableprop // a
 final fun (androidx.compose.ui/Modifier).app.simt.ui.components/canopyGlass(androidx.compose.ui.graphics/Shape?, kotlin/Float, kotlin/Float, androidx.compose.ui.graphics/Color?, androidx.compose.runtime/Composer?, kotlin/Int, kotlin/Int): androidx.compose.ui/Modifier // app.simt.ui.components/canopyGlass|canopyGlass@androidx.compose.ui.Modifier(androidx.compose.ui.graphics.Shape?;kotlin.Float;kotlin.Float;androidx.compose.ui.graphics.Color?;androidx.compose.runtime.Composer?;kotlin.Int;kotlin.Int){}[0]
 final fun (androidx.compose.ui/Modifier).app.simt.ui.utils/fullScreenBottomInsets(androidx.compose.runtime/Composer?, kotlin/Int): androidx.compose.ui/Modifier // app.simt.ui.utils/fullScreenBottomInsets|fullScreenBottomInsets@androidx.compose.ui.Modifier(androidx.compose.runtime.Composer?;kotlin.Int){}[0]
 final fun (androidx.compose.ui/Modifier).app.simt.ui.utils/fullScreenTopInsets(androidx.compose.runtime/Composer?, kotlin/Int): androidx.compose.ui/Modifier // app.simt.ui.utils/fullScreenTopInsets|fullScreenTopInsets@androidx.compose.ui.Modifier(androidx.compose.runtime.Composer?;kotlin.Int){}[0]
+final fun <#A: kotlin/Any?> app.simt.ui.components.forms/AppMultiChoice(kotlin.collections/List<app.simt.ui.components.forms/AppMultiChoiceOption<#A>>, app.simt.ui.components.forms/AppMultiChoiceState<#A>, androidx.compose.ui/Modifier?, app.simt.ui.components.forms/AppMultiChoiceLayout?, app.simt.ui.components.forms/AppMultiChoiceColor?, app.simt.ui.components.forms/AppMultiChoiceIconDisplay?, kotlin/Function1<kotlin.collections/Set<#A>, kotlin/Unit>?, kotlin/Function1<#A, kotlin/Unit>?, androidx.compose.runtime/Composer?, kotlin/Int, kotlin/Int) // app.simt.ui.components.forms/AppMultiChoice|AppMultiChoice(kotlin.collections.List<app.simt.ui.components.forms.AppMultiChoiceOption<0:0>>;app.simt.ui.components.forms.AppMultiChoiceState<0:0>;androidx.compose.ui.Modifier?;app.simt.ui.components.forms.AppMultiChoiceLayout?;app.simt.ui.components.forms.AppMultiChoiceColor?;app.simt.ui.components.forms.AppMultiChoiceIconDisplay?;kotlin.Function1<kotlin.collections.Set<0:0>,kotlin.Unit>?;kotlin.Function1<0:0,kotlin.Unit>?;androidx.compose.runtime.Composer?;kotlin.Int;kotlin.Int){0§<kotlin.Any?>}[0]
+final fun <#A: kotlin/Any?> app.simt.ui.components.forms/AppSelectField(kotlin.collections/List<app.simt.ui.components.forms/AppSelectOption<#A>>, #A?, kotlin/Function1<#A, kotlin/Unit>, kotlin/String, androidx.compose.ui/Modifier?, kotlin/String?, androidx.compose.ui.graphics.vector/ImageVector?, kotlin/Boolean, kotlin/Function2<androidx.compose.runtime/Composer, kotlin/Int, kotlin/Unit>?, androidx.compose.ui.unit/Dp, androidx.compose.runtime/Composer?, kotlin/Int, kotlin/Int) // app.simt.ui.components.forms/AppSelectField|AppSelectField(kotlin.collections.List<app.simt.ui.components.forms.AppSelectOption<0:0>>;0:0?;kotlin.Function1<0:0,kotlin.Unit>;kotlin.String;androidx.compose.ui.Modifier?;kotlin.String?;androidx.compose.ui.graphics.vector.ImageVector?;kotlin.Boolean;kotlin.Function2<androidx.compose.runtime.Composer,kotlin.Int,kotlin.Unit>?;androidx.compose.ui.unit.Dp;androidx.compose.runtime.Composer?;kotlin.Int;kotlin.Int){0§<kotlin.Any?>}[0]
+final fun <#A: kotlin/Any?> app.simt.ui.components.forms/AppSingleChoice(kotlin.collections/List<app.simt.ui.components.forms/AppMultiChoiceOption<#A>>, app.simt.ui.components.forms/AppSingleChoiceState<#A>, androidx.compose.ui/Modifier?, app.simt.ui.components.forms/AppMultiChoiceLayout?, app.simt.ui.components.forms/AppMultiChoiceColor?, app.simt.ui.components.forms/AppMultiChoiceIconDisplay?, kotlin/Function1<#A?, kotlin/Unit>?, androidx.compose.runtime/Composer?, kotlin/Int, kotlin/Int) // app.simt.ui.components.forms/AppSingleChoice|AppSingleChoice(kotlin.collections.List<app.simt.ui.components.forms.AppMultiChoiceOption<0:0>>;app.simt.ui.components.forms.AppSingleChoiceState<0:0>;androidx.compose.ui.Modifier?;app.simt.ui.components.forms.AppMultiChoiceLayout?;app.simt.ui.components.forms.AppMultiChoiceColor?;app.simt.ui.components.forms.AppMultiChoiceIconDisplay?;kotlin.Function1<0:0?,kotlin.Unit>?;androidx.compose.runtime.Composer?;kotlin.Int;kotlin.Int){0§<kotlin.Any?>}[0]
+final fun <#A: kotlin/Any?> app.simt.ui.components.forms/rememberAppMultiChoiceState(kotlin.collections/Set<#A>, kotlin/Int, androidx.compose.runtime/Composer?, kotlin/Int, kotlin/Int): app.simt.ui.components.forms/AppMultiChoiceState<#A> // app.simt.ui.components.forms/rememberAppMultiChoiceState|rememberAppMultiChoiceState(kotlin.collections.Set<0:0>;kotlin.Int;androidx.compose.runtime.Composer?;kotlin.Int;kotlin.Int){0§<kotlin.Any?>}[0]
+final fun <#A: kotlin/Any?> app.simt.ui.components.forms/rememberAppSingleChoiceState(#A?, kotlin/Boolean, androidx.compose.runtime/Composer?, kotlin/Int, kotlin/Int): app.simt.ui.components.forms/AppSingleChoiceState<#A> // app.simt.ui.components.forms/rememberAppSingleChoiceState|rememberAppSingleChoiceState(0:0?;kotlin.Boolean;androidx.compose.runtime.Composer?;kotlin.Int;kotlin.Int){0§<kotlin.Any?>}[0]
 final fun <#A: kotlin/Any?> app.simt.ui.components/WindowedList(kotlin.collections/List<#A>, kotlin/Function1<#A, kotlin/Any>, androidx.compose.ui/Modifier?, androidx.compose.foundation.lazy/LazyListState?, androidx.compose.foundation.layout/PaddingValues?, androidx.compose.foundation.layout/Arrangement.Vertical?, androidx.compose.ui/Alignment.Horizontal?, kotlin/Function1<#A, kotlin/Any?>?, kotlin/Boolean, androidx.compose.ui.unit/Dp, kotlin/Boolean, androidx.compose.ui.graphics/Color, kotlin/Function2<androidx.compose.runtime/Composer, kotlin/Int, kotlin/Unit>?, kotlin/Function4<kotlin/Int, #A, androidx.compose.runtime/Composer, kotlin/Int, kotlin/Unit>, androidx.compose.runtime/Composer?, kotlin/Int, kotlin/Int, kotlin/Int) // app.simt.ui.components/WindowedList|WindowedList(kotlin.collections.List<0:0>;kotlin.Function1<0:0,kotlin.Any>;androidx.compose.ui.Modifier?;androidx.compose.foundation.lazy.LazyListState?;androidx.compose.foundation.layout.PaddingValues?;androidx.compose.foundation.layout.Arrangement.Vertical?;androidx.compose.ui.Alignment.Horizontal?;kotlin.Function1<0:0,kotlin.Any?>?;kotlin.Boolean;androidx.compose.ui.unit.Dp;kotlin.Boolean;androidx.compose.ui.graphics.Color;kotlin.Function2<androidx.compose.runtime.Composer,kotlin.Int,kotlin.Unit>?;kotlin.Function4<kotlin.Int,0:0,androidx.compose.runtime.Composer,kotlin.Int,kotlin.Unit>;androidx.compose.runtime.Composer?;kotlin.Int;kotlin.Int;kotlin.Int){0§<kotlin.Any?>}[0]
 final fun app.simt.ui.components.backgrounds/GradientBackground(androidx.compose.ui/Modifier?, androidx.compose.ui.graphics/Color, androidx.compose.ui.graphics/Color, androidx.compose.ui.graphics/Color, androidx.compose.runtime/Composer?, kotlin/Int, kotlin/Int) // app.simt.ui.components.backgrounds/GradientBackground|GradientBackground(androidx.compose.ui.Modifier?;androidx.compose.ui.graphics.Color;androidx.compose.ui.graphics.Color;androidx.compose.ui.graphics.Color;androidx.compose.runtime.Composer?;kotlin.Int;kotlin.Int){}[0]
 final fun app.simt.ui.components.banners/InformationBanner(kotlin/String, kotlin/String?, androidx.compose.ui.graphics.vector/ImageVector?, androidx.compose.ui.graphics/Color, androidx.compose.ui.graphics/Color, kotlin/Function0<kotlin/Unit>?, androidx.compose.ui/Modifier?, androidx.compose.runtime/Composer?, kotlin/Int, kotlin/Int) // app.simt.ui.components.banners/InformationBanner|InformationBanner(kotlin.String;kotlin.String?;androidx.compose.ui.graphics.vector.ImageVector?;androidx.compose.ui.graphics.Color;androidx.compose.ui.graphics.Color;kotlin.Function0<kotlin.Unit>?;androidx.compose.ui.Modifier?;androidx.compose.runtime.Composer?;kotlin.Int;kotlin.Int){}[0]
@@ -147,6 +268,10 @@ final fun app.simt.ui.components.forms/DebouncedTextField(kotlin/String, kotlin/
 final fun app.simt.ui.components.forms/NumberStepperField(kotlin/String, kotlin/Int, kotlin/Function1<kotlin/Int, kotlin/Unit>, kotlin/Int?, kotlin/Int?, androidx.compose.ui/Modifier?, kotlin/String?, kotlin/Int, kotlin/Function2<androidx.compose.runtime/Composer, kotlin/Int, kotlin/Unit>?, kotlin/Boolean, kotlin/Long, kotlin/Boolean, kotlin/Boolean, androidx.compose.runtime/Composer?, kotlin/Int, kotlin/Int, kotlin/Int) // app.simt.ui.components.forms/NumberStepperField|NumberStepperField(kotlin.String;kotlin.Int;kotlin.Function1<kotlin.Int,kotlin.Unit>;kotlin.Int?;kotlin.Int?;androidx.compose.ui.Modifier?;kotlin.String?;kotlin.Int;kotlin.Function2<androidx.compose.runtime.Composer,kotlin.Int,kotlin.Unit>?;kotlin.Boolean;kotlin.Long;kotlin.Boolean;kotlin.Boolean;androidx.compose.runtime.Composer?;kotlin.Int;kotlin.Int;kotlin.Int){}[0]
 final fun app.simt.ui.components.forms/RadioOptionLine(kotlin/Boolean, kotlin/String, kotlin/Function0<kotlin/Unit>, androidx.compose.ui/Modifier?, kotlin/String?, androidx.compose.foundation.layout/PaddingValues?, kotlin/Function2<androidx.compose.runtime/Composer, kotlin/Int, kotlin/Unit>, androidx.compose.runtime/Composer?, kotlin/Int, kotlin/Int) // app.simt.ui.components.forms/RadioOptionLine|RadioOptionLine(kotlin.Boolean;kotlin.String;kotlin.Function0<kotlin.Unit>;androidx.compose.ui.Modifier?;kotlin.String?;androidx.compose.foundation.layout.PaddingValues?;kotlin.Function2<androidx.compose.runtime.Composer,kotlin.Int,kotlin.Unit>;androidx.compose.runtime.Composer?;kotlin.Int;kotlin.Int){}[0]
 final fun app.simt.ui.components.forms/SettingLine(kotlin/String, kotlin/Boolean, kotlin/Function1<kotlin/Boolean, kotlin/Unit>, androidx.compose.ui/Modifier?, kotlin/Boolean, kotlin/String?, kotlin/Function2<androidx.compose.runtime/Composer, kotlin/Int, kotlin/Unit>?, kotlin/Boolean, kotlin/Function0<kotlin/Unit>?, kotlin/String?, androidx.compose.runtime/Composer?, kotlin/Int, kotlin/Int) // app.simt.ui.components.forms/SettingLine|SettingLine(kotlin.String;kotlin.Boolean;kotlin.Function1<kotlin.Boolean,kotlin.Unit>;androidx.compose.ui.Modifier?;kotlin.Boolean;kotlin.String?;kotlin.Function2<androidx.compose.runtime.Composer,kotlin.Int,kotlin.Unit>?;kotlin.Boolean;kotlin.Function0<kotlin.Unit>?;kotlin.String?;androidx.compose.runtime.Composer?;kotlin.Int;kotlin.Int){}[0]
+final fun app.simt.ui.components.forms/app_simt_ui_components_forms_AppMultiChoiceOption$stableprop_getter(): kotlin/Int // app.simt.ui.components.forms/app_simt_ui_components_forms_AppMultiChoiceOption$stableprop_getter|app_simt_ui_components_forms_AppMultiChoiceOption$stableprop_getter(){}[0]
+final fun app.simt.ui.components.forms/app_simt_ui_components_forms_AppMultiChoiceState$stableprop_getter(): kotlin/Int // app.simt.ui.components.forms/app_simt_ui_components_forms_AppMultiChoiceState$stableprop_getter|app_simt_ui_components_forms_AppMultiChoiceState$stableprop_getter(){}[0]
+final fun app.simt.ui.components.forms/app_simt_ui_components_forms_AppSelectOption$stableprop_getter(): kotlin/Int // app.simt.ui.components.forms/app_simt_ui_components_forms_AppSelectOption$stableprop_getter|app_simt_ui_components_forms_AppSelectOption$stableprop_getter(){}[0]
+final fun app.simt.ui.components.forms/app_simt_ui_components_forms_AppSingleChoiceState$stableprop_getter(): kotlin/Int // app.simt.ui.components.forms/app_simt_ui_components_forms_AppSingleChoiceState$stableprop_getter|app_simt_ui_components_forms_AppSingleChoiceState$stableprop_getter(){}[0]
 final fun app.simt.ui.components/GradientDivider(androidx.compose.ui/Modifier?, androidx.compose.ui.unit/Dp, kotlin/Float, androidx.compose.runtime/Composer?, kotlin/Int, kotlin/Int) // app.simt.ui.components/GradientDivider|GradientDivider(androidx.compose.ui.Modifier?;androidx.compose.ui.unit.Dp;kotlin.Float;androidx.compose.runtime.Composer?;kotlin.Int;kotlin.Int){}[0]
 final fun app.simt.ui.components/TopOverlayHeader(kotlin/String, kotlin/Function0<kotlin/Unit>, androidx.compose.ui/Modifier?, kotlin/Boolean, kotlin/String?, kotlin/Function2<androidx.compose.runtime/Composer, kotlin/Int, kotlin/Unit>?, kotlin.collections/List<app.simt.ui.components/TopOverlayToolToggle>?, androidx.compose.ui/Modifier?, androidx.compose.ui.graphics/Color, androidx.compose.ui.graphics/Color, kotlin/String?, kotlin/Function2<androidx.compose.runtime/Composer, kotlin/Int, kotlin/Unit>?, kotlin/Function0<kotlin/Unit>?, androidx.compose.runtime/Composer?, kotlin/Int, kotlin/Int, kotlin/Int) // app.simt.ui.components/TopOverlayHeader|TopOverlayHeader(kotlin.String;kotlin.Function0<kotlin.Unit>;androidx.compose.ui.Modifier?;kotlin.Boolean;kotlin.String?;kotlin.Function2<androidx.compose.runtime.Composer,kotlin.Int,kotlin.Unit>?;kotlin.collections.List<app.simt.ui.components.TopOverlayToolToggle>?;androidx.compose.ui.Modifier?;androidx.compose.ui.graphics.Color;androidx.compose.ui.graphics.Color;kotlin.String?;kotlin.Function2<androidx.compose.runtime.Composer,kotlin.Int,kotlin.Unit>?;kotlin.Function0<kotlin.Unit>?;androidx.compose.runtime.Composer?;kotlin.Int;kotlin.Int;kotlin.Int){}[0]
 final fun app.simt.ui.components/WindowedList(androidx.compose.ui/Modifier?, androidx.compose.foundation.lazy/LazyListState?, androidx.compose.foundation.layout/PaddingValues?, androidx.compose.foundation.layout/Arrangement.Vertical?, androidx.compose.ui/Alignment.Horizontal?, kotlin/Boolean, kotlin/Boolean, kotlin/Boolean, androidx.compose.ui.unit/Dp, kotlin/Boolean, androidx.compose.ui.graphics/Color, kotlin/Function1<androidx.compose.foundation.lazy/LazyListScope, kotlin/Unit>, androidx.compose.runtime/Composer?, kotlin/Int, kotlin/Int, kotlin/Int) // app.simt.ui.components/WindowedList|WindowedList(androidx.compose.ui.Modifier?;androidx.compose.foundation.lazy.LazyListState?;androidx.compose.foundation.layout.PaddingValues?;androidx.compose.foundation.layout.Arrangement.Vertical?;androidx.compose.ui.Alignment.Horizontal?;kotlin.Boolean;kotlin.Boolean;kotlin.Boolean;androidx.compose.ui.unit.Dp;kotlin.Boolean;androidx.compose.ui.graphics.Color;kotlin.Function1<androidx.compose.foundation.lazy.LazyListScope,kotlin.Unit>;androidx.compose.runtime.Composer?;kotlin.Int;kotlin.Int;kotlin.Int){}[0]

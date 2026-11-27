@@ -2,6 +2,7 @@
 <resources>
     <string name="simt_ui_close">إغلاق</string>
     <string name="simt_ui_cd_clear">مسح النص</string>
+    <string name="simt_ui_cd_selected">محدد</string>
     <string name="simt_ui_city_name">اسم المدينة</string>
     <string name="simt_ui_enter_city_name">أدخل اسم المدينة</string>
     <string name="simt_ui_country_code_label">رمز الدولة (حرفين)</string>

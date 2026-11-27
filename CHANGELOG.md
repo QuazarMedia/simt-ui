@@ -30,6 +30,8 @@
 - Host tests for the QR width rule (`QrCodeFullscreenOverlayTest`, ported from simt-app).
 - Basic form controls extracted from simt-app `core:ui` in commonMain — `DebouncedTextField` (trailing-edge debounce with the latest callback), `RadioOptionLine` (caller-owned selection with animated content) and `SettingLine` (switch or permission action, with a 48 dp minimum permission-button target).
 - Robolectric host behavior tests for the basic form controls (`BasicFormsTest`: debounce timing and callback replacement, radio row/button selection, permission-to-switch transition, touch-target size and disabled state).
+- Choice and select controls extracted from simt-app `core:ui` in commonMain — `AppMultiChoice` / `AppSingleChoice` with remembered selection state, wrapping/scrolling layouts, icons and tooltips, plus `AppSelectField` with a height-capped dropdown and localized selected description.
+- Robolectric host behavior tests for the choice controls (`ChoiceControlsTest`: minimum and optional selection, disabled controls, long-press suppression, and select-field choice propagation).
 
 ### Notes
 

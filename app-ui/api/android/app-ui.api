@@ -170,6 +170,108 @@ public final class app/simt/ui/components/dialogs/SimtDialogVariant : java/lang/
 	public static fun values ()[Lapp/simt/ui/components/dialogs/SimtDialogVariant;
 }
 
+public final class app/simt/ui/components/forms/AppMultiChoiceColor : java/lang/Enum {
+	public static final field Primary Lapp/simt/ui/components/forms/AppMultiChoiceColor;
+	public static final field Secondary Lapp/simt/ui/components/forms/AppMultiChoiceColor;
+	public static final field Tertiary Lapp/simt/ui/components/forms/AppMultiChoiceColor;
+	public static fun getEntries ()Lkotlin/enums/EnumEntries;
+	public static fun valueOf (Ljava/lang/String;)Lapp/simt/ui/components/forms/AppMultiChoiceColor;
+	public static fun values ()[Lapp/simt/ui/components/forms/AppMultiChoiceColor;
+}
+
+public final class app/simt/ui/components/forms/AppMultiChoiceIconDisplay : java/lang/Enum {
+	public static final field Always Lapp/simt/ui/components/forms/AppMultiChoiceIconDisplay;
+	public static final field WhenSelected Lapp/simt/ui/components/forms/AppMultiChoiceIconDisplay;
+	public static fun getEntries ()Lkotlin/enums/EnumEntries;
+	public static fun valueOf (Ljava/lang/String;)Lapp/simt/ui/components/forms/AppMultiChoiceIconDisplay;
+	public static fun values ()[Lapp/simt/ui/components/forms/AppMultiChoiceIconDisplay;
+}
+
+public final class app/simt/ui/components/forms/AppMultiChoiceKt {
+	public static final fun AppMultiChoice (Ljava/util/List;Lapp/simt/ui/components/forms/AppMultiChoiceState;Landroidx/compose/ui/Modifier;Lapp/simt/ui/components/forms/AppMultiChoiceLayout;Lapp/simt/ui/components/forms/AppMultiChoiceColor;Lapp/simt/ui/components/forms/AppMultiChoiceIconDisplay;Lkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function1;Landroidx/compose/runtime/Composer;II)V
+	public static final fun rememberAppMultiChoiceState (Ljava/util/Set;ILandroidx/compose/runtime/Composer;II)Lapp/simt/ui/components/forms/AppMultiChoiceState;
+}
+
+public final class app/simt/ui/components/forms/AppMultiChoiceLayout : java/lang/Enum {
+	public static final field Scroll Lapp/simt/ui/components/forms/AppMultiChoiceLayout;
+	public static final field Wrap Lapp/simt/ui/components/forms/AppMultiChoiceLayout;
+	public static fun getEntries ()Lkotlin/enums/EnumEntries;
+	public static fun valueOf (Ljava/lang/String;)Lapp/simt/ui/components/forms/AppMultiChoiceLayout;
+	public static fun values ()[Lapp/simt/ui/components/forms/AppMultiChoiceLayout;
+}
+
+public final class app/simt/ui/components/forms/AppMultiChoiceOption {
+	public static final field $stable I
+	public synthetic fun <init> (Ljava/lang/Object;Ljava/lang/String;Ljava/lang/String;Landroidx/compose/ui/graphics/vector/ImageVector;Landroidx/compose/ui/graphics/Color;ZZILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public synthetic fun <init> (Ljava/lang/Object;Ljava/lang/String;Ljava/lang/String;Landroidx/compose/ui/graphics/vector/ImageVector;Landroidx/compose/ui/graphics/Color;ZZLkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public final fun component1 ()Ljava/lang/Object;
+	public final fun component2 ()Ljava/lang/String;
+	public final fun component3 ()Ljava/lang/String;
+	public final fun component4 ()Landroidx/compose/ui/graphics/vector/ImageVector;
+	public final fun component5-QN2ZGVo ()Landroidx/compose/ui/graphics/Color;
+	public final fun component6 ()Z
+	public final fun component7 ()Z
+	public final fun copy-pO7O5F0 (Ljava/lang/Object;Ljava/lang/String;Ljava/lang/String;Landroidx/compose/ui/graphics/vector/ImageVector;Landroidx/compose/ui/graphics/Color;ZZ)Lapp/simt/ui/components/forms/AppMultiChoiceOption;
+	public static synthetic fun copy-pO7O5F0$default (Lapp/simt/ui/components/forms/AppMultiChoiceOption;Ljava/lang/Object;Ljava/lang/String;Ljava/lang/String;Landroidx/compose/ui/graphics/vector/ImageVector;Landroidx/compose/ui/graphics/Color;ZZILjava/lang/Object;)Lapp/simt/ui/components/forms/AppMultiChoiceOption;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getEnabled ()Z
+	public final fun getHighlighted ()Z
+	public final fun getIcon ()Landroidx/compose/ui/graphics/vector/ImageVector;
+	public final fun getIconColor-QN2ZGVo ()Landroidx/compose/ui/graphics/Color;
+	public final fun getLabel ()Ljava/lang/String;
+	public final fun getTooltip ()Ljava/lang/String;
+	public final fun getValue ()Ljava/lang/Object;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class app/simt/ui/components/forms/AppMultiChoiceState {
+	public static final field $stable I
+	public fun <init> (Ljava/util/Set;I)V
+	public synthetic fun <init> (Ljava/util/Set;IILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public final fun getMinSelected ()I
+	public final fun getSelected ()Ljava/util/Set;
+	public final fun select (Ljava/lang/Object;)V
+	public final fun toggle (Ljava/lang/Object;)V
+}
+
+public final class app/simt/ui/components/forms/AppSelectFieldKt {
+	public static final fun AppSelectField-aqv2aB4 (Ljava/util/List;Ljava/lang/Object;Lkotlin/jvm/functions/Function1;Ljava/lang/String;Landroidx/compose/ui/Modifier;Ljava/lang/String;Landroidx/compose/ui/graphics/vector/ImageVector;ZLkotlin/jvm/functions/Function2;FLandroidx/compose/runtime/Composer;II)V
+}
+
+public final class app/simt/ui/components/forms/AppSelectOption {
+	public static final field $stable I
+	public fun <init> (Ljava/lang/Object;Ljava/lang/String;Ljava/lang/String;Landroidx/compose/ui/graphics/vector/ImageVector;)V
+	public synthetic fun <init> (Ljava/lang/Object;Ljava/lang/String;Ljava/lang/String;Landroidx/compose/ui/graphics/vector/ImageVector;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public final fun component1 ()Ljava/lang/Object;
+	public final fun component2 ()Ljava/lang/String;
+	public final fun component3 ()Ljava/lang/String;
+	public final fun component4 ()Landroidx/compose/ui/graphics/vector/ImageVector;
+	public final fun copy (Ljava/lang/Object;Ljava/lang/String;Ljava/lang/String;Landroidx/compose/ui/graphics/vector/ImageVector;)Lapp/simt/ui/components/forms/AppSelectOption;
+	public static synthetic fun copy$default (Lapp/simt/ui/components/forms/AppSelectOption;Ljava/lang/Object;Ljava/lang/String;Ljava/lang/String;Landroidx/compose/ui/graphics/vector/ImageVector;ILjava/lang/Object;)Lapp/simt/ui/components/forms/AppSelectOption;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getIcon ()Landroidx/compose/ui/graphics/vector/ImageVector;
+	public final fun getLabel ()Ljava/lang/String;
+	public final fun getSupportingText ()Ljava/lang/String;
+	public final fun getValue ()Ljava/lang/Object;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class app/simt/ui/components/forms/AppSingleChoiceKt {
+	public static final fun AppSingleChoice (Ljava/util/List;Lapp/simt/ui/components/forms/AppSingleChoiceState;Landroidx/compose/ui/Modifier;Lapp/simt/ui/components/forms/AppMultiChoiceLayout;Lapp/simt/ui/components/forms/AppMultiChoiceColor;Lapp/simt/ui/components/forms/AppMultiChoiceIconDisplay;Lkotlin/jvm/functions/Function1;Landroidx/compose/runtime/Composer;II)V
+	public static final fun rememberAppSingleChoiceState (Ljava/lang/Object;ZLandroidx/compose/runtime/Composer;II)Lapp/simt/ui/components/forms/AppSingleChoiceState;
+}
+
+public final class app/simt/ui/components/forms/AppSingleChoiceState {
+	public static final field $stable I
+	public fun <init> (Ljava/lang/Object;Z)V
+	public synthetic fun <init> (Ljava/lang/Object;ZILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public final fun getRequired ()Z
+	public final fun getSelected ()Ljava/lang/Object;
+	public final fun select (Ljava/lang/Object;)V
+}
+
 public final class app/simt/ui/components/forms/CityCountryFieldsKt {
 	public static final field CITY_NAME_MAX_LENGTH I
 	public static final field COUNTRY_CODE_LENGTH I
@@ -178,6 +280,12 @@ public final class app/simt/ui/components/forms/CityCountryFieldsKt {
 
 public final class app/simt/ui/components/forms/ClearableTextFieldKt {
 	public static final fun ClearableTextField (Ljava/lang/String;Lkotlin/jvm/functions/Function1;Ljava/lang/String;Landroidx/compose/ui/Modifier;Ljava/lang/String;ZZLjava/lang/Integer;IILandroidx/compose/foundation/text/KeyboardOptions;Landroidx/compose/ui/graphics/vector/ImageVector;Lkotlin/jvm/functions/Function2;ZLkotlin/jvm/functions/Function0;Landroidx/compose/ui/text/input/VisualTransformation;Ljava/lang/String;Ljava/lang/String;Landroidx/compose/runtime/Composer;III)V
+}
+
+public final class app/simt/ui/components/forms/ComposableSingletons$AppSelectFieldKt {
+	public static final field INSTANCE Lapp/simt/ui/components/forms/ComposableSingletons$AppSelectFieldKt;
+	public fun <init> ()V
+	public final fun getLambda$787072084$app_simt_app_ui ()Lkotlin/jvm/functions/Function2;
 }
 
 public final class app/simt/ui/components/forms/ComposableSingletons$NumberStepperFieldKt {
