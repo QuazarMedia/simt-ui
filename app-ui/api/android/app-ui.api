@@ -48,8 +48,22 @@ public final class app/simt/ui/components/WindowedListKt {
 	public static final fun WindowedList-KFd677o (Ljava/util/List;Lkotlin/jvm/functions/Function1;Landroidx/compose/ui/Modifier;Landroidx/compose/foundation/lazy/LazyListState;Landroidx/compose/foundation/layout/PaddingValues;Landroidx/compose/foundation/layout/Arrangement$Vertical;Landroidx/compose/ui/Alignment$Horizontal;Lkotlin/jvm/functions/Function1;ZFZJLkotlin/jvm/functions/Function2;Lkotlin/jvm/functions/Function4;Landroidx/compose/runtime/Composer;III)V
 }
 
+public final class app/simt/ui/components/backgrounds/CosmosBackgroundKt {
+	public static final fun CosmosBackground-Sj8uqqQ (Landroidx/compose/ui/Modifier;Lapp/simt/ui/components/backgrounds/CosmosVariant;Lkotlin/jvm/functions/Function0;Landroidx/compose/ui/graphics/Color;ZLandroidx/compose/runtime/Composer;II)V
+}
+
 public final class app/simt/ui/components/backgrounds/CosmosSpecksKt {
 	public static final fun CosmosSpecks (Ljava/util/List;Landroidx/compose/ui/Modifier;ILandroidx/compose/runtime/Composer;II)V
+}
+
+public final class app/simt/ui/components/backgrounds/CosmosVariant : java/lang/Enum {
+	public static final field Dialog Lapp/simt/ui/components/backgrounds/CosmosVariant;
+	public static final field Gate Lapp/simt/ui/components/backgrounds/CosmosVariant;
+	public static final field Home Lapp/simt/ui/components/backgrounds/CosmosVariant;
+	public static final field Panel Lapp/simt/ui/components/backgrounds/CosmosVariant;
+	public static fun getEntries ()Lkotlin/enums/EnumEntries;
+	public static fun valueOf (Ljava/lang/String;)Lapp/simt/ui/components/backgrounds/CosmosVariant;
+	public static fun values ()[Lapp/simt/ui/components/backgrounds/CosmosVariant;
 }
 
 public final class app/simt/ui/components/backgrounds/GradientBackgroundKt {
