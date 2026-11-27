@@ -10,7 +10,11 @@
     "coverage": null,
     "fileLines": {
       "warn": 400,
-      "error": 1000
+      "error": 1000,
+      "exclude": [
+        "app-ui/api/android/app-ui.api",
+        "app-ui/api/app-ui.klib.api"
+      ]
     }
   },
   "gates": {
