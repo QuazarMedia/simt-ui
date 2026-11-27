@@ -40,7 +40,8 @@
 - Reusable `InfoRow`, `MetricBadge` and `CustomToolbar` layout primitives in `app.simt.ui.components.layout` (commonMain), with caller-owned content, theme, modifiers and callbacks.
 - `AccordionGroup` in `app.simt.ui.components.layout` (commonMain), with caller-owned expansion, labels, optional subtitle/count, tri-state and long-press actions, 48 dp action targets and reduced-motion-aware transitions.
 - `EditableItemCard` and `EditableItemViewAction` in `app.simt.ui.components.layout` (commonMain), with caller-owned icons, accessibility labels, warning content, title/view/edit/delete actions, replacement edit content and 48 dp disabled-safe action targets.
-- Robolectric host behavior tests for layout rows, metric labels, callback replacement, horizontally scrolling toolbar actions, accordion disclosure, tri-state isolation, long press, touch targets, motion policy, editable-item action isolation, disabled semantics and edit save/cancel forwarding (`LayoutPrimitivesTest`, `AccordionGroupTest`, `EditableItemCardTest`).
+- `AppScreen` in `app.simt.ui.components.layout` (commonMain), a string-based full-screen layout with caller-owned background, header, action and content slots, horizontal/bottom safe-drawing insets, optional scrolling and shared dialog-action defaults.
+- Robolectric host behavior tests for layout rows, metric labels, callback replacement, horizontally scrolling toolbar actions, accordion disclosure, tri-state isolation, long press, touch targets, motion policy, editable-item action isolation, disabled semantics and edit save/cancel forwarding, plus AppScreen composition, single root-modifier application, action routing, disabled save and fixed/scrollable content (`LayoutPrimitivesTest`, `AccordionGroupTest`, `EditableItemCardTest`, `AppScreenTest`).
 
 ### Notes
 
