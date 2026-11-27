@@ -98,6 +98,8 @@ Layer-2 presets built on it: `ConfirmDialog` (confirm/cancel callbacks, destruct
 
 `CanopyGlass`, `GradientBackground` and `GradientDivider` are the glass/gradient surfaces; `InformationBanner` is a closable informational row; `DialogActionButtons` is the labeled action row with stable `modal_button_cancel` / `modal_button_save` test tags; `DataField` wraps a labeled input with error text. `DebouncedTextField`, `RadioOptionLine` and `SettingLine` complete the extracted basic form-control kit.
 
+`OverlayIconButton`, `QuickActionButton`, `LockButton`, `FavoriteToggleButton`, `VisibilityToggleButton` and `BetaChip` retain caller-owned state, callbacks and Material3 styling. Toggle and lock descriptions are localized; favorite and visibility controls combine tap and long-press tooltip behavior without changing the caller's value directly.
+
 ### Motion and tier (`app.simt.ui.effects`)
 
 `SimtMotion` is the central Cosmos motion spec (FAST 150 ms / MEDIUM 300 ms, enter/exit/transform easings, `enterSpec`/`exitSpec`). `CosmosTier` (`FULL` / `REDUCED` / `STATIC`) with `LocalCosmosTier` (default `FULL`) lets shared UI degrade ambient animation on lower-performance devices; app roots should provide the tier from their device performance level.

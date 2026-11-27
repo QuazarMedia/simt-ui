@@ -63,6 +63,30 @@ public final class app/simt/ui/components/buttons/DialogActionButtonsKt {
 	public static final fun SaveButton (Lkotlin/jvm/functions/Function0;Landroidx/compose/ui/Modifier;Ljava/lang/String;Landroidx/compose/ui/graphics/vector/ImageVector;ZLandroidx/compose/material3/ButtonColors;Landroidx/compose/runtime/Composer;II)V
 }
 
+public final class app/simt/ui/components/buttons/FavoriteToggleButtonKt {
+	public static final fun FavoriteToggleButton (ZLkotlin/jvm/functions/Function1;Landroidx/compose/ui/Modifier;Landroidx/compose/runtime/Composer;II)V
+}
+
+public final class app/simt/ui/components/buttons/LockButtonKt {
+	public static final fun LockButton-cf5BqRc (ZLkotlin/jvm/functions/Function0;JLandroidx/compose/ui/Modifier;Landroidx/compose/runtime/Composer;II)V
+}
+
+public final class app/simt/ui/components/buttons/OverlayIconButtonKt {
+	public static final fun OverlayIconButton-E3aWhrw (Landroidx/compose/ui/graphics/vector/ImageVector;Lkotlin/jvm/functions/Function0;Landroidx/compose/ui/Modifier;ZLjava/lang/String;JJJLandroidx/compose/runtime/Composer;II)V
+}
+
+public final class app/simt/ui/components/buttons/QuickActionButtonKt {
+	public static final fun QuickActionButton-uDo3WH8 (Landroidx/compose/ui/graphics/vector/ImageVector;Ljava/lang/String;Lkotlin/jvm/functions/Function0;JLandroidx/compose/ui/Modifier;Landroidx/compose/runtime/Composer;II)V
+}
+
+public final class app/simt/ui/components/buttons/VisibilityToggleButtonKt {
+	public static final fun VisibilityToggleButton (ZLkotlin/jvm/functions/Function1;Landroidx/compose/ui/Modifier;Landroidx/compose/runtime/Composer;II)V
+}
+
+public final class app/simt/ui/components/chips/BetaChipKt {
+	public static final fun BetaChip-FNF3uiM (Landroidx/compose/ui/Modifier;Ljava/lang/String;JLandroidx/compose/runtime/Composer;II)V
+}
+
 public final class app/simt/ui/components/dialogs/ActionListDialogKt {
 	public static final fun ActionListDialog (Ljava/lang/String;Ljava/util/List;Lkotlin/jvm/functions/Function0;Landroidx/compose/runtime/Composer;I)V
 }

@@ -56,4 +56,10 @@
     <string name="simt_ui_tle_error_format">Format TLE invalide (lignes commençant par 1 et 2).</string>
     <string name="simt_ui_tle_error_checksum_format">Format de checksum TLE invalide.</string>
     <string name="simt_ui_tle_error_checksum_invalid">Checksum TLE invalide.</string>
+    <string name="simt_ui_action_lock">Verrouiller</string>
+    <string name="simt_ui_action_unlock">Déverrouiller</string>
+    <string name="simt_ui_add_to_favorites">Ajouter aux favoris</string>
+    <string name="simt_ui_remove_from_favorites">Retirer des favoris</string>
+    <string name="simt_ui_show_target">Afficher la cible</string>
+    <string name="simt_ui_hide_target">Masquer la cible</string>
 </resources>

@@ -56,4 +56,10 @@
     <string name="simt_ui_tle_error_format">تنسيق TLE غير صالح (يجب أن تبدأ الأسطر بـ 1 و2).</string>
     <string name="simt_ui_tle_error_checksum_format">تنسيق التحقق (checksum) في TLE غير صالح.</string>
     <string name="simt_ui_tle_error_checksum_invalid">قيمة التحقق (checksum) في TLE غير صحيحة.</string>
+    <string name="simt_ui_action_lock">قفل</string>
+    <string name="simt_ui_action_unlock">فتح القفل</string>
+    <string name="simt_ui_add_to_favorites">إضافة إلى المفضلة</string>
+    <string name="simt_ui_remove_from_favorites">إزالة من المفضلة</string>
+    <string name="simt_ui_show_target">عرض الهدف</string>
+    <string name="simt_ui_hide_target">إخفاء الهدف</string>
 </resources>
