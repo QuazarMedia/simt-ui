@@ -13,6 +13,12 @@
           "light": "daylight"
         }
       }
+    },
+    {
+      "id": "app-ui",
+      "packageDirectory": "../app-ui",
+      "kind": "native",
+      "published": true
     }
   ]
 }

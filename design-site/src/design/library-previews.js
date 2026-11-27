@@ -1,6 +1,7 @@
 import { readFileSync, readdirSync } from 'node:fs';
 import { resolve, dirname, relative } from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
+import { loadNativeLibrary, nativeCoverage, nativeLibraryPage } from './native-library.js';
 
 const esc = (value) =>
   String(value).replaceAll('&', '&amp;').replaceAll('<', '&lt;').replaceAll('>', '&gt;').replaceAll('"', '&quot;');
@@ -82,16 +83,22 @@ const bindPackageManifest = (manifest, packageName) => {
 
 async function loadLibrary(config) {
   if (!/^[a-z0-9-]+$/.test(config.id)) throw new Error(`Unsafe library id: ${config.id}`);
+  if (!['web', 'native'].includes(config.kind)) throw new Error(`Unsupported library kind: ${config.kind}`);
   const packageRoot = resolve(siteRoot, config.packageDirectory);
-  const metadata = JSON.parse(readFileSync(resolve(packageRoot, 'package.json'), 'utf8'));
-  const manifestPath = resolve(packageRoot, config.manifest ?? 'preview.manifest.js');
+  const manifestFile = config.manifest ?? 'preview.manifest.js';
+  const manifestPath = resolve(packageRoot, manifestFile);
   const rawManifest = (await import(pathToFileURL(manifestPath).href)).default;
-  const manifest = bindPackageManifest(rawManifest, metadata.name);
-  if (manifest.id !== config.id) throw new Error(`${config.id}: manifest id does not match the registry`);
-  const ids = manifest.components.map((component) => component.id);
+  if (rawManifest.id !== config.id) throw new Error(`${config.id}: manifest id does not match the registry`);
+  const ids = rawManifest.components.map((component) => component.id);
   if (new Set(ids).size !== ids.length) throw new Error(`${config.id}: preview component ids must be unique`);
-  const files = config.kind === 'web' ? sourceFiles(packageRoot) : [];
-  const sources = new Map(
+
+  const native = config.kind === 'native' ? loadNativeLibrary(packageRoot, rawManifest) : null;
+  const metadata =
+    native?.metadata ??
+    JSON.parse(readFileSync(resolve(packageRoot, 'package.json'), 'utf8'));
+  const manifest = native?.manifest ?? bindPackageManifest(rawManifest, metadata.name);
+  const files = native?.files ?? sourceFiles(packageRoot);
+  const sources = native?.sources ?? new Map(
     files.map((path) => [path, readFileSync(resolve(packageRoot, 'src', path), 'utf8')]),
   );
   const runtimeEntry = packagePath(metadata.exports?.['.'] ?? 'src/index.mjs');
@@ -103,21 +110,22 @@ async function loadLibrary(config) {
   const route = `libraries/${config.id}`;
   return {
     ...config,
+    ...native,
     packageRoot,
     metadata,
     manifest,
-    manifestFile: config.manifest ?? 'preview.manifest.js',
+    manifestFile,
     files,
     sources,
     runtimeEntry,
     bootstrap,
     route,
     path: route,
-    previewPath: `${route}/preview`,
+    previewPath: config.kind === 'web' ? `${route}/preview` : null,
     url: `/${route}/`,
-    previewUrl: `/${route}/preview/`,
-    runtimeUrl: `/${route}/runtime/${runtimeEntry}`,
-    packageUrl: `/${route}/package.json`,
+    previewUrl: config.kind === 'web' ? `/${route}/preview/` : null,
+    runtimeUrl: config.kind === 'web' ? `/${route}/runtime/${runtimeEntry}` : null,
+    packageUrl: config.kind === 'web' ? `/${route}/package.json` : null,
     manifestUrl: `/${route}/preview.manifest.js`,
     stylesheet: metadata.exports?.['./styles.css']
       ? `/${route}/runtime/${packagePath(metadata.exports['./styles.css'])}`
@@ -128,6 +136,7 @@ async function loadLibrary(config) {
 export const libraries = await Promise.all((registry.libraries ?? []).map(loadLibrary));
 export const publishedLibraries = libraries.filter((library) => library.published);
 export const webLibraries = publishedLibraries.filter((library) => library.kind === 'web');
+export const nativeLibraries = publishedLibraries.filter((library) => library.kind === 'native');
 
 export function libraryPreviewRewrites(library) {
   if (library.kind !== 'web') return [];
@@ -136,6 +145,7 @@ export function libraryPreviewRewrites(library) {
 }
 
 export function libraryCoverage(library) {
+  if (library.kind === 'native') return nativeCoverage(library);
   const markup = `${previewChrome(library)}\n${library.manifest.components.map((component) => component.markup).join('\n')}`;
   const demonstrated = markupClasses(markup);
   const stylesheetSource = library.files
@@ -165,11 +175,11 @@ export function librariesOverviewBody() {
     .map(
       (library) => `<article class="library-card"><div class="library-card-head"><span class="library-kind">${kindLabel(library)}</span><span class="library-version">v${esc(library.metadata.version)}</span></div><h2><a href="${library.url}">${esc(library.metadata.name)}</a></h2><p>${esc(library.manifest.description)}</p><dl class="library-facts"><div><dt>Components</dt><dd>${library.manifest.components.length}</dd></div><div><dt>Source files</dt><dd>${library.files.length}</dd></div><div><dt>Runtime</dt><dd>${library.kind === 'web' ? 'Local ESM + CSS' : 'Native captures'}</dd></div></dl><a class="text-link" href="${library.url}">Open ${esc(library.id)} catalog <span aria-hidden="true">↗</span></a></article>`,
     )
-    .join('')}</section><section class="library-section library-note"><p class="eyebrow">AUTOMATIC BY DEFAULT</p><h2>One registry. Package-owned previews.</h2><p>The registry supplies the package location and preview kind. Package metadata supplies the name, version, exports and entry points. The preview manifest supplies only the examples that need authored markup; source publication and coverage are discovered from the package itself.</p></section></main>`;
+    .join('')}</section><section class="library-section library-note"><p class="eyebrow">AUTOMATIC BY DEFAULT</p><h2>One registry. Package-owned previews.</h2><p>The registry supplies the package location and preview kind. Package metadata or the native manifest supplies the name, version and platforms. Authored examples carry their usage contracts; source publication, ABI discovery and coverage are read from the package itself.</p></section></main>`;
 }
 
 export function libraryPageBody(library) {
-  if (library.kind !== 'web') throw new Error(`${library.id}: native catalog rendering is not registered`);
+  if (library.kind === 'native') return nativeLibraryPage(library);
   const coverage = libraryCoverage(library);
   const exports = Object.entries(library.metadata.exports ?? {});
   return `<main id="main-content"><div class="breadcrumb"><a href="/">Design</a><span aria-hidden="true">/</span><a href="/libraries/">Libraries</a><span aria-hidden="true">/</span><span>${esc(library.id)}</span></div><section class="library-hero"><div><p class="eyebrow">${esc(library.metadata.name.toUpperCase())}</p><h1>${esc(library.manifest.title)}</h1><p class="hero-lede">${esc(library.manifest.description)}</p><div class="hero-actions"><a class="button button-primary" href="#live-preview">Open live preview <span aria-hidden="true">↓</span></a><a class="button button-secondary" href="${library.packageUrl}">Package metadata <span aria-hidden="true">↗</span></a></div></div><aside class="library-package" aria-label="Package facts"><span class="library-status"><span class="status-indicator" aria-hidden="true"></span>LIVE SOURCE</span><strong>v${esc(library.metadata.version)}</strong><p>${esc(library.metadata.description)}</p><dl class="library-facts"><div><dt>Components</dt><dd>${library.manifest.components.length}</dd></div><div><dt>Source files</dt><dd>${library.files.length}</dd></div><div><dt>Dependencies</dt><dd>${Object.keys(library.metadata.dependencies ?? {}).length}</dd></div></dl></aside></section>

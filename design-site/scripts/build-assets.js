@@ -2,7 +2,7 @@ import { cpSync, existsSync, mkdirSync, readFileSync, readdirSync, writeFileSync
 import { resolve, dirname, basename } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import less from 'less';
-import { webLibraries } from '../src/design/library-previews.js';
+import { publishedLibraries, webLibraries } from '../src/design/library-previews.js';
 
 const root = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 const DIST = resolve(root, 'dist');
@@ -50,17 +50,41 @@ export async function buildAssets({ check = false } = {}) {
       readFileSync(resolve(library.packageRoot, library.manifestFile), 'utf8'),
     );
   }
+  for (const library of publishedLibraries.filter((entry) => entry.kind === 'native')) {
+    for (const [file, source] of library.sources) {
+      outputs.set(`${library.route}/source/src/${file}`, source);
+    }
+    for (const surface of library.apiSurfaces) {
+      outputs.set(`${library.route}/api/${surface.path}`, surface.source);
+    }
+    for (const capture of library.captures) {
+      outputs.set(
+        `${library.route}/captures/${capture.capture}`,
+        readFileSync(resolve(library.packageRoot, 'previews', capture.capture)),
+      );
+    }
+    for (const source of library.captureSources) {
+      outputs.set(`${library.route}/capture-source/${source.path}`, source.contents);
+    }
+    outputs.set(
+      `${library.route}/preview.manifest.js`,
+      readFileSync(resolve(library.packageRoot, library.manifestFile), 'utf8'),
+    );
+  }
 
   for (const [path, contents] of outputs) {
     const absolute = resolve(DIST, path);
     if (check) {
       let actual;
       try {
-        actual = readFileSync(absolute, 'utf8');
+        actual = readFileSync(absolute);
       } catch {
         throw new Error(`Missing built file: dist/${path}`);
       }
-      if (actual !== contents) throw new Error(`Built output drift: dist/${path}. Run npm run build.`);
+      const matches = Buffer.isBuffer(contents)
+        ? actual.equals(contents)
+        : actual.equals(Buffer.from(contents));
+      if (!matches) throw new Error(`Built output drift: dist/${path}. Run npm run build.`);
     } else {
       mkdirSync(dirname(absolute), { recursive: true });
       writeFileSync(absolute, contents);

@@ -70,7 +70,7 @@ private fun PreviewSurface(
 ) {
     MaterialTheme(colorScheme = if (isSystemInDarkTheme()) darkColorScheme() else lightColorScheme()) {
         CompositionLocalProvider(LocalUiMotionEnabled provides false, LocalUiHapticsEnabled provides false) {
-            Surface(Modifier.fillMaxWidth().height(height)) {
+            Surface(Modifier.fillMaxWidth().height(height).testTag("preview-surface")) {
                 Column(
                     Modifier.fillMaxSize().padding(16.dp),
                     verticalArrangement = Arrangement.spacedBy(12.dp),

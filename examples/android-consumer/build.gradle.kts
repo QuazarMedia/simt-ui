@@ -69,6 +69,9 @@ dependencies {
 tasks.withType<Test>().configureEach {
     jvmArgs("--add-exports=java.base/jdk.internal.access=ALL-UNNAMED")
     maxParallelForks = 1
+    providers.gradleProperty("previewOutput").orNull?.let { output ->
+        systemProperty("simt.previewOutput", rootProject.file(output).absolutePath)
+    }
 }
 
 // Assert the producer's resource payload survives both packaging and R8.

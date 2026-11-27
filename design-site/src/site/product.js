@@ -32,6 +32,7 @@ export const budgets = {
   libraryPreviewJsGzipBytes: 4096,
   libraryPreviewCssGzipBytes: 6144,
   libraryRuntimeBytes: 32768,
+  libraryNativeAssetsBytes: 1024 * 1024,
   initialFontsBytes: 122880,
   // The index is what an agent reads first; keep it small enough that it always is.
   // Raised twice, from 24 KiB and then 26 KiB, and the growth is content rather
@@ -465,6 +466,9 @@ ${resources.map(doc).join('\n')}`;
       `/*.md\n  ${served('text/markdown')}`,
       `/*.css\n  ${served('text/css')}`,
       `/*.mjs\n  ${served('text/javascript')}`,
+      `/*.kt\n  ${served('text/plain')}`,
+      `/*.api\n  ${served('text/plain')}`,
+      `/libraries/*/captures/*.png\n  Content-Type: image/png\nCache-Control: public, max-age=0, must-revalidate\nX-Content-Type-Options: nosniff`,
       `/libraries/*/preview.manifest.js\n  ${served('text/javascript')}`,
     ];
   }

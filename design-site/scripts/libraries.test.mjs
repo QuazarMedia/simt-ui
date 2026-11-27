@@ -9,6 +9,7 @@ import {
   libraryCoverage,
   publishedLibraries,
   webLibraries,
+  nativeLibraries,
 } from '../src/design/library-previews.js';
 
 const root = resolve(dirname(fileURLToPath(import.meta.url)), '..');
@@ -51,6 +52,56 @@ test('every manifest component reaches both the catalog and the live document', 
     assert(preview.includes('noindex, nofollow'));
     assert(!preview.includes('rel="canonical"'));
     assert(!/<(?:script|link)[^>]+(?:src|href)="https?:\/\//.test(preview));
+  }
+});
+
+test('native catalogs derive version, source, ABI and captures from package-owned evidence', () => {
+  assert(nativeLibraries.length > 0);
+  for (const library of nativeLibraries) {
+    assert.equal(library.metadata.name, 'app.simt:app-ui');
+    const version = readFileSync(resolve(library.packageRoot, '../gradle.properties'), 'utf8')
+      .match(/^VERSION_NAME=(.*)$/m)[1]
+      .trim();
+    assert.equal(library.metadata.version, version);
+    assert(library.files.includes('commonMain/kotlin/app/simt/ui/components/forms/ClearableTextField.kt'));
+    assert(library.files.every((file) => /^(?:commonMain|androidMain|iosMain)\/kotlin\//.test(file)));
+    assert.equal(library.apiFiles.length, 2);
+    assert(libraryCoverage(library).declarationCount > 50);
+    for (const surface of library.apiSurfaces) assert(surface.declarations.length > 0);
+    const declarations = library.apiSurfaces.flatMap((surface) => surface.declarations);
+    assert(declarations.some((entry) => entry.kind === 'interface' && entry.name === 'BlockingLoaderController'));
+    assert(declarations.every((entry) => entry.name !== 'class'));
+    assert(declarations.filter((entry) => entry.kind === 'fun' && entry.name === 'WindowedList').length >= 2);
+    assert.deepEqual(library.metadata.sourceRoots, ['commonMain/kotlin', 'androidMain/kotlin', 'iosMain/kotlin']);
+    assert.equal(library.captures.length, library.manifest.components.length);
+    assert.deepEqual(
+      library.captures.map((capture) => capture.capture).sort(),
+      readdirSync(resolve(library.packageRoot, 'previews')).filter((file) => file.endsWith('.png')).sort(),
+    );
+    for (const capture of library.captures) {
+      const bytes = readFileSync(resolve(library.packageRoot, 'previews', capture.capture));
+      assert.deepEqual([...bytes.subarray(0, 8)], [137, 80, 78, 71, 13, 10, 26, 10]);
+      assert(capture.width > 0 && capture.height > 0);
+    }
+  }
+});
+
+test('native catalogs show real captures without implying browser execution or device evidence', () => {
+  for (const library of nativeLibraries) {
+    const page = outputs.get(`${library.route}/index.html`);
+    assert(page.includes('id="native-previews"'));
+    assert(page.includes('Robolectric Android host capture'));
+    assert(page.includes('not emulator or physical-device evidence'));
+    assert(page.includes('iOS launch, bundled-resource rendering'));
+    assert(!page.includes('<iframe'));
+    assert(!outputs.has(`${library.route}/preview/index.html`));
+    for (const component of library.manifest.components) {
+      assert(page.includes(`id="component-${component.id}"`));
+      assert(page.includes(`${library.route}/captures/${component.capture}`));
+      for (const source of component.source) assert(page.includes(`${library.route}/source/${source}`));
+    }
+    for (const file of library.files) assert(page.includes(`${library.route}/source/src/${file}`));
+    for (const surface of library.apiSurfaces) assert(page.includes(`${library.route}/api/${surface.path}`));
   }
 });
 

@@ -53,14 +53,22 @@ function checkLibraries(outputs) {
     assert(page, `missing library page ${library.route}`);
     assert(page.includes(library.metadata.name), `${library.route}: package name`);
     assert(page.includes(`v${library.metadata.version}`), `${library.route}: package version`);
-    assert(page.includes('data-preview-library') || page.includes('library-preview'), `${library.route}: preview surface`);
+    assert(page.includes('data-preview-library') || page.includes('library-preview') || page.includes('native-previews'), `${library.route}: preview surface`);
     for (const component of library.manifest.components) {
       assert(page.includes(`id="component-${component.id}"`), `${library.route}: missing ${component.id} catalog entry`);
     }
     for (const file of library.files) {
-      assert(page.includes(`${library.route}/runtime/src/${file}`), `${library.route}: missing source link ${file}`);
+      const sourcePath = library.kind === 'web' ? `runtime/src/${file}` : `source/src/${file}`;
+      assert(page.includes(`${library.route}/${sourcePath}`), `${library.route}: missing source link ${file}`);
     }
-    if (library.kind !== 'web') continue;
+    if (library.kind === 'native') {
+      assert(page.includes('id="native-previews"'), `${library.route}: native preview section`);
+      assert(!page.includes('<iframe'), `${library.route}: native catalog must not imply browser execution`);
+      for (const capture of library.captures) {
+        assert(page.includes(`${library.route}/captures/${capture.capture}`), `${library.route}: missing ${capture.capture}`);
+      }
+      continue;
+    }
     assert(page.includes(`src="${library.previewUrl}"`), `${library.route}: isolated preview`);
     const preview = outputs.get(`${library.previewPath}/index.html`);
     assert(preview, `missing preview document ${library.previewPath}`);
@@ -97,6 +105,38 @@ function checkLibraryAssets() {
       readFileSync(join(library.packageRoot, 'package.json'), 'utf8'),
       `${library.id}: package metadata drift`,
     );
+    assert.equal(
+      readFileSync(join(root, 'dist', library.route, 'preview.manifest.js'), 'utf8'),
+      readFileSync(join(library.packageRoot, library.manifestFile), 'utf8'),
+      `${library.id}: preview manifest drift`,
+    );
+  }
+  for (const library of publishedLibraries.filter((entry) => entry.kind === 'native')) {
+    let assetBytes = 0;
+    for (const [file, source] of library.sources) {
+      const path = join(root, 'dist', library.route, 'source', 'src', file);
+      assert.equal(readFileSync(path, 'utf8'), source, `native source drift: ${path}`);
+      assetBytes += statSync(path).size;
+    }
+    for (const surface of library.apiSurfaces) {
+      const path = join(root, 'dist', library.route, 'api', surface.path);
+      assert.equal(readFileSync(path, 'utf8'), surface.source, `native ABI drift: ${path}`);
+      assetBytes += statSync(path).size;
+    }
+    for (const capture of library.captures) {
+      const path = join(root, 'dist', library.route, 'captures', capture.capture);
+      assert(
+        readFileSync(path).equals(readFileSync(join(library.packageRoot, 'previews', capture.capture))),
+        `native capture drift: ${path}`,
+      );
+      assetBytes += statSync(path).size;
+    }
+    for (const source of library.captureSources) {
+      const path = join(root, 'dist', library.route, 'capture-source', source.path);
+      assert.equal(readFileSync(path, 'utf8'), source.contents, `capture source drift: ${path}`);
+      assetBytes += statSync(path).size;
+    }
+    assert(assetBytes <= budgetOf('libraryNativeAssetsBytes'), `${library.id}: native asset byte budget: ${assetBytes}`);
     assert.equal(
       readFileSync(join(root, 'dist', library.route, 'preview.manifest.js'), 'utf8'),
       readFileSync(join(library.packageRoot, library.manifestFile), 'utf8'),
@@ -204,6 +244,9 @@ function checkEnvelope(outputs) {
   const headers = outputs.get('_headers');
   for (const path of ['/robots.txt', '/sitemap.xml', '/releases.xml', '/llms.txt', '/llms-full.txt', '/.well-known/security.txt'])
     assert(headers.includes(`${path}\n`), `missing headers for ${path}`);
+  assert(headers.includes('/*.kt\n  Content-Type: text/plain'), 'Kotlin source content type');
+  assert(headers.includes('/*.api\n  Content-Type: text/plain'), 'ABI dump content type');
+  assert(headers.includes('/libraries/*/captures/*.png\n  Content-Type: image/png'), 'native capture content type');
 }
 
 function checkAssets(outputs) {
@@ -212,7 +255,7 @@ function checkAssets(outputs) {
   assert(!/(?:margin|padding|border)-(left|right)\s*:/.test(stylesheet), 'stylesheet must use logical box properties');
   assert(!/text-align\s*:\s*(?:left|right)\b/.test(stylesheet), 'stylesheet must use logical text alignment');
   for (const html of [...outputs].filter(([path]) => path.endsWith('.html')).map(([, value]) => value)) {
-    for (const [, path] of html.matchAll(/(?:href|src)="(\/(?:assets|styles|images|fonts)\/[^" ]+)"/g))
+    for (const [, path] of html.matchAll(/(?:href|src)="(\/(?:assets|styles|images|fonts|libraries)\/[^" ]+)"/g))
       assert(existsSync(join(root, 'dist', path)), `missing self-hosted asset ${path}`);
   }
   const cssGzip = gzipSync(readFileSync(join(root, 'dist/styles/site.css'))).length;

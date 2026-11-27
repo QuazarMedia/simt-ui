@@ -1,6 +1,8 @@
 package app.simt.ui.preview
 
+import android.graphics.Bitmap
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.graphics.asAndroidBitmap
 import androidx.compose.ui.semantics.ScrollAxisRange
 import androidx.compose.ui.semantics.SemanticsProperties
 import androidx.compose.ui.test.ExperimentalTestApi
@@ -11,6 +13,7 @@ import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.assertIsNotEnabled
 import androidx.compose.ui.test.assertIsNotSelected
 import androidx.compose.ui.test.assertIsSelected
+import androidx.compose.ui.test.captureToImage
 import androidx.compose.ui.test.hasScrollToIndexAction
 import androidx.compose.ui.test.hasSetTextAction
 import androidx.compose.ui.test.hasText
@@ -32,10 +35,11 @@ import org.junit.runner.RunWith
 import org.robolectric.ParameterizedRobolectricTestRunner
 import org.robolectric.annotation.Config
 import org.robolectric.annotation.GraphicsMode
+import java.io.File
 
 @OptIn(ExperimentalTestApi::class)
 @RunWith(ParameterizedRobolectricTestRunner::class)
-@Config(sdk = [36], qualifiers = "en")
+@Config(sdk = [36], qualifiers = "en-w420dp-h800dp-mdpi")
 @GraphicsMode(GraphicsMode.Mode.NATIVE)
 class SharedUiPreviewsTest(private val sample: Sample) {
     enum class Sample {
@@ -148,6 +152,25 @@ class SharedUiPreviewsTest(private val sample: Sample) {
                 compose.onNodeWithText("Bottom inset sample").assertIsDisplayed()
             }
         }
+    }
+
+    @Test
+    fun publishedPreviewProducesNativeGraphicsCapture() {
+        compose.setContent { sample.Render() }
+        compose.waitForIdle()
+        val image = compose.onNodeWithTag("preview-surface").captureToImage()
+        assertTrue("Captured preview has width", image.width > 0)
+        assertTrue("Captured preview has height", image.height > 0)
+
+        val output = System.getProperty("simt.previewOutput") ?: return
+        val directory = File(output)
+        check(directory.isDirectory || directory.mkdirs()) { "Cannot create preview output directory" }
+        val name = sample.name.lowercase().replace('_', '-')
+        val target = File(directory, "$name.png")
+        target.outputStream().use { stream ->
+            check(image.asAndroidBitmap().compress(Bitmap.CompressFormat.PNG, 100, stream)) { "PNG encoding failed" }
+        }
+        assertTrue("Published capture is not empty", target.length() > 0)
     }
 
     private fun assertMidrange(range: ScrollAxisRange) {
