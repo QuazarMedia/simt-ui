@@ -112,6 +112,12 @@ Layer-2 presets built on it: `ConfirmDialog` (confirm/cancel callbacks, destruct
 
 `RoundMultiButton` expands caller-provided icon actions around a main button and owns only transient disclosure state. Disabling the control or removing every item collapses it; activating an item collapses before invoking its callback. Caller-supplied descriptions label the main and item actions. Expansion follows layout direction and `LocalUiMotionEnabled`; reduced motion adds or removes actions immediately without transition frames.
 
+### Backgrounds
+
+`CosmosBackground` provides the shared warm deep-space sky with caller-owned theme colors, optional accent, heading parallax and four density/nebula variants. With UI motion enabled, full tier adds ambient drift and twinkle while reduced tier retains parallax without infinite motion. Disabled UI motion or `frozen` stops ambient animation while FULL/REDUCED tiers retain heading parallax; the STATIC tier stops both ambient motion and parallax.
+
+`AnimatedDialogBackground` (androidMain) applies `CosmosVariant.Gate` and resolves the caller's accent from `AnimatedDialogBackgroundStyle`: `NetworkGrid` uses the secondary color and every other style uses the primary color. `gateHeaderBackground` is the full-size gate renderer for permission and feature header slots. Both forward `frozen`; neither owns host state or visibility.
+
 ### Motion and tier (`app.simt.ui.effects`)
 
 `SimtMotion` is the central Cosmos motion spec (FAST 150 ms / MEDIUM 300 ms, enter/exit/transform easings, `enterSpec`/`exitSpec`). `CosmosTier` (`FULL` / `REDUCED` / `STATIC`) with `LocalCosmosTier` (default `FULL`) lets shared UI degrade ambient animation on lower-performance devices; app roots should provide the tier from their device performance level.
@@ -132,7 +138,7 @@ Layer-2 presets built on it: `ConfirmDialog` (confirm/cancel callbacks, destruct
 
 `PermissionPresentation` bundles the icon, tint and copy resources for one runtime permission; the application owns the mapping from its permission model onto this class. `PermissionRequestDialog` wraps `PermissionGate` with the presentation's copy and grant/cancel button labels.
 
-The animated header background is a caller slot (`headerBackground` on the gate and dialog, `background` on `AnimatedDialogBackground`): the library resolves the accent from `AnimatedDialogBackgroundStyle` (`NetworkGrid` → secondary color, all other styles → primary) and renders a flat tinted wash by default; applications with an ambient background (simt-app's Cosmos gate background) supply their own renderer.
+The animated header background is a caller slot (`headerBackground` on the gate and dialog, `background` on `AnimatedDialogBackground`): the library resolves the accent from `AnimatedDialogBackgroundStyle` (`NetworkGrid` → secondary color, all other styles → primary) and renders a flat tinted wash by default; applications with an ambient background use `components.backgrounds.AnimatedDialogBackground` or `gateHeaderBackground` to render the shared Cosmos gate sky.
 
 ### Toasts (`app.simt.ui.components.toasts`, androidMain)
 
