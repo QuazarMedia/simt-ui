@@ -7,6 +7,7 @@ import os
 import sys
 import unicodedata
 from fontTools.fontBuilder import FontBuilder
+from fontTools.misc.timeTools import timestampSinceEpoch
 from fontTools.pens.ttGlyphPen import TTGlyphPen
 from fontTools.ttLib import newTable
 from fontTools.ttLib.tables._g_l_y_f import OVERLAP_COMPOUND
@@ -32,6 +33,8 @@ LICENSE_DESCRIPTION = (
     "This license is available with a FAQ at: https://openfontlicense.org"
 )
 LICENSE_URL = "https://openfontlicense.org"
+SOURCE_DATE_EPOCH = int(os.environ.get("SOURCE_DATE_EPOCH", "1795737600"))
+BUILD_TIMESTAMP = timestampSinceEpoch(SOURCE_DATE_EPOCH)
 
 WEIGHTS = {
     "Regular": dict(W=82, H=74, g=22, k=62, dot=92, sx=1.0, wght=400),
@@ -89,6 +92,9 @@ def build(style, out_dir, with_arabic=True, extra_cmap=None):
     by = {g.name: g for g in glyphs}
 
     fb = FontBuilder(1000, isTTF=True)
+    # Fixed timestamps keep identical source builds byte-for-byte reproducible.
+    fb.font["head"].created = BUILD_TIMESTAMP
+    fb.font["head"].modified = BUILD_TIMESTAMP
     fb.setupGlyphOrder(order)
     cmap = {}
     for g in glyphs:
