@@ -110,6 +110,8 @@ Layer-2 presets built on it: `ConfirmDialog` (confirm/cancel callbacks, destruct
 
 `app.simt.ui.transitions` provides the shared screen fade/scale transitions and `Modifier.staggeredEntrance`. The entrance runs once per composition, keeps its delay and offset caller-controlled, and renders immediately at the final position when `LocalUiMotionEnabled` is false or the cosmos tier is `STATIC`.
 
+`CosmosSpecks` provides a deterministic ambient star field. `CosmosWaveField`, `CosmosSuccessBurst` and `CosmosErrorBurst` share the same caller-owned motion policy: full tier adds infinite twinkle/glow, reduced tier retains one-shot entrances, and disabled motion or the static tier renders the final visual immediately. The active wave field retains its functional progress indicator when cosmetic motion is disabled.
+
 `GlobalBlockingLoaderHost` (androidMain) renders the `components.loader` contract above everything — including open dialogs — in its own full-screen `Dialog` window: dimmed click-absorbing backdrop, indeterminate or linear progress, optional message chip, an optional interrupt button wired to `controller.requestInterrupt()`, and an optional background-processing warning `InformationBanner`. While visible it keeps the screen on (view flag + window flag, both restored on dispose). The `findActivity` context walk is module-internal; the generic warning copy ships as `simt_ui_blocking_loader_background_processing_warning` in the four locales.
 
 ### Permissions (`app.simt.ui.components.permissions`, androidMain)

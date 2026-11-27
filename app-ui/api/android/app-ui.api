@@ -2,6 +2,12 @@ public final class app/simt/ui/components/CanopyGlassKt {
 	public static final fun canopyGlass-M8YrEPQ (Landroidx/compose/ui/Modifier;Landroidx/compose/ui/graphics/Shape;FFLandroidx/compose/ui/graphics/Color;Landroidx/compose/runtime/Composer;II)Landroidx/compose/ui/Modifier;
 }
 
+public final class app/simt/ui/components/CosmosFxKt {
+	public static final fun CosmosErrorBurst-iJQMabo (Landroidx/compose/ui/Modifier;JLandroidx/compose/runtime/Composer;II)V
+	public static final fun CosmosSuccessBurst-3J-VO9M (JLandroidx/compose/ui/Modifier;Landroidx/compose/runtime/Composer;II)V
+	public static final fun CosmosWaveField-vc5YOHI (JJZLandroidx/compose/ui/graphics/vector/ImageVector;Landroidx/compose/ui/Modifier;Landroidx/compose/runtime/Composer;II)V
+}
+
 public final class app/simt/ui/components/GradientDividerKt {
 	public static final fun GradientDivider-uFdPcIQ (Landroidx/compose/ui/Modifier;FFLandroidx/compose/runtime/Composer;II)V
 }
@@ -40,6 +46,10 @@ public final class app/simt/ui/components/TopOverlayToolToggle {
 public final class app/simt/ui/components/WindowedListKt {
 	public static final fun WindowedList-IpOmDXo (Landroidx/compose/ui/Modifier;Landroidx/compose/foundation/lazy/LazyListState;Landroidx/compose/foundation/layout/PaddingValues;Landroidx/compose/foundation/layout/Arrangement$Vertical;Landroidx/compose/ui/Alignment$Horizontal;ZZZFZJLkotlin/jvm/functions/Function1;Landroidx/compose/runtime/Composer;III)V
 	public static final fun WindowedList-KFd677o (Ljava/util/List;Lkotlin/jvm/functions/Function1;Landroidx/compose/ui/Modifier;Landroidx/compose/foundation/lazy/LazyListState;Landroidx/compose/foundation/layout/PaddingValues;Landroidx/compose/foundation/layout/Arrangement$Vertical;Landroidx/compose/ui/Alignment$Horizontal;Lkotlin/jvm/functions/Function1;ZFZJLkotlin/jvm/functions/Function2;Lkotlin/jvm/functions/Function4;Landroidx/compose/runtime/Composer;III)V
+}
+
+public final class app/simt/ui/components/backgrounds/CosmosSpecksKt {
+	public static final fun CosmosSpecks (Ljava/util/List;Landroidx/compose/ui/Modifier;ILandroidx/compose/runtime/Composer;II)V
 }
 
 public final class app/simt/ui/components/backgrounds/GradientBackgroundKt {
