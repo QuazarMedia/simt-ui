@@ -1,13 +1,13 @@
 SIMT UI
 Copyright Said Elimam
 
-Said Elimam confirmed the required UI/Cosmos code and document rights and approved
+Said Elimam confirmed the required UI and Design code and document rights and approved
 these licenses on 2026-11-17.
 
-Code in this repository, including app-ui and Cosmos JavaScript/JSON schemas,
+Code in this repository, including app-ui and Design JavaScript/JSON schemas,
 is licensed under the Apache License, Version 2.0. See LICENSE.
 
-Cosmos specifications, normative rules, explanatory text and exported
+Design specifications, normative rules, explanatory text and exported
 documentation/data are licensed under Creative Commons Attribution 4.0
 International. See LICENSE-DOCS. Normative text embedded in JavaScript or JSON
 retains CC BY 4.0 attribution requirements.
@@ -18,15 +18,15 @@ organization, Android/iOS seams, explicit API, resources, tests and publication.
 The original source paths and hashes are recorded in app-ui/source-provenance.json.
 
 Cosmos is copied from QuazarMedia/simt-space; the exact upstream commit, unchanged
-source/export hashes and licensing scope are recorded in cosmos-spec/provenance.json.
+source/export hashes and licensing scope are recorded in design-spec/provenance.json.
 Attribution for the frozen snapshot: SIMT Cosmos by Said Elimam, historical
 source https://simt.space/cosmos/design, licensed CC BY 4.0. Retain this notice,
 license references and source attribution, and identify subsequent modifications.
-The independently generated public Cosmos site is canonical at
-https://cosmos.simt.app.
+The independently generated public SIMT Design site is canonical at
+https://design.simt.app.
 
 Third-party code, fonts and dependencies retain their own licenses and notices.
-No third-party font or unrelated site/product assets are included in the Cosmos
+No third-party font or unrelated site/product assets are included in the frozen
 snapshot. No trademark rights are granted.
 
 License permission is not approval to publish, sign or upload a release, and does

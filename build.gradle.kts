@@ -22,7 +22,7 @@ spotless {
         endWithNewline()
     }
     kotlinGradle {
-        target("*.gradle.kts", "app-ui/*.gradle.kts", "cosmos-spec/*.gradle.kts", "cosmos-site/*.gradle.kts", "examples/**/*.gradle.kts")
+        target("*.gradle.kts", "app-ui/*.gradle.kts", "design-spec/*.gradle.kts", "design-site/*.gradle.kts", "examples/**/*.gradle.kts")
         targetExclude("**/build/**")
         ktlint(libs.versions.ktlint.get())
         trimTrailingWhitespace()
@@ -67,15 +67,15 @@ val publicationAudit =
     }
 
 tasks.named("assemble") {
-    dependsOn(":cosmos-site:assemble")
+    dependsOn(":design-site:assemble")
 }
 
 tasks.named("check") {
-    dependsOn(":app-ui:check", ":cosmos-spec:check", ":cosmos-site:check", auditTests, sourceAudit)
+    dependsOn(":app-ui:check", ":design-spec:check", ":design-site:check", auditTests, sourceAudit)
 }
 
 tasks.named("clean") {
-    dependsOn(":cosmos-site:clean")
+    dependsOn(":design-site:clean")
 }
 
 tasks.register("localQuality") {

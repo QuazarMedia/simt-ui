@@ -1,0 +1,22 @@
+SIMT Design
+Copyright Said Elimam
+
+Said Elimam confirmed the required code and document rights and approved these
+licenses on 2026-11-17.
+
+Code: the authored specification JavaScript in design-spec/versions/2.4.0/*.js
+is licensed under the Apache License, Version 2.0. See LICENSE.
+
+Documents: the authored Design specification, normative rules, explanatory text,
+and exported documentation/data are licensed under Creative Commons Attribution 4.0 International. See LICENSE-DOCS.
+Executable source and generated JSON schemas remain under Apache-2.0; normative
+text embedded in source or JSON retains CC BY 4.0 attribution requirements.
+
+Attribution for the frozen upstream snapshot: SIMT Cosmos by Said Elimam,
+historical source https://simt.space/cosmos/design, licensed CC BY 4.0. Retain
+this notice, license references and source attribution, and identify any modifications.
+The current SIMT Design publication is canonical at https://design.simt.app.
+
+This grant does not license unrelated website/product assets, third-party code,
+fonts or dependencies. Their own licenses and notices continue to apply. No
+trademark rights are granted. Font files are not included in the private snapshot.

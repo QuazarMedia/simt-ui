@@ -4,9 +4,9 @@ __pycache__/
 *.pyc
 .kotlin/
 **/build/
-cosmos-site/dist/
-cosmos-site/.wrangler/
-cosmos-site/.dev.vars
+design-site/dist/
+design-site/.wrangler/
+design-site/.dev.vars
 .idea/
 *.iml
 .DS_Store

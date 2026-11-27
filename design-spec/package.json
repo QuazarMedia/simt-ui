@@ -1,0 +1,21 @@
+{
+  "name": "simt-design-spec",
+  "version": "2.3.0",
+  "private": true,
+  "type": "module",
+  "description": "Licensed frozen Cosmos snapshot and authored SIMT Design specifications; code Apache-2.0, documents CC-BY-4.0; release approval separate",
+  "scripts": {
+    "check": "node scripts/check.js integrity && node --test tests/snapshot.test.js",
+    "check:integrity": "node scripts/check.js integrity",
+    "check:canonical-schema": "node scripts/check.js canonical-schema",
+    "test": "node --test tests/snapshot.test.js",
+    "archive:private": "node scripts/check.js archive"
+  },
+  "devDependencies": {
+    "ajv": "8.20.0",
+    "ajv-formats": "3.0.1"
+  },
+  "engines": {
+    "node": ">=22.20.0"
+  }
+}

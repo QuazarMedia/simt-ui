@@ -248,7 +248,7 @@ def validate_legal_document(relative, data, label):
 def forbidden(label):
     # This single operational file declares the public static Worker. Keep every
     # other Wrangler configuration forbidden, including nested/archive copies.
-    if label.lower() in ('cosmos-site/wrangler.jsonc', 'history/cosmos-site/wrangler.jsonc'):
+    if label.lower() in ('design-site/wrangler.jsonc', 'history/cosmos-site/wrangler.jsonc', 'history/design-site/wrangler.jsonc'):
         return False
     parts = PurePosixPath(label).parts
     for part in parts:
@@ -713,7 +713,7 @@ def check_release_gates(root, version, library):
             audit.catch(error)
         else:
             audit.add('HEAD', 'invalid-head')
-    for relative, kind in (('app-ui/source-provenance.json', 'source'), ('cosmos-spec/provenance.json', 'cosmos')):
+    for relative, kind in (('app-ui/source-provenance.json', 'source'), ('design-spec/provenance.json', 'cosmos')):
         try:
             provenance = json_data(read_file(root, relative, MAX_TEXT), relative)
             if kind == 'source':
@@ -732,11 +732,11 @@ def check_release_gates(root, version, library):
         except (AttributeError, TypeError):
             audit.add(relative, 'malformed-provenance')
     try:
-        script = safe_path(root, 'cosmos-spec/scripts/check.js')
-        read_file(root, 'cosmos-spec/scripts/check.js', MAX_TEXT)
+        script = safe_path(root, 'design-spec/scripts/check.js')
+        read_file(root, 'design-spec/scripts/check.js', MAX_TEXT)
         run_command(root, ['node', str(script), 'canonical-schema'])
     except ValidationError:
-        audit.add('cosmos-spec', 'canonical-schema-check-failed')
+        audit.add('design-spec', 'canonical-schema-check-failed')
     return audit
 
 
@@ -750,17 +750,17 @@ def release_documents(root, audit):
         if not api:
             audit.add('app-ui/api', 'missing-abi-baseline')
         paths.update(api)
-        provenance = json_data(read_file(root, 'cosmos-spec/provenance.json', MAX_TEXT), 'cosmos-spec/provenance.json')
-        paths.update(('app-ui/source-provenance.json', 'cosmos-spec/provenance.json'))
+        provenance = json_data(read_file(root, 'design-spec/provenance.json', MAX_TEXT), 'design-spec/provenance.json')
+        paths.update(('app-ui/source-provenance.json', 'design-spec/provenance.json'))
         inventory = provenance.get('inventory')
         if not isinstance(inventory, list) or not inventory:
-            raise ValidationError('cosmos-spec/provenance.json', 'missing-spec-inventory')
+            raise ValidationError('design-spec/provenance.json', 'missing-spec-inventory')
         expected = {}
         for item in inventory:
-            relative = 'cosmos-spec/' + item['path']
+            relative = 'design-spec/' + item['path']
             safe_path(root, relative)
             if relative in expected or not HEX.fullmatch(item['sha256']):
-                raise ValidationError('cosmos-spec/provenance.json', 'malformed-spec-inventory')
+                raise ValidationError('design-spec/provenance.json', 'malformed-spec-inventory')
             expected[relative] = item['sha256']
             paths.add(relative)
         for relative in sorted(paths):
@@ -779,7 +779,7 @@ def release_documents(root, audit):
     except ValidationError as error:
         audit.catch(error)
     except (AttributeError, KeyError, TypeError):
-        audit.add('cosmos-spec/provenance.json', 'malformed-spec-inventory')
+        audit.add('design-spec/provenance.json', 'malformed-spec-inventory')
 
 
 def check_release(root, repo, version, library):

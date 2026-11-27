@@ -105,8 +105,8 @@ jobs:
           node-version: '22'
           cache: npm
           cache-dependency-path: |
-            cosmos-spec/package-lock.json
-            cosmos-site/package-lock.json
+            design-spec/package-lock.json
+            design-site/package-lock.json
 
       - name: Set up Android SDK
         uses: android-actions/setup-android@v4
@@ -116,10 +116,10 @@ jobs:
       - name: Set up Gradle
         uses: gradle/actions/setup-gradle@v6
 
-      - name: Install locked Cosmos tooling
+      - name: Install locked SIMT Design tooling
         run: |
-          npm --prefix cosmos-spec ci --ignore-scripts --no-audit --no-fund
-          npm --prefix cosmos-site ci --ignore-scripts --no-audit --no-fund
+          npm --prefix design-spec ci --ignore-scripts --no-audit --no-fund
+          npm --prefix design-site ci --ignore-scripts --no-audit --no-fund
 
       - name: Verify release authorization
         run: >-

@@ -237,7 +237,7 @@ class PublicationTests(unittest.TestCase):
                 del entries[missing]
                 self.fixture.write('app-ui', ('legal-notices', 'zip'), archive(entries))
                 self.assertBlocked('legal-notices-entries')
-        for extra in ('cosmos-spec/snapshots/payload.json', 'app-ui/', 'unrelated.txt'):
+        for extra in ('design-spec/snapshots/payload.json', 'app-ui/', 'unrelated.txt'):
             with self.subTest(extra=extra):
                 self.fixture.write('app-ui', ('legal-notices', 'zip'), archive({**self.fixture.legal_entries, extra: b'{}'}))
                 self.assertBlocked('legal-notices-entries')
@@ -674,25 +674,29 @@ class SourceTests(unittest.TestCase):
         result = audit.check_source(self.root)
         self.assertTrue(result.ok, result.payload())
 
-    def test_only_standalone_cosmos_wrangler_config_is_allowed(self):
-        self.put('cosmos-site/wrangler.jsonc', '{"name":"simt-cosmos"}')
+    def test_only_standalone_design_wrangler_config_is_allowed(self):
+        self.put('design-site/wrangler.jsonc', '{"name":"simt-design"}')
         self.put('wrangler.jsonc', '{"name":"root"}')
         self.put('other/wrangler.jsonc', '{"name":"other"}')
         result = audit.check_source(self.root)
-        self.assertNotIn(('cosmos-site/wrangler.jsonc', 'forbidden-file'), result.findings)
+        self.assertNotIn(('design-site/wrangler.jsonc', 'forbidden-file'), result.findings)
         self.assertIn(('wrangler.jsonc', 'forbidden-file'), result.findings)
         self.assertIn(('other/wrangler.jsonc', 'forbidden-file'), result.findings)
 
     def test_allowed_wrangler_config_is_still_content_scanned(self):
-        self.put('cosmos-site/wrangler.jsonc', '{"token":"' + secret() + '"}')
+        self.put('design-site/wrangler.jsonc', '{"token":"' + secret() + '"}')
         result = audit.check_source(self.root)
-        self.assertIn(('cosmos-site/wrangler.jsonc', 'credential'), result.findings)
-        self.assertNotIn(('cosmos-site/wrangler.jsonc', 'forbidden-file'), result.findings)
+        self.assertIn(('design-site/wrangler.jsonc', 'credential'), result.findings)
+        self.assertNotIn(('design-site/wrangler.jsonc', 'forbidden-file'), result.findings)
 
     def test_exact_wrangler_allowance_applies_to_history(self):
         self.put('cosmos-site/wrangler.jsonc', '{"name":"simt-cosmos"}')
         self.git('add', 'cosmos-site/wrangler.jsonc')
+        self.git('commit', '-qm', 'legacy worker config')
+        self.put('design-site/wrangler.jsonc', '{"name":"simt-design"}')
+        self.git('add', 'design-site/wrangler.jsonc')
         self.git('commit', '-qm', 'worker config')
+        self.git('rm', '-q', 'cosmos-site/wrangler.jsonc')
         result = audit.check_source(self.root)
         self.assertTrue(result.ok, result.payload())
 
@@ -727,18 +731,18 @@ class ReleaseTests(unittest.TestCase):
             if relative not in LEGAL_DOCUMENTS:
                 self.fixture.put(relative, 'Owner-confirmed release document')
         self.fixture.put('app-ui/api/app-ui.api', 'public class app/simt/ui/Example')
-        self.fixture.put('cosmos-spec/scripts/check.js', '// fixed strict schema checker fixture')
-        self.fixture.put('cosmos-spec/snapshots/specification.md', 'Approved specification')
+        self.fixture.put('design-spec/scripts/check.js', '// fixed strict schema checker fixture')
+        self.fixture.put('design-spec/snapshots/specification.md', 'Approved specification')
         source = json.loads(LEGAL_DOCUMENTS['app-ui/source-provenance.json'])
         cosmos = {'licenses': {'code': {'status': 'confirmed'}, 'documents': {'status': 'confirmed'}},
                   'distribution': {'scope': 'public-redistribution', 'publicRedistribution': 'approved'},
                   'knownSchemaDefects': [], 'inventory': [{'path': 'snapshots/specification.md',
                    'sha256': digest(b'Approved specification')}]}
         self.fixture.put('app-ui/source-provenance.json', encoded(source))
-        self.fixture.put('cosmos-spec/provenance.json', encoded(cosmos))
+        self.fixture.put('design-spec/provenance.json', encoded(cosmos))
         self.tracked = list(audit.RELEASE_DOCS) + ['app-ui/api/app-ui.api', 'app-ui/source-provenance.json',
-                        'cosmos-spec/provenance.json', 'cosmos-spec/snapshots/specification.md',
-                        'cosmos-spec/scripts/check.js']
+                        'design-spec/provenance.json', 'design-spec/snapshots/specification.md',
+                        'design-spec/scripts/check.js']
         self.command_calls = []
         self.commands = patch.object(audit, 'run_command', side_effect=self.command)
         self.commands.start()
@@ -747,7 +751,7 @@ class ReleaseTests(unittest.TestCase):
     def command(self, root, args, **kwargs):
         self.command_calls.append(list(args))
         if args[0] == 'node':
-            self.assertEqual(args, ['node', str(self.root / 'cosmos-spec/scripts/check.js'), 'canonical-schema'])
+            self.assertEqual(args, ['node', str(self.root / 'design-spec/scripts/check.js'), 'canonical-schema'])
             return b'canonical schemas passed'
         rest = args[2:]
         if rest[:2] == ['rev-parse', '--verify']:
@@ -850,21 +854,21 @@ class ReleaseTests(unittest.TestCase):
         self.assertIn(('LICENSE-DOCS', 'missing-or-unreadable'), result.findings)
 
     def test_cosmos_document_rights_independently_unconfirmed(self):
-        path = self.root / 'cosmos-spec/provenance.json'
+        path = self.root / 'design-spec/provenance.json'
         data = json.loads(path.read_bytes())
         data['licenses']['documents']['status'] = 'unconfirmed'
         path.write_bytes(encoded(data))
         self.assertGate('redistribution-rights-unconfirmed')
 
     def test_private_only_provenance_blocks_release(self):
-        path = self.root / 'cosmos-spec/provenance.json'
+        path = self.root / 'design-spec/provenance.json'
         data = json.loads(path.read_bytes())
         data['distribution']['scope'] = 'private-development-only'
         path.write_bytes(encoded(data))
         self.assertGate('redistribution-rights-unconfirmed')
 
     def test_known_canonical_schema_defects_block(self):
-        path = self.root / 'cosmos-spec/provenance.json'
+        path = self.root / 'design-spec/provenance.json'
         data = json.loads(path.read_bytes())
         data['knownSchemaDefects'] = [{'file': 'scoped/rules.json'}] * 4
         path.write_bytes(encoded(data))
@@ -953,7 +957,7 @@ class IntegrationStageTests(unittest.TestCase):
             self.assertTrue(manifest['unsigned'])
             self.assertEqual(manifest['head'], HEAD)
             self.assertTrue(manifest['dirtyTree'])
-            self.assertFalse(any(p.startswith('source/cosmos-spec/') for p in stream.namelist()))
+            self.assertFalse(any(p.startswith('source/design-spec/') for p in stream.namelist()))
             for relative in ('LICENSE', 'LICENSE-DOCS', 'NOTICE'):
                 self.assertEqual(stream.read('source/' + relative), LEGAL_DOCUMENTS[relative])
                 self.assertIn('source/' + relative, {entry['path'] for entry in manifest['artifacts']})
