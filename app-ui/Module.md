@@ -94,9 +94,11 @@ The modal foundation extracted from simt-app `core:ui`: the canonical centered g
 
 Layer-2 presets built on it: `ConfirmDialog` (confirm/cancel callbacks, destructive styling, height-capped scrollable content), `PromptDialog`, `InfoDialog`, `ActionListDialog`, `DateTimePickerDialog`, and `RateAppDialog`. Presets keep callbacks and state caller-owned; dismissal never removes the dialog by itself.
 
-### Sheets (`app.simt.ui.components.sheets`, androidMain)
+### Sheets (`app.simt.ui.components.sheets`)
 
-`SimtSheetSurface` is the full-screen sheet with `TopOverlayHeader`, a `GradientBackground`, an optional blocking loader bound to `isBlocking`, and a `DialogActionButtons` row. Save/cancel labels are plain `String` values; callers resolve their own resources.
+`SimtSheetSurface` (androidMain) is the full-screen sheet with `TopOverlayHeader`, a `GradientBackground`, an optional blocking loader bound to `isBlocking`, and a `DialogActionButtons` row. Save/cancel labels are plain `String` values; callers resolve their own resources.
+
+`SettingsBottomSheet` (commonMain) is a Material3 modal sheet for live settings. It paints a theme-derived gradient panel with an optional overline/icon, caller-selected accent, custom drag handle, top-only border and shared scroll edges. The caller owns the title, content, state and dismissal callback; there is no save/cancel transaction. Source previews were not carried over because simt-ui has no preview-tooling dependency.
 
 ### Blocking loader (`app.simt.ui.components.loader`, androidMain)
 
@@ -154,7 +156,7 @@ The animated header background is a caller slot (`headerBackground` on the gate 
 
 ### Placement
 
-The `dialogs`, `sheets`, `loader`, `permissions` and `toasts` packages live in `androidMain` because they use Android/JVM-only APIs (`java.time` pickers, `LocalConfiguration`, `DialogProperties.decorFitsSystemWindows`, haptics, `DialogWindowProvider` window flags), the `GlobalBlockingLoaderHost` effect is `androidMain` for the same dialog-window reason, `features.onboarding` is `androidMain` for its native-canvas scrim compositing, `features.notifications` is `androidMain` because it is pure Android platform work (`NotificationCompat`, channels, vibrator), `features.auth` is `androidMain` because it builds on Android Credential Manager and Google ID, and `features.qr` is `androidMain` because its full-screen presentation builds on the androidMain modal foundation and Android `LocalConfiguration`; `components.forms.TLEField` is `androidMain` because it uses Android clipboard access and `java.time`; the remaining components are in `commonMain`. The consumers of this extraction batch are Android-only (simt-app). `@Preview` functions from the source files were not carried over — simt-ui has no preview-tooling dependency.
+The `dialogs`, `loader`, `permissions` and `toasts` packages and `SimtSheetSurface` live in `androidMain` because they use Android/JVM-only APIs (`java.time` pickers, `LocalConfiguration`, `DialogProperties.decorFitsSystemWindows`, haptics, `DialogWindowProvider` window flags), the `GlobalBlockingLoaderHost` effect is `androidMain` for the same dialog-window reason, `SettingsBottomSheet` is in `commonMain` because its production surface uses only cross-platform Compose APIs, `features.onboarding` is `androidMain` for its native-canvas scrim compositing, `features.notifications` is `androidMain` because it is pure Android platform work (`NotificationCompat`, channels, vibrator), `features.auth` is `androidMain` because it builds on Android Credential Manager and Google ID, and `features.qr` is `androidMain` because its full-screen presentation builds on the androidMain modal foundation and Android `LocalConfiguration`; `components.forms.TLEField` is `androidMain` because it uses Android clipboard access and `java.time`; the remaining components are in `commonMain`. The consumers of this extraction batch are Android-only (simt-app). `@Preview` functions from the source files were not carried over — simt-ui has no preview-tooling dependency.
 
 ## Compatibility evidence and limits
 

@@ -786,6 +786,10 @@ public final class app/simt/ui/components/permissions/RequirementStatus : java/l
 	public static fun values ()[Lapp/simt/ui/components/permissions/RequirementStatus;
 }
 
+public final class app/simt/ui/components/sheets/SettingsBottomSheetKt {
+	public static final fun SettingsBottomSheet-1YH7lEI (Ljava/lang/String;Lkotlin/jvm/functions/Function0;Landroidx/compose/ui/Modifier;Ljava/lang/String;Landroidx/compose/ui/graphics/vector/ImageVector;JZLkotlin/jvm/functions/Function3;Landroidx/compose/runtime/Composer;II)V
+}
+
 public final class app/simt/ui/components/sheets/SheetEdge : java/lang/Enum {
 	public static final field Bottom Lapp/simt/ui/components/sheets/SheetEdge;
 	public static final field Top Lapp/simt/ui/components/sheets/SheetEdge;
