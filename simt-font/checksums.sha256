@@ -1,0 +1,6 @@
+# SHA-256 manifest for the Simt Font binaries.
+# Regenerate with: cd simt-font && shasum -a 256 fonts/ttf/*.ttf fonts/webfonts/*.woff | sed 's|fonts/||' > checksums.sha256
+398b2d2b12ca4e9d10d50cd750f19011f10ea0498092251b9d03eeba64271ac2  fonts/ttf/SimtFont-Regular.ttf
+b0f9563c585664e4f9b25a9617596d6f4f81d309efd43100254caa46af0e463e  fonts/ttf/SimtFont-Bold.ttf
+a90913cf42c9db142f39ad40c503c682a8f6ed3136f675e395729a6e10d611c9  fonts/webfonts/SimtFont-Regular.woff
+3247945d9e2b76579816c982c2e8cc2f20812cdbfd5cbd34ae4fe42a5cb50701  fonts/webfonts/SimtFont-Bold.woff

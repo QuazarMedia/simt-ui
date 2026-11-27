@@ -25,6 +25,12 @@ license references and source attribution, and identify subsequent modifications
 The independently generated public SIMT Design site is canonical at
 https://design.simt.app.
 
+Simt Font, a Latin and Arabic typeface (version 0.200), is in simt-font/.
+It is licensed under the SIL Open Font License, Version 1.1 (simt-font/OFL.txt).
+Copyright (c) 2026 The Simt Project Authors. The committed binaries are the
+SimtFont-v0.200 archive fonts with only the name table changed to declare the
+license; see simt-font/NOTICE.
+
 Third-party code, fonts and dependencies retain their own licenses and notices.
 No third-party font or unrelated site/product assets are included in the frozen
 snapshot. No trademark rights are granted.
