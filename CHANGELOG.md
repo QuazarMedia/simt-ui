@@ -69,8 +69,12 @@
 - Robolectric host behavior tests for style accent resolution, parent bounds and frozen gate backgrounds (`AnimatedDialogBackgroundTest`).
 - `LockCurrentOrientationEffect` in `app.simt.ui.effects` (androidMain), with reference-counted Activity ownership and exact restoration of the prior requested orientation when the final caller leaves composition. Android may ignore requested-orientation changes on large displays or in restricted window modes; physical-device behavior remains host-configuration validation.
 - Coordinator and Robolectric Activity-composition tests for orientation restoration, overlapping owners, independent Activities, ignored extra releases and nested `ContextWrapper` lookup (`OrientationLockCoordinatorTest`, `LockCurrentOrientationEffectHostTest`).
+- `FullScreenExperienceEffect` in `app.simt.ui.effects` (androidMain), with caller-owned keep-screen-on and system-bar policy for Activity or Dialog windows, reference-counted overlapping ownership, exact restoration of prior flags/behavior and independent status/navigation-bar visibility, plus the explicit `alwaysShowSystemBarsOnDispose` override.
+- Robolectric host tests for fullscreen keep-screen-on restoration, per-bar visibility, system-bar behavior, disabled options, overlapping owners, the always-show override and Dialog-window isolation (`FullScreenExperienceEffectHostTest`).
 
 ### Changed
+
+- `FullScreenExperienceEffect` now coordinates overlapping callers per window and restores status and navigation bars independently. An early owner no longer releases another owner's active policy, combined visibility no longer leaves a previously visible bar hidden, and the latest remaining hide-bars owner selects gesture behavior until the final relevant owner restores the host.
 
 - `LongPressTooltipEffect` accepts caller-owned `enabled` state and an optional semantic `role`; disabled anchors suppress click, long-click and tooltip input.
 
