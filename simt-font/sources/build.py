@@ -325,7 +325,7 @@ if __name__ == "__main__":
         print("built", p)
         from fontTools.ttLib import TTFont
 
-        f = TTFont(p)
+        f = TTFont(p, recalcTimestamp=False)
         f.flavor = "woff"
         woff = os.path.join(woff_dir, os.path.basename(p).replace(".ttf", ".woff"))
         f.save(woff)
