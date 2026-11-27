@@ -873,6 +873,10 @@ public final class app/simt/ui/effects/GlobalBlockingLoaderKt {
 	public static final fun GlobalBlockingLoaderHost (Lapp/simt/ui/components/loader/BlockingLoaderController;Landroidx/compose/ui/Modifier;Landroidx/compose/runtime/Composer;II)V
 }
 
+public final class app/simt/ui/effects/LockCurrentOrientationEffectKt {
+	public static final fun LockCurrentOrientationEffect (Landroidx/compose/runtime/Composer;I)V
+}
+
 public final class app/simt/ui/effects/LongPressTooltipEffectKt {
 	public static final fun LongPressTooltipEffect-wVcLqfE (Ljava/lang/String;Lkotlin/jvm/functions/Function0;Landroidx/compose/ui/Modifier;Landroidx/compose/ui/Modifier;ZLandroidx/compose/ui/Alignment;IZLandroidx/compose/ui/semantics/Role;Lkotlin/jvm/functions/Function3;Landroidx/compose/runtime/Composer;II)V
 }

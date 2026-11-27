@@ -1,8 +1,5 @@
 package app.simt.ui.effects
 
-import android.app.Activity
-import android.content.Context
-import android.content.ContextWrapper
 import android.view.WindowManager
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -52,22 +49,12 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import app.simt.ui.components.banners.InformationBanner
 import app.simt.ui.components.dialogs.ModalDefaults
 import app.simt.ui.components.loader.BlockingLoaderController
+import app.simt.ui.internal.platform.findActivity
 import app.simt.ui.resources.Res
 import app.simt.ui.resources.simt_ui_blocking_loader_background_processing_warning
 import app.simt.ui.resources.simt_ui_cancel
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.stringResource
-
-/**
- * Walks the context chain (e.g. `ContextThemeWrapper` in dialogs) to find the hosting [Activity].
- * Needed because [LocalContext.current] may not be an Activity directly inside a Compose dialog.
- */
-private tailrec fun Context.findActivity(): Activity? =
-    when (this) {
-        is Activity -> this
-        is ContextWrapper -> baseContext.findActivity()
-        else -> null
-    }
 
 /**
  * Renders the global blocking loader above everything using a [Dialog], so it also overlays other

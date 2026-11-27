@@ -1,5 +1,8 @@
 package app.simt.ui.internal.platform
 
+import android.app.Activity
+import android.content.Context
+import android.content.ContextWrapper
 import android.content.res.Configuration
 import android.view.HapticFeedbackConstants
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
@@ -16,6 +19,13 @@ import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalView
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
+
+internal tailrec fun Context.findActivity(): Activity? =
+    when (this) {
+        is Activity -> this
+        is ContextWrapper -> baseContext.findActivity()
+        else -> null
+    }
 
 internal actual val countdownStartDispatcher: CoroutineDispatcher get() = Dispatchers.IO
 
