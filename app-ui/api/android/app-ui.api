@@ -997,6 +997,20 @@ public abstract interface class app/simt/ui/features/update/UpdateChecker {
 	public abstract fun startUpdateFlow (Lkotlin/jvm/functions/Function0;)V
 }
 
+public final class app/simt/ui/transitions/AppScreenTransitionKt {
+	public static final fun appScreenEnterTransition (IF)Landroidx/compose/animation/EnterTransition;
+	public static synthetic fun appScreenEnterTransition$default (IFILjava/lang/Object;)Landroidx/compose/animation/EnterTransition;
+	public static final fun appScreenExitTransition (I)Landroidx/compose/animation/ExitTransition;
+	public static synthetic fun appScreenExitTransition$default (IILjava/lang/Object;)Landroidx/compose/animation/ExitTransition;
+	public static final fun appScreenTransition (IIF)Landroidx/compose/animation/ContentTransform;
+	public static synthetic fun appScreenTransition$default (IIFILjava/lang/Object;)Landroidx/compose/animation/ContentTransform;
+}
+
+public final class app/simt/ui/transitions/StaggeredEntranceKt {
+	public static final fun staggeredEntrance (Landroidx/compose/ui/Modifier;ILjava/lang/Long;IF)Landroidx/compose/ui/Modifier;
+	public static synthetic fun staggeredEntrance$default (Landroidx/compose/ui/Modifier;ILjava/lang/Long;IFILjava/lang/Object;)Landroidx/compose/ui/Modifier;
+}
+
 public final class app/simt/ui/utils/FullscreenInsetsKt {
 	public static final fun fullScreenBottomInsets (Landroidx/compose/ui/Modifier;Landroidx/compose/runtime/Composer;I)Landroidx/compose/ui/Modifier;
 	public static final fun fullScreenTopInsets (Landroidx/compose/ui/Modifier;Landroidx/compose/runtime/Composer;I)Landroidx/compose/ui/Modifier;

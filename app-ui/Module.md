@@ -108,6 +108,8 @@ Layer-2 presets built on it: `ConfirmDialog` (confirm/cancel callbacks, destruct
 
 `SimtMotion` is the central Cosmos motion spec (FAST 150 ms / MEDIUM 300 ms, enter/exit/transform easings, `enterSpec`/`exitSpec`). `CosmosTier` (`FULL` / `REDUCED` / `STATIC`) with `LocalCosmosTier` (default `FULL`) lets shared UI degrade ambient animation on lower-performance devices; app roots should provide the tier from their device performance level.
 
+`app.simt.ui.transitions` provides the shared screen fade/scale transitions and `Modifier.staggeredEntrance`. The entrance runs once per composition, keeps its delay and offset caller-controlled, and renders immediately at the final position when `LocalUiMotionEnabled` is false or the cosmos tier is `STATIC`.
+
 `GlobalBlockingLoaderHost` (androidMain) renders the `components.loader` contract above everything — including open dialogs — in its own full-screen `Dialog` window: dimmed click-absorbing backdrop, indeterminate or linear progress, optional message chip, an optional interrupt button wired to `controller.requestInterrupt()`, and an optional background-processing warning `InformationBanner`. While visible it keeps the screen on (view flag + window flag, both restored on dispose). The `findActivity` context walk is module-internal; the generic warning copy ships as `simt_ui_blocking_loader_background_processing_warning` in the four locales.
 
 ### Permissions (`app.simt.ui.components.permissions`, androidMain)
