@@ -28,6 +28,8 @@
 - QR feature extracted from simt-app `core:ui` in `app.simt.ui.features.qr` (androidMain) — `QrCodeFullscreenOverlay` (the full-screen QR presentation with optional download/share actions) and `QRScannerOverlay` (the animated scan mask with corner brackets, scan line and prompt). The `qr_scanner_prompt` string moved into the `simt_ui_`-prefixed resources in English, French, Spanish and Arabic.
 - `io.github.alexzhirkevich:qrose` 1.3.1 as an `implementation`-scoped androidMain dependency; the painter API is Compose-only, so the public surface stays free of qrose types.
 - Host tests for the QR width rule (`QrCodeFullscreenOverlayTest`, ported from simt-app).
+- Basic form controls extracted from simt-app `core:ui` in commonMain — `DebouncedTextField` (trailing-edge debounce with the latest callback), `RadioOptionLine` (caller-owned selection with animated content) and `SettingLine` (switch or permission action, with a 48 dp minimum permission-button target).
+- Robolectric host behavior tests for the basic form controls (`BasicFormsTest`: debounce timing and callback replacement, radio row/button selection, permission-to-switch transition, touch-target size and disabled state).
 
 ### Notes
 

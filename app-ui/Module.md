@@ -10,6 +10,8 @@ Use the caller's Material3 theme. Labels, callbacks, state, window policy, reduc
 
 `CityCountryFields` retains caller-owned city/country values. City edits are capped at `CITY_NAME_MAX_LENGTH` (30); country edits are capped at `COUNTRY_CODE_LENGTH` (2), then uppercased. It does not validate ISO codes, persist location data or perform geocoding.
 
+`DebouncedTextField` wraps `ClearableTextField` with a caller-visible draft and trailing-edge debounce (300 ms by default). Only edits and clear actions publish after a quiet period; a replacement callback is used without restarting the pending delay. `RadioOptionLine` keeps selection caller-owned, makes both its label row and radio button select exactly once, and reveals its content only while selected. `SettingLine` renders a caller-owned switch, or an enabled permission action when permission is missing; its permission button has a 48 dp minimum touch target. Labels and supporting copy remain caller-owned.
+
 ## Lists and scrolling
 
 `WindowedList` has a `LazyListScope` overload with a caller-supplied `LazyListState`, reverse layout and scroll policy, and a typed overload with mandatory stable keys, content types and an optional centered empty placeholder. Keys must follow item identity through reorder; choosing positional keys can lose remembered row state. Give lists bounded layout space rather than nesting unconstrained vertical scroll containers.
@@ -88,7 +90,7 @@ Layer-2 presets built on it: `ConfirmDialog` (confirm/cancel callbacks, destruct
 
 ### Surfaces, banners, forms, buttons (commonMain)
 
-`CanopyGlass`, `GradientBackground` and `GradientDivider` are the glass/gradient surfaces; `InformationBanner` is a closable informational row; `DialogActionButtons` is the labeled action row with stable `modal_button_cancel` / `modal_button_save` test tags; `DataField` wraps a labeled input with error text.
+`CanopyGlass`, `GradientBackground` and `GradientDivider` are the glass/gradient surfaces; `InformationBanner` is a closable informational row; `DialogActionButtons` is the labeled action row with stable `modal_button_cancel` / `modal_button_save` test tags; `DataField` wraps a labeled input with error text. `DebouncedTextField`, `RadioOptionLine` and `SettingLine` complete the extracted basic form-control kit.
 
 ### Motion and tier (`app.simt.ui.effects`)
 
