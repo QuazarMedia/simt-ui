@@ -228,14 +228,21 @@
 }
 
 .marquee {
+  width: 100%;
   padding-block: var(--space-10, 40px);
   border-block: 1px solid var(--outline, rgb(255 236 226 / 12%));
   background: linear-gradient(90deg, transparent, var(--surface-subtle, rgb(255 255 255 / 4%)), transparent);
   overflow: clip;
 }
 
+.marquee__viewport {
+  width: 100%;
+  overflow: clip;
+}
+
 .marquee__title {
   margin-block-end: var(--space-5, 20px);
+  padding-inline: var(--gutter, clamp(20px, 5vw, 48px));
   color: var(--text-faint, #9f90a5);
   font-size: 0.85rem;
   font-weight: 600;
@@ -254,7 +261,9 @@
   flex-wrap: wrap;
   justify-content: center;
   gap: var(--space-3, 12px) 0;
+  margin: 0;
   padding-inline: var(--gutter, clamp(20px, 5vw, 48px));
+  list-style: none;
 }
 
 .marquee__track--clone {
@@ -292,22 +301,22 @@
 .marquee__item:nth-child(5n + 4) { --hue: var(--rose, #ff7e8a); }
 .marquee__item:nth-child(5n + 5) { --hue: var(--gold, #ffc766); }
 
-:root[data-motion="full"] .marquee__viewport {
+:root[data-motion="full"]:not([data-perf="lite"]) .marquee__viewport {
   mask-image: linear-gradient(90deg, transparent, #000 10%, #000 90%, transparent);
 }
 
-:root[data-motion="full"] .marquee__rail {
+:root[data-motion="full"]:not([data-perf="lite"]) .marquee__rail {
   display: flex;
   width: max-content;
   animation: simt-marquee 80s linear infinite;
 }
 
-:root[data-motion="full"] .marquee__rail .marquee__track {
+:root[data-motion="full"]:not([data-perf="lite"]) .marquee__rail .marquee__track {
   flex-wrap: nowrap;
   padding-inline: 0;
 }
 
-:root[data-motion="full"] .marquee__rail .marquee__track--clone {
+:root[data-motion="full"]:not([data-perf="lite"]) .marquee__rail .marquee__track--clone {
   display: flex;
 }
 
@@ -317,4 +326,113 @@
 
 @keyframes simt-marquee {
   to { transform: translate3d(calc(-50% * var(--flip, 1)), 0, 0); }
+}
+
+.finale {
+  position: relative;
+  isolation: isolate;
+  width: 100%;
+  padding-block: clamp(96px, 14vw, 180px);
+  overflow: clip;
+  text-align: center;
+}
+
+.finale::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -2;
+  background:
+    radial-gradient(40% 50% at 50% 50%, color-mix(in oklab, var(--ember, #ff8c42) 16%, transparent), transparent 70%),
+    radial-gradient(60% 60% at 50% 60%, color-mix(in oklab, var(--violet, #c9a0ff) 10%, transparent), transparent 70%);
+}
+
+.finale__corona {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  display: grid;
+  place-items: center;
+  pointer-events: none;
+}
+
+.finale__corona span {
+  grid-area: 1 / 1;
+  width: min(92vw, 920px);
+  aspect-ratio: 1;
+  border: 1px solid color-mix(in oklab, var(--ember, #ff8c42) 35%, transparent);
+  border-radius: 50%;
+  opacity: 0.5;
+}
+
+.finale__corona span:nth-child(1) { --i: 0; scale: 0.3; }
+.finale__corona span:nth-child(2) { --i: 1; scale: 0.5; }
+.finale__corona span:nth-child(3) { --i: 2; scale: 0.7; }
+.finale__corona span:nth-child(4) { --i: 3; scale: 0.9; }
+
+:root[data-motion="full"]:not([data-perf="lite"]) .finale__corona span {
+  animation: simt-finale-corona 10s linear infinite;
+  animation-delay: calc(var(--i) * -2.5s);
+}
+
+@keyframes simt-finale-corona {
+  from {
+    opacity: 0;
+    scale: 0.2;
+  }
+
+  25% {
+    opacity: 0.8;
+  }
+
+  to {
+    opacity: 0;
+    scale: 1;
+  }
+}
+
+.finale__inner {
+  position: relative;
+  z-index: 1;
+}
+
+.finale__mark {
+  width: 56px;
+  height: 56px;
+  margin: 0 auto var(--space-6, 24px);
+  color: var(--ember, #ff8c42);
+}
+
+.finale__title {
+  max-width: 16ch;
+  margin-inline: auto;
+  font-size: clamp(2.4rem, 1.3rem + 4.2vw, 4.8rem);
+}
+
+.finale__body {
+  max-width: 44ch;
+  margin: var(--space-5, 20px) auto var(--space-10, 40px);
+  color: var(--text-muted, #c0b2c6);
+  font-size: 1.2rem;
+  text-wrap: pretty;
+}
+
+.finale__actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: var(--space-3, 12px);
+}
+
+.finale__fine {
+  margin-block-start: var(--space-5, 20px);
+  color: var(--text-faint, #9f90a5);
+  font-size: 0.9rem;
+}
+
+@media (forced-colors: active) {
+  .finale::before,
+  .finale__corona {
+    display: none;
+  }
 }
