@@ -109,6 +109,15 @@ tasks.withType<Test>().configureEach {
     jvmArgs("--add-exports=java.base/jdk.internal.access=ALL-UNNAMED")
 }
 
+// KGP registers this diagnostic (partially resolved dependency report, KT-69790)
+// with no declared outputs, so it re-runs on every build and serializes
+// configuration resolution (MP-7915). Its type is internal and unreachable via
+// withType, so configure it by name; matching() keeps this inert if KGP ever
+// renames or removes the task.
+tasks.matching { it.name == "kmpPartiallyResolvedDependenciesChecker" }.configureEach {
+    enabled = false
+}
+
 compose.resources {
     packageOfResClass = "app.simt.ui.resources"
     publicResClass = false
