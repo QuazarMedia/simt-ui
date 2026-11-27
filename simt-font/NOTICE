@@ -13,6 +13,6 @@ Provenance:
   and the head table's checkSumAdjustment and modified fields were updated by
   fontTools 4.69.1. Every other table is byte-identical to the archive.
 
-The font's parametric build source (source/) reproduces the glyphs; it requires
-Python 3 and fontTools (`pip install fonttools`). Rebuild with `python3 build.py`
-from source/.
+The font's parametric build source (sources/) reproduces the glyphs; it requires
+Python 3.10+ and the pinned fontTools dependency. Rebuild with `./sources/build.sh`
+from simt-font/.

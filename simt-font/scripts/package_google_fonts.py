@@ -14,10 +14,10 @@ FONT_FILES = ("SimtFont-Regular.ttf", "SimtFont-Bold.ttf")
 
 
 def font_version():
-    source = (MODULE / "source" / "build.py").read_text()
+    source = (MODULE / "sources" / "build.py").read_text()
     match = re.search(r'^VERSION = "([0-9]+\.[0-9]+)"$', source, re.MULTILINE)
     if not match:
-        raise ValueError("VERSION in source/build.py must look like 0.200")
+        raise ValueError("VERSION in sources/build.py must look like 0.200")
     return match.group(1)
 
 

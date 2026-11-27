@@ -27,6 +27,7 @@
 
 - Google Fonts contribution workflow with a clean source build, exact `ofl/simtfont` packaging, pinned Fontspector QA reports, and opt-in pull-request submission through a protected environment.
 - Google Fonts metadata and article templates, a pinned fontTools requirement, and packaging/workflow regression tests.
+- Google Fonts upstream project structure with `sources/`, author/contributor records, documentation, ignore rules, and a one-command build script.
 
 ### Fixed
 

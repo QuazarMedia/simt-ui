@@ -52,9 +52,9 @@ jobs:
           set -euo pipefail
           python3 -m venv "$RUNNER_TEMP/font-build-venv"
           "$RUNNER_TEMP/font-build-venv/bin/pip" install --quiet -r simt-font/requirements.txt
-          cp -R simt-font/source "$RUNNER_TEMP/simt-font-source"
+          cp -R simt-font/sources "$RUNNER_TEMP/simt-font-sources"
           (
-            cd "$RUNNER_TEMP/simt-font-source"
+            cd "$RUNNER_TEMP/simt-font-sources"
             "$RUNNER_TEMP/font-build-venv/bin/python" build.py
           )
 

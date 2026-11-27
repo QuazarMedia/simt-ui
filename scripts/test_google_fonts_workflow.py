@@ -67,7 +67,7 @@ class GoogleFontsWorkflowTests(unittest.TestCase):
         self.assertNotIn("pull-requests: write", WORKFLOW)
 
     def test_build_uses_valid_fonttools_license_keys(self):
-        source = (ROOT / "simt-font/source/build.py").read_text()
+        source = (ROOT / "simt-font/sources/build.py").read_text()
         self.assertIn('"licenseDescription":', source)
         self.assertIn('"licenseInfoURL":', source)
         self.assertNotIn('"license":', source)

@@ -3,6 +3,8 @@
 A Latin and Arabic typeface on the theme of direction, compass and space.
 Simt (سمت) means azimuth, the bearing a traveller holds.
 
+![Simt Font Latin and Arabic specimen](documentation/previews/latin-arabic-matched.png)
+
 ## License
 
 This Font Software is licensed under the **SIL Open Font License, Version 1.1**
@@ -19,12 +21,14 @@ derivation, ship the license, do not sell the fonts by themselves).
 - `fonts/ttf/` — SimtFont-Regular.ttf and SimtFont-Bold.ttf (install these on desktop)
 - `fonts/webfonts/` — SimtFont-Regular.woff and SimtFont-Bold.woff (for websites)
 - `simt-specimen.html` — open it in a browser to type and test the font
-- `previews/` — character-set overviews for both weights, and the hah/kaf design comparison sheets
-- `source/` — the Python build scripts that generate the fonts, plus the OpenType feature files
+- `documentation/previews/` — character-set overviews and design comparison sheets
+- `sources/` — the Python build scripts and OpenType feature files
+- `sources/build.sh` — one-command reproducible build
 - `requirements.txt` — pinned fontTools build dependency
 - `scripts/check-integrity.py` — offline verification script (checksums, name table, license)
 - `scripts/package_google_fonts.py` — builds the exact `ofl/simtfont` contribution package
 - `google-fonts/` — Google Fonts metadata and article templates
+- `AUTHORS.txt`, `CONTRIBUTORS.txt` — author and contributor records
 - `checksums.sha256` — SHA-256 manifest of the font binaries
 - `OFL.txt`, `NOTICE` — license and provenance notices
 
@@ -38,7 +42,7 @@ derivation, ship the license, do not sell the fonts by themselves).
   skeleton (two arms meeting at a sharp vertex on the left); isolated and final ك have a small
   raised inner mark and a head stroke on the stem; ک and گ use the "<" with a long base, and
   گ adds its second parallel stroke.
-- The new designs live in `source/variants.py` (`hah_A`, `kaf_A`), wired in by `build.py`.
+- The new designs live in `sources/variants.py` (`hah_A`, `kaf_A`), wired in by `build.py`.
 
 ## The design rules
 
@@ -76,17 +80,15 @@ body { font-family: "Simt Font", system-ui, sans-serif; line-height: 1.6; }
 
 ## Rebuilding
 
-Requires Python 3.10+ and the pinned fontTools dependency. From `simt-font/`:
+Requires Python 3.10+. From `simt-font/`:
 
 ```bash
-python3 -m pip install -r requirements.txt
-cd source
-python3 build.py
+./sources/build.sh
 ```
 
-All proportions live in `latin.py` and `arabic.py`; stroke weights are in `WEIGHTS` in `build.py`.
-The build writes TTF and WOFF files to `fonts/`; the committed binaries are the archive
-binaries (see `NOTICE`), not a rebuild of this tree with a specific fontTools version.
+The script creates a local virtual environment, installs the pinned requirements, and writes
+TTF and WOFF files to `fonts/`. All proportions live in `sources/latin.py` and
+`sources/arabic.py`; stroke weights are in `WEIGHTS` in `sources/build.py`.
 
 ## Verification
 
