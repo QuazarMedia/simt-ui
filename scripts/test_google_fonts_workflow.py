@@ -126,6 +126,43 @@ class GoogleFontsWorkflowTests(unittest.TestCase):
             )
             self.assertEqual(output.read_text(), "version=1.000\n")
 
+    def test_workflow_packages_fresh_source_builds(self):
+        self.assertEqual(
+            WORKFLOW.count('--font-dir "$RUNNER_TEMP/simt-font-sources/fonts/ttf"'),
+            2,
+        )
+        self.assertEqual(WORKFLOW.count("- name: Build font sources"), 2)
+
+    def test_packager_accepts_a_fresh_build_directory(self):
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            fonts = root / "fonts"
+            fonts.mkdir()
+            expected = {}
+            for name in ("SimtFont-Regular.ttf", "SimtFont-Bold.ttf"):
+                expected[name] = name.encode()
+                (fonts / name).write_bytes(expected[name])
+            destination = root / "package"
+            result = subprocess.run(
+                [
+                    sys.executable,
+                    str(PACKAGER),
+                    str(destination),
+                    "--font-dir",
+                    str(fonts),
+                    "--commit",
+                    COMMIT,
+                    "--date-added",
+                    DATE_ADDED,
+                ],
+                capture_output=True,
+                text=True,
+            )
+            self.assertEqual(result.returncode, 0, result.stderr)
+            family = destination / "ofl/simtfont"
+            for name, data in expected.items():
+                self.assertEqual((family / name).read_bytes(), data)
+
     def test_packager_rejects_invalid_provenance(self):
         cases = (
             ("not-a-sha", DATE_ADDED),

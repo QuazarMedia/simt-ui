@@ -64,6 +64,7 @@ jobs:
           set -euo pipefail
           package_dir="$RUNNER_TEMP/google-fonts-package"
           python3 simt-font/scripts/package_google_fonts.py "$package_dir" \
+            --font-dir "$RUNNER_TEMP/simt-font-sources/fonts/ttf" \
             --commit "$GITHUB_SHA" \
             --date-added "$(date -u +%F)" \
             --github-output "$GITHUB_OUTPUT"
@@ -128,12 +129,24 @@ jobs:
       - name: Verify released font integrity
         run: python3 simt-font/scripts/check-integrity.py
 
+      - name: Build font sources
+        run: |
+          set -euo pipefail
+          python3 -m venv "$RUNNER_TEMP/font-build-venv"
+          "$RUNNER_TEMP/font-build-venv/bin/pip" install --quiet -r simt-font/requirements.txt
+          cp -R simt-font/sources "$RUNNER_TEMP/simt-font-sources"
+          (
+            cd "$RUNNER_TEMP/simt-font-sources"
+            "$RUNNER_TEMP/font-build-venv/bin/python" build.py
+          )
+
       - name: Package for Google Fonts
         id: package
         run: |
           set -euo pipefail
           package_dir="$RUNNER_TEMP/google-fonts-package"
           python3 simt-font/scripts/package_google_fonts.py "$package_dir" \
+            --font-dir "$RUNNER_TEMP/simt-font-sources/fonts/ttf" \
             --commit "$GITHUB_SHA" \
             --date-added "$(date -u +%F)" \
             --github-output "$GITHUB_OUTPUT"

@@ -21,7 +21,7 @@ def font_version():
     return match.group(1)
 
 
-def package(destination, commit, date_added):
+def package(destination, commit, date_added, font_dir=None):
     if not re.fullmatch(r"[0-9a-f]{40}", commit):
         raise ValueError("commit must be a full lowercase Git SHA")
     if not re.fullmatch(r"[0-9]{4}-[0-9]{2}-[0-9]{2}", date_added):
@@ -32,10 +32,11 @@ def package(destination, commit, date_added):
     if family_dir.exists():
         raise ValueError(f"refusing to overwrite existing {family_dir}")
 
+    font_dir = font_dir or MODULE / "fonts" / "ttf"
     article_dir = family_dir / "article"
     article_dir.mkdir(parents=True)
     for name in FONT_FILES:
-        shutil.copy2(MODULE / "fonts" / "ttf" / name, family_dir / name)
+        shutil.copy2(font_dir / name, family_dir / name)
     shutil.copy2(MODULE / "OFL.txt", family_dir / "OFL.txt")
     shutil.copy2(
         MODULE / "google-fonts" / "article" / "ARTICLE.en_us.html",
@@ -56,11 +57,14 @@ def main():
     parser.add_argument("destination", type=Path)
     parser.add_argument("--commit", required=True)
     parser.add_argument("--date-added", required=True)
+    parser.add_argument("--font-dir", type=Path)
     parser.add_argument("--github-output", type=Path)
     args = parser.parse_args()
 
     try:
-        family_dir = package(args.destination, args.commit, args.date_added)
+        family_dir = package(
+            args.destination, args.commit, args.date_added, args.font_dir
+        )
         version = font_version()
     except (OSError, ValueError) as error:
         parser.exit(1, f"error: {error}\n")
