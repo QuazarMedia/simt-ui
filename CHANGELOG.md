@@ -67,6 +67,8 @@
 - Robolectric host behavior tests for independent twin actions, disabled map actions and tooltip suppression, panel slot ordering, 48 dp touch targets and large-font zoom labels (`VerticalTwinControlTest`, `MapControlPanelTest`, `LongPressTooltipEffectTest`).
 - `AnimatedDialogBackground` and `gateHeaderBackground` in `app.simt.ui.components.backgrounds` (androidMain), rendering `CosmosVariant.Gate` with caller-owned style colors, accent and frozen state.
 - Robolectric host behavior tests for style accent resolution, parent bounds and frozen gate backgrounds (`AnimatedDialogBackgroundTest`).
+- `LockCurrentOrientationEffect` in `app.simt.ui.effects` (androidMain), with reference-counted Activity ownership and exact restoration of the prior requested orientation when the final caller leaves composition. Android may ignore requested-orientation changes on large displays or in restricted window modes; physical-device behavior remains host-configuration validation.
+- Coordinator and Robolectric Activity-composition tests for orientation restoration, overlapping owners, independent Activities, ignored extra releases and nested `ContextWrapper` lookup (`OrientationLockCoordinatorTest`, `LockCurrentOrientationEffectHostTest`).
 
 ### Changed
 
