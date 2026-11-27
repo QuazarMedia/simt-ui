@@ -1,6 +1,7 @@
 import { authority, canonicalUrl } from './authority.js';
 import { latestVersion, listVersions, loadSpec } from '../../../design-spec/registry.js';
 import { skillRuleIds } from '../design/skill.js';
+import { libraryPreviewRewrites, publishedLibraries, webLibraries } from '../design/library-previews.js';
 
 // A gallery route per family is only worth publishing if each stays inside the
 // per-route HTML budget, so the family list is owned by the registry rather than
@@ -28,6 +29,9 @@ export const budgets = {
   htmlBytesPerRoute: 81920,
   cssGzipBytes: 20480,
   jsGzipBytes: 6144,
+  libraryPreviewJsGzipBytes: 4096,
+  libraryPreviewCssGzipBytes: 6144,
+  libraryRuntimeBytes: 32768,
   initialFontsBytes: 122880,
   // The index is what an agent reads first; keep it small enough that it always is.
   // Raised twice, from 24 KiB and then 26 KiB, and the growth is content rather
@@ -200,6 +204,27 @@ export function createProduct(spec, { isLatest = false } = {}) {
       summary: `The ${family.label.toLowerCase()} family, governed by ${family.rules.join(' and ')}, every component drawn from its registry entry.`,
       inSitemap: true,
     })),
+    ...(isLatest
+      ? [
+          {
+            path: 'libraries',
+            relativePath: 'libraries',
+            label: 'Libraries',
+            updated: authority.updated,
+            summary:
+              'Published SIMT UI libraries with package-owned preview manifests, live web playgrounds and native preview catalogs discovered from one registry.',
+            inSitemap: true,
+          },
+          ...publishedLibraries.map((library) => ({
+            path: library.route,
+            relativePath: library.route,
+            label: `Library · ${library.id}`,
+            updated: authority.updated,
+            summary: library.manifest.description,
+            inSitemap: true,
+          })),
+        ]
+      : []),
   ];
 
   const resources = [
@@ -405,11 +430,14 @@ ${resources.map(doc).join('\n')}`;
   }
 
   function rewrites() {
-    return routes.flatMap((route) => {
-      if (route.path === '') return ['/ /index.html 200'];
-      const clean = `/${route.path}`;
-      return [`${clean} ${clean}/index.html 200`, `${clean}/ ${clean}/index.html 200`];
-    });
+    return [
+      ...routes.flatMap((route) => {
+        if (route.path === '') return ['/ /index.html 200'];
+        const clean = `/${route.path}`;
+        return [`${clean} ${clean}/index.html 200`, `${clean}/ ${clean}/index.html 200`];
+      }),
+      ...(isLatest ? webLibraries.flatMap(libraryPreviewRewrites) : []),
+    ];
   }
 
   function redirects() {
@@ -436,6 +464,8 @@ ${resources.map(doc).join('\n')}`;
       `/*.json\n  ${served('application/json')}`,
       `/*.md\n  ${served('text/markdown')}`,
       `/*.css\n  ${served('text/css')}`,
+      `/*.mjs\n  ${served('text/javascript')}`,
+      `/libraries/*/preview.manifest.js\n  ${served('text/javascript')}`,
     ];
   }
 

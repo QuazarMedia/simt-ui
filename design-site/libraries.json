@@ -1,0 +1,18 @@
+{
+  "libraries": [
+    {
+      "id": "web-ui",
+      "packageDirectory": "../web-ui",
+      "kind": "web",
+      "published": true,
+      "tokenStylesheet": "/tokens.css",
+      "themeAdapter": {
+        "attribute": "data-cosmos-theme",
+        "values": {
+          "dark": "deepSpace",
+          "light": "daylight"
+        }
+      }
+    }
+  ]
+}

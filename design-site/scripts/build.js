@@ -7,6 +7,12 @@ import { fileURLToPath } from 'node:url';
 import { createSpecimens, MOTION_TIERS } from '../src/design/specimens.js';
 import { createSkill, skillRuleIds } from '../src/design/skill.js';
 import { createGallery } from '../src/design/gallery.js';
+import {
+  librariesOverviewBody,
+  libraryPageBody,
+  libraryPreviewDocument,
+  publishedLibraries,
+} from '../src/design/library-previews.js';
 
 const root = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 // Everything published lands under dist/, which is the Workers assets directory.
@@ -276,7 +282,7 @@ function generateProductOutputs(PRODUCT) {
       .map((name) => `<option value="${name}" data-color="${chromeColor(name)}">${THEME_LABELS[name]}</option>`)
       .join(
         '',
-      )}</select></label><a class="header-download" href="${PRODUCT_BASE}/specification.md">Plain text <span aria-hidden="true">↗</span></a></div></div><nav class="platform-nav" aria-label="Design parts"><a href="${pathFor('')}"${!slug ? ' aria-current="page"' : ''}>Overview</a>${pages.map((p) => `<a href="${pathFor(p.slug)}"${slug === p.slug ? ' aria-current="page"' : ''}><span>${p.number}</span>${p.label}</a>`).join('')}<a href="${PRODUCT_BASE}/gallery"${slug === GALLERY_SLUG ? ' aria-current="page"' : ''}>Gallery</a></nav></header>`;
+      )}</select></label><a class="header-download" href="${PRODUCT_BASE}/specification.md">Plain text <span aria-hidden="true">↗</span></a></div></div><nav class="platform-nav" aria-label="Design parts"><a href="${pathFor('')}"${!slug ? ' aria-current="page"' : ''}>Overview</a>${pages.map((p) => `<a href="${pathFor(p.slug)}"${slug === p.slug ? ' aria-current="page"' : ''}><span>${p.number}</span>${p.label}</a>`).join('')}${PRODUCT.isLatest ? `<a href="${PRODUCT_BASE}/libraries"${slug === 'libraries' || slug?.startsWith('library:') ? ' aria-current="page"' : ''}>Libraries</a>` : ''}<a href="${PRODUCT_BASE}/gallery"${slug === GALLERY_SLUG ? ' aria-current="page"' : ''}>Gallery</a></nav></header>`;
   }
 
   function partPayloadNote() {
@@ -433,6 +439,88 @@ function generateProductOutputs(PRODUCT) {
       skip: 'Skip to the gallery',
       active: GALLERY_SLUG,
       versionPath: path,
+    });
+  }
+
+  function libraryDocument(library = null) {
+    const overview = library === null;
+    const canonical = urlFor(overview ? 'libraries' : library.route);
+    const title = overview
+      ? 'SIMT UI libraries | SIMT Design'
+      : `${library.manifest.title} | SIMT Design`;
+    const description = overview
+      ? 'Published SIMT UI libraries with package-owned preview manifests, automatic source coverage, live web playgrounds and native preview catalogs.'
+      : library.manifest.description;
+    const graph = [
+      {
+        '@type': 'WebPage',
+        '@id': `${canonical}#webpage`,
+        url: canonical,
+        name: title,
+        description,
+        inLanguage: 'en',
+        dateModified: space.updated,
+        isPartOf: { '@id': `${release.base}#system` },
+        mainEntity: { '@id': `${canonical}#guide` },
+      },
+      {
+        '@type': overview ? 'CollectionPage' : 'TechArticle',
+        '@id': `${canonical}#guide`,
+        name: title,
+        description,
+        datePublished: space.published,
+        dateModified: space.updated,
+        author: { '@type': 'Organization', name: 'SIMT', url: 'https://simt.app' },
+        publisher: { '@type': 'Organization', name: space.name, url: `${space.origin}/` },
+        isPartOf: { '@id': `${release.base}#system` },
+        mainEntityOfPage: { '@id': `${canonical}#webpage` },
+        ...(overview
+          ? {
+              hasPart: publishedLibraries.map((entry) => ({
+                '@type': 'WebPage',
+                name: entry.metadata.name,
+                url: urlFor(entry.route),
+              })),
+            }
+          : {
+              version: library.metadata.version,
+              proficiencyLevel: 'Implementation reference',
+              hasPart: library.manifest.components.map((component) => ({
+                '@type': 'WebPageElement',
+                name: component.title,
+                url: `${canonical}#component-${component.id}`,
+              })),
+            }),
+      },
+      {
+        '@type': 'CreativeWork',
+        '@id': `${release.base}#system`,
+        name: 'SIMT Design',
+        version: release.version,
+        url: release.base,
+      },
+      {
+        '@type': 'BreadcrumbList',
+        itemListElement: [
+          { '@type': 'ListItem', position: 1, name: space.name, item: `${space.origin}/` },
+          { '@type': 'ListItem', position: 2, name: 'SIMT Design', item: release.base },
+          { '@type': 'ListItem', position: 3, name: 'Libraries', item: urlFor('libraries') },
+          ...(overview
+            ? []
+            : [{ '@type': 'ListItem', position: 4, name: library.metadata.name, item: canonical }]),
+        ],
+      },
+    ];
+    return pageShell({
+      title,
+      description,
+      canonical,
+      graph,
+      body: overview ? librariesOverviewBody() : libraryPageBody(library),
+      alternate: '',
+      skip: overview ? 'Skip to libraries' : 'Skip to library catalog',
+      active: overview ? 'libraries' : `library:${library.id}`,
+      versionPath: '',
     });
   }
 
@@ -1091,6 +1179,13 @@ function generateProductOutputs(PRODUCT) {
         breadcrumb: ['Gallery'],
       }),
     );
+  }
+  if (PRODUCT.isLatest) {
+    put('libraries/index.html', libraryDocument());
+    for (const library of publishedLibraries) {
+      put(`${library.route}/index.html`, libraryDocument(library));
+      if (library.kind === 'web') put(`${library.previewPath}/index.html`, libraryPreviewDocument(library));
+    }
   }
 
   const sizes = noteSizes(outputs, PRODUCT_DIR);

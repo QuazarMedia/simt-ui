@@ -2,6 +2,7 @@ import { cpSync, existsSync, mkdirSync, readFileSync, readdirSync, writeFileSync
 import { resolve, dirname, basename } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import less from 'less';
+import { webLibraries } from '../src/design/library-previews.js';
 
 const root = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 const DIST = resolve(root, 'dist');
@@ -32,6 +33,22 @@ export async function buildAssets({ check = false } = {}) {
 
   for (const file of ['site.js']) {
     outputs.set(`assets/${file}`, readFileSync(resolve(root, 'client', file), 'utf8'));
+  }
+
+  outputs.set('assets/library-preview.js', readFileSync(resolve(root, 'client', 'library-preview.js'), 'utf8'));
+  outputs.set('styles/library-preview.css', readFileSync(resolve(root, 'styles', 'library-preview.css'), 'utf8'));
+  for (const library of webLibraries) {
+    for (const file of library.files) {
+      outputs.set(
+        `${library.route}/runtime/src/${file}`,
+        readFileSync(resolve(library.packageRoot, 'src', file), 'utf8'),
+      );
+    }
+    outputs.set(`${library.route}/package.json`, readFileSync(resolve(library.packageRoot, 'package.json'), 'utf8'));
+    outputs.set(
+      `${library.route}/preview.manifest.js`,
+      readFileSync(resolve(library.packageRoot, library.manifestFile), 'utf8'),
+    );
   }
 
   for (const [path, contents] of outputs) {

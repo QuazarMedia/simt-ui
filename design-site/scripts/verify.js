@@ -6,6 +6,7 @@ import { gzipSync } from 'node:zlib';
 import { build, generatedOutputs } from './build.js';
 import { authority, canonicalUrl } from '../src/site/authority.js';
 import product, { allRoutes, budgetOf, latest, products, productResourceUrl, productRouteUrl } from '../src/site/product.js';
+import { publishedLibraries, webLibraries } from '../src/design/library-previews.js';
 
 const root = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 const read = (path) => readFileSync(join(root, path), 'utf8');
@@ -39,6 +40,68 @@ function checkRoutes(outputs) {
     assert(html.includes('>SIMT / Design</a>'), `${route.path || '/'}: footer brand`);
     assert(html.includes('data-design-toast'), `${route.path || '/'}: Design toast hook`);
     assert(html.includes('src="/assets/site.js"'), `${route.path || '/'}: site client`);
+  }
+}
+
+function checkLibraries(outputs) {
+  const overview = outputs.get('libraries/index.html');
+  assert(overview, 'missing library overview');
+  assert.equal((overview.match(/<h1[ >]/g) ?? []).length, 1, 'library overview: exactly one H1');
+  for (const library of publishedLibraries) {
+    assert(overview.includes(`href="${library.url}"`), `library overview: missing ${library.id}`);
+    const page = outputs.get(`${library.route}/index.html`);
+    assert(page, `missing library page ${library.route}`);
+    assert(page.includes(library.metadata.name), `${library.route}: package name`);
+    assert(page.includes(`v${library.metadata.version}`), `${library.route}: package version`);
+    assert(page.includes('data-preview-library') || page.includes('library-preview'), `${library.route}: preview surface`);
+    for (const component of library.manifest.components) {
+      assert(page.includes(`id="component-${component.id}"`), `${library.route}: missing ${component.id} catalog entry`);
+    }
+    for (const file of library.files) {
+      assert(page.includes(`${library.route}/runtime/src/${file}`), `${library.route}: missing source link ${file}`);
+    }
+    if (library.kind !== 'web') continue;
+    assert(page.includes(`src="${library.previewUrl}"`), `${library.route}: isolated preview`);
+    const preview = outputs.get(`${library.previewPath}/index.html`);
+    assert(preview, `missing preview document ${library.previewPath}`);
+    assert(preview.includes('noindex, nofollow'), `${library.previewPath}: preview must not be indexed`);
+    assert(!preview.includes('rel="canonical"'), `${library.previewPath}: preview must not claim a canonical page`);
+    assert.equal((preview.match(/<h1[ >]/g) ?? []).length, 1, `${library.previewPath}: exactly one H1`);
+    assert(preview.includes('src="/assets/library-preview.js"'), `${library.previewPath}: generic client`);
+    assert(preview.includes(library.stylesheet), `${library.previewPath}: package stylesheet`);
+    assert(!/<(?:script|link)[^>]+(?:src|href)="https?:\/\//.test(preview), `${library.previewPath}: no remote assets`);
+    const config = JSON.parse(preview.match(/<script type="application\/json" data-preview-config>([\s\S]*?)<\/script>/)[1]);
+    assert.equal(config.runtimeUrl, library.runtimeUrl, `${library.previewPath}: runtime entry`);
+    assert.deepEqual(config.features, library.manifest.features, `${library.previewPath}: feature contract`);
+    for (const component of library.manifest.components) {
+      assert(preview.includes(`data-preview-component="${component.id}"`), `${library.previewPath}: missing ${component.id}`);
+    }
+  }
+}
+
+function checkLibraryAssets() {
+  const previewJs = gzipSync(readFileSync(join(root, 'dist/assets/library-preview.js'))).length;
+  const previewCss = gzipSync(readFileSync(join(root, 'dist/styles/library-preview.css'))).length;
+  assert(previewJs <= budgetOf('libraryPreviewJsGzipBytes'), `Library preview JS gzip budget: ${previewJs}`);
+  assert(previewCss <= budgetOf('libraryPreviewCssGzipBytes'), `Library preview CSS gzip budget: ${previewCss}`);
+  for (const library of webLibraries) {
+    let runtimeBytes = 0;
+    for (const file of library.files) {
+      const path = join(root, 'dist', library.route, 'runtime', 'src', file);
+      assert.equal(readFileSync(path, 'utf8'), readFileSync(join(library.packageRoot, 'src', file), 'utf8'), `runtime source drift: ${path}`);
+      runtimeBytes += statSync(path).size;
+    }
+    assert(runtimeBytes <= budgetOf('libraryRuntimeBytes'), `${library.id}: runtime byte budget: ${runtimeBytes}`);
+    assert.equal(
+      readFileSync(join(root, 'dist', library.route, 'package.json'), 'utf8'),
+      readFileSync(join(library.packageRoot, 'package.json'), 'utf8'),
+      `${library.id}: package metadata drift`,
+    );
+    assert.equal(
+      readFileSync(join(root, 'dist', library.route, 'preview.manifest.js'), 'utf8'),
+      readFileSync(join(library.packageRoot, library.manifestFile), 'utf8'),
+      `${library.id}: preview manifest drift`,
+    );
   }
 }
 
@@ -184,12 +247,14 @@ export function verify({ built = false } = {}) {
     assert(!path.startsWith('/') && !path.includes('//') && !path.includes('..'), `unsafe output path ${path}`);
   }
   checkRoutes(outputs);
+  checkLibraries(outputs);
   checkResources(outputs);
   checkRewrites(outputs);
   checkEnvelope(outputs);
   if (built) {
     checkBuilt(outputs);
     checkAssets(outputs);
+    checkLibraryAssets();
   }
   console.log(`Design: ${allRoutes.length} routes (${products.length - 1} versioned), ${JSON.parse(outputs.get('rules.json')).ruleCount} rules and ${outputs.size} deterministic outputs verified.`);
   return outputs.size;

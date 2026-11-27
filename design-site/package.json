@@ -6,7 +6,7 @@
   "description": "Standalone static publication of the SIMT Design System at https://design.simt.app",
   "scripts": {
     "build": "node scripts/build.js && node scripts/build-assets.js",
-    "check": "node scripts/build.js --check && node scripts/build-assets.js --check && node scripts/verify.js --built && node --test scripts/seo.test.js scripts/design-licenses.test.js scripts/design-schema.test.js",
+    "check": "node scripts/build.js --check && node scripts/build-assets.js --check && node scripts/verify.js --built && node --test scripts/seo.test.js scripts/design-licenses.test.js scripts/design-schema.test.js scripts/libraries.test.mjs",
     "test:design": "node --test scripts/design-licenses.test.js scripts/design-schema.test.js",
     "test:seo": "node --test scripts/seo.test.js",
     "verify": "node scripts/verify.js --built",
