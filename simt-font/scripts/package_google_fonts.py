@@ -17,7 +17,7 @@ def font_version():
     source = (MODULE / "sources" / "build.py").read_text()
     match = re.search(r'^VERSION = "([0-9]+\.[0-9]+)"$', source, re.MULTILINE)
     if not match:
-        raise ValueError("VERSION in sources/build.py must look like 0.200")
+        raise ValueError("VERSION in sources/build.py must look like 1.000")
     return match.group(1)
 
 

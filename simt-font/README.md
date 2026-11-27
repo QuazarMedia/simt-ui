@@ -1,16 +1,24 @@
-# Simt Font — version 0.200
+# Simt Font
 
-A Latin and Arabic typeface on the theme of direction, compass and space.
+Project release **0.3.0** · Font software version **1.000**
+
+A Latin and Arabic typeface by Said Elimam on the theme of direction, compass and space.
 Simt (سمت) means azimuth, the bearing a traveller holds.
 
 ![Simt Font Latin and Arabic specimen](documentation/previews/latin-arabic-matched.png)
 
+## Author
+
+- **Designer:** Said Elimam
+- **Website:** <https://saidelimam.com>
+- **Contact:** <contact@saidelimam.com>
+
 ## License
 
 This Font Software is licensed under the **SIL Open Font License, Version 1.1**
-(see `OFL.txt`, full text at <https://scripts.sil.org/OFL>).
+(see `OFL.txt`, full text at <https://openfontlicense.org>).
 
-Copyright (c) 2026 The Simt Project Authors.
+Copyright (c) 2026 Said Elimam.
 
 No Reserved Font Name is set, so modified versions may keep the name
 "Simt Font" provided the OFL conditions are met (plainly declare the
@@ -32,17 +40,17 @@ derivation, ship the license, do not sell the fonts by themselves).
 - `checksums.sha256` — SHA-256 manifest of the font binaries
 - `OFL.txt`, `NOTICE` — license and provenance notices
 
-## What's new in 0.200
+## What's new in 0.3.0
 
-- Renamed from Simt Sextant to **Simt Font**.
-- **ج ح خ چ redesigned** (calligraphic option): the head now has the downward tick at its right
-  end; the initial form drops down to the left straight into the join; the isolated and final
-  bowls are wider and shallower. The medial form is unchanged.
-- **ك ک گ redesigned** (calligraphic option): initial and medial forms use the correct "<"
-  skeleton (two arms meeting at a sharp vertex on the left); isolated and final ك have a small
-  raised inner mark and a head stroke on the stem; ک and گ use the "<" with a long base, and
-  گ adds its second parallel stroke.
-- The new designs live in `sources/variants.py` (`hah_A`, `kaf_A`), wired in by `build.py`.
+- Set the project release to `0.3.0` and the font software version to `1.000`.
+- Credit Said Elimam as the designer, manufacturer and author, with the public
+  website and contact address in the font name table and contribution metadata.
+- Add the Google Fonts package, article, checksum-pinned QA workflow and opt-in
+  reviewed pull-request submission.
+- Align the upstream project with `sources/`, `documentation/`, author and
+  contributor records, and a one-command build script.
+- Correct the SIL Open Font License name-table declarations and regenerate the
+  committed TTF/WOFF binaries from the parametric sources.
 
 ## The design rules
 
@@ -120,8 +128,7 @@ Before the first submission:
    fork can be supplied in the `fork` input.
 4. Register a
    [designer profile](https://docs.google.com/forms/d/e/1FAIpQLSeMwHN8J213ZaxHrr5lHCrX56HY_NjGrWB8o604g98YxuMrdA/viewform)
-   for the exact credit `The Simt Project Authors`, or update `google-fonts/METADATA.pb`
-   and the font metadata to the preferred credit before submitting.
+   for the exact credit `Said Elimam` with the email registered with the CLA.
 5. Create a `google-fonts` GitHub environment, preferably with a required reviewer, and add
    `GOOGLE_FONTS_TOKEN`. Use a fine-grained PAT with Contents read/write on your fork and
    Pull requests read/write on `google/fonts`. Optionally add `GOOGLE_FONTS_EMAIL` with the

@@ -29,9 +29,14 @@
 - Google Fonts metadata and article templates, a pinned fontTools requirement, and packaging/workflow regression tests.
 - Google Fonts upstream project structure with `sources/`, author/contributor records, documentation, ignore rules, and a one-command build script.
 
+### Changed
+
+- Prepared project release `0.3.0` with font software version `1.000`, credited Said Elimam as designer and manufacturer, added the public author URLs, and regenerated the committed TTF/WOFF binaries.
+- Made the one-command build write to the released `fonts/ttf/` and `fonts/webfonts/` directories.
+
 ### Fixed
 
-- Corrected the FontTools license name-table keys so the parametric source build completes.
+- Corrected the FontTools license name-table keys and canonical Google Fonts copyright/OFL declarations so the parametric source build and integrity checks pass.
 
 ## app-ui Unreleased
 

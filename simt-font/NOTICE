@@ -1,18 +1,15 @@
 Simt Font
-Copyright (c) 2026 The Simt Project Authors
+Copyright (c) 2026 Said Elimam
 
-Simt Font is a Latin and Arabic typeface, version 0.200.
+Simt Font is a Latin and Arabic typeface by Said Elimam.
+Project release 0.3.0 uses font software version 1.000.
 This Font Software is licensed under the SIL Open Font License, Version 1.1.
-See OFL.txt for the full license text and https://scripts.sil.org/OFL for a FAQ.
+See OFL.txt for the full license text and https://openfontlicense.org for a FAQ.
 
-Provenance:
-- Base binaries and build source from the SimtFont-v0.200 distribution archive.
-- The committed font binaries are the archive's TTF/WOFF files with only the
-  name table changed: typographic family name (ID 12), license (ID 13) and
-  license URL (ID 14) entries declaring the SIL Open Font License were added,
-  and the head table's checkSumAdjustment and modified fields were updated by
-  fontTools 4.69.1. Every other table is byte-identical to the archive.
+Author: Said Elimam
+Website: https://saidelimam.com
+Contact: contact@saidelimam.com
 
-The font's parametric build source (sources/) reproduces the glyphs; it requires
-Python 3.10+ and the pinned fontTools dependency. Rebuild with `./sources/build.sh`
-from simt-font/.
+The committed TTF and WOFF binaries are generated from the parametric build
+source in sources/ with the pinned fontTools dependency. Rebuild with
+`./sources/build.sh` from simt-font/.

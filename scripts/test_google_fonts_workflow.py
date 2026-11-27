@@ -118,7 +118,13 @@ class GoogleFontsWorkflowTests(unittest.TestCase):
             self.assertIn(f'commit: "{COMMIT}"', metadata)
             self.assertIn(f'date_added: "{DATE_ADDED}"', metadata)
             self.assertNotIn("{{", metadata)
-            self.assertEqual(output.read_text(), "version=0.200\n")
+            self.assertIn('designer: "Said Elimam"', metadata)
+            self.assertIn(
+                'copyright: "Copyright 2026 The Simt Font Project Authors '
+                '(https://github.com/QuazarMedia/simt-ui); Said Elimam"',
+                metadata,
+            )
+            self.assertEqual(output.read_text(), "version=1.000\n")
 
     def test_packager_rejects_invalid_provenance(self):
         cases = (

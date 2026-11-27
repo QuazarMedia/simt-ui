@@ -20,14 +20,24 @@ from pathlib import Path
 MODULE = Path(__file__).resolve().parent.parent
 
 FAMILY = "Simt Font"
+AUTHOR = "Said Elimam"
+AUTHOR_URL = "https://saidelimam.com"
+VERSION = "1.000"
+COPYRIGHT = (
+    "Copyright 2026 The Simt Font Project Authors "
+    "(https://github.com/QuazarMedia/simt-ui); Said Elimam"
+)
 EXPECTED_STYLE = {
     "fonts/ttf/SimtFont-Regular.ttf": ("Regular", "SimtFont-Regular"),
     "fonts/ttf/SimtFont-Bold.ttf": ("Bold", "SimtFont-Bold"),
     "fonts/webfonts/SimtFont-Regular.woff": ("Regular", "SimtFont-Regular"),
     "fonts/webfonts/SimtFont-Bold.woff": ("Bold", "SimtFont-Bold"),
 }
-LICENSE_TEXT = "This font is licensed under the SIL Open Font License, Version 1.1."
-LICENSE_URL = "https://scripts.sil.org/OFL"
+LICENSE_TEXT = (
+    "This Font Software is licensed under the SIL Open Font License, Version 1.1. "
+    "This license is available with a FAQ at: https://openfontlicense.org"
+)
+LICENSE_URL = "https://openfontlicense.org"
 
 failures = []
 
@@ -134,6 +144,12 @@ def main():
         got_style = names.get(2) or names.get(17)
         check(f"{rel} style", got_style == style, f"got {got_style!r}")
         check(f"{rel} PS name", names.get(6) == psname, f"got {names.get(6)!r}")
+        check(f"{rel} version", names.get(5) == f"Version {VERSION}", f"got {names.get(5)!r}")
+        check(f"{rel} copyright", names.get(0) == COPYRIGHT, f"got {names.get(0)!r}")
+        check(f"{rel} manufacturer", names.get(8) == AUTHOR, f"got {names.get(8)!r}")
+        check(f"{rel} designer", names.get(9) == AUTHOR, f"got {names.get(9)!r}")
+        check(f"{rel} vendor URL", names.get(11) == AUTHOR_URL, f"got {names.get(11)!r}")
+        check(f"{rel} designer URL", names.get(12) == AUTHOR_URL, f"got {names.get(12)!r}")
         license_text = names.get(13, "")
         check(
             f"{rel} license (ID 13)",
@@ -156,7 +172,11 @@ def main():
         )
         check(
             "OFL.txt: copyright line",
-            re.search(r"Copyright \(c\) \d{4} The Simt Project Authors", text)
+            re.search(
+                r"Copyright \d{4} The Simt Font Project Authors "
+                r"\(https://github\.com/QuazarMedia/simt-ui\); Said Elimam",
+                text,
+            )
             is not None,
         )
     else:

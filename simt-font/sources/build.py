@@ -17,9 +17,20 @@ from geom import draw_contours, bbox, Contour, poly
 import latin
 from latin import Glyph, X, CAP, ASC, DESC
 
-VERSION = "0.200"
+VERSION = "1.000"
 FAMILY = "Simt Font"
 PS_FAMILY = "SimtFont"
+AUTHOR = "Said Elimam"
+AUTHOR_URL = "https://saidelimam.com"
+COPYRIGHT = (
+    "Copyright 2026 The Simt Font Project Authors "
+    "(https://github.com/QuazarMedia/simt-ui); Said Elimam"
+)
+LICENSE_DESCRIPTION = (
+    "This Font Software is licensed under the SIL Open Font License, Version 1.1. "
+    "This license is available with a FAQ at: https://openfontlicense.org"
+)
+LICENSE_URL = "https://openfontlicense.org"
 
 WEIGHTS = {
     "Regular": dict(W=82, H=74, g=22, k=62, dot=92, sx=1.0, wght=400),
@@ -127,20 +138,21 @@ def build(style, out_dir, with_arabic=True, extra_cmap=None):
     psname = f"{PS_FAMILY}-{style}"
     fb.setupNameTable(
         {
-            "copyright": "Copyright 2026 The Simt Project Authors",
+            "copyright": COPYRIGHT,
             "familyName": FAMILY,
             "styleName": style,
             "uniqueFontIdentifier": f"{VERSION};NONE;{psname}",
             "fullName": f"{FAMILY} {style}",
             "version": f"Version {VERSION}",
             "psName": psname,
-            "manufacturer": "Simt Project",
-            "designer": "Simt Project",
+            "manufacturer": AUTHOR,
+            "designer": AUTHOR,
+            "designerURL": AUTHOR_URL,
+            "vendorURL": AUTHOR_URL,
             "description": "Simt Font: a Latin and Arabic typeface on the theme of direction, compass and space.",
             "sampleText": "Simt \u0633\u0645\u062a",
-            # SIL Open Font License 1.1 (OFL.txt): typographic family, license, license URL.
-            "licenseDescription": "This font is licensed under the SIL Open Font License, Version 1.1.",
-            "licenseInfoURL": "https://scripts.sil.org/OFL",
+            "licenseDescription": LICENSE_DESCRIPTION,
+            "licenseInfoURL": LICENSE_URL,
         }
     )
     fs_sel = 1 << 7  # USE_TYPO_METRICS
@@ -259,12 +271,17 @@ def latin_kerning(names):
 
 if __name__ == "__main__":
     with_ar = "--latin-only" not in sys.argv
+    ttf_dir = "fonts/ttf"
+    woff_dir = "fonts/webfonts"
+    os.makedirs(woff_dir, exist_ok=True)
     for style in WEIGHTS:
-        p, fea = build(style, "fonts", with_arabic=with_ar)
+        p, fea = build(style, ttf_dir, with_arabic=with_ar)
         open(f"fonts/features-{style}.fea", "w").write(fea)
         print("built", p)
         from fontTools.ttLib import TTFont
 
         f = TTFont(p)
         f.flavor = "woff"
-        f.save(p.replace(".ttf", ".woff"))
+        woff = os.path.join(woff_dir, os.path.basename(p).replace(".ttf", ".woff"))
+        f.save(woff)
+        print("built", woff)

@@ -1,5 +1,5 @@
 name: "Simt Font"
-designer: "The Simt Project Authors"
+designer: "Said Elimam"
 license: "OFL"
 category: "SANS_SERIF"
 date_added: "{{DATE_ADDED}}"
@@ -10,7 +10,7 @@ fonts {
   filename: "SimtFont-Regular.ttf"
   post_script_name: "SimtFont-Regular"
   full_name: "Simt Font Regular"
-  copyright: "Copyright 2026 The Simt Project Authors"
+  copyright: "Copyright 2026 The Simt Font Project Authors (https://github.com/QuazarMedia/simt-ui); Said Elimam"
 }
 fonts {
   name: "Simt Font"
@@ -19,7 +19,7 @@ fonts {
   filename: "SimtFont-Bold.ttf"
   post_script_name: "SimtFont-Bold"
   full_name: "Simt Font Bold"
-  copyright: "Copyright 2026 The Simt Project Authors"
+  copyright: "Copyright 2026 The Simt Font Project Authors (https://github.com/QuazarMedia/simt-ui); Said Elimam"
 }
 subsets: "arabic"
 subsets: "latin"
