@@ -14,6 +14,8 @@ Use the caller's Material3 theme. Labels, callbacks, state, window policy, reduc
 
 `AppMultiChoice` and `AppSingleChoice` expose remembered working selection state with minimum-selection and required-selection rules. Both use caller-owned options and Material3 chip semantics and support wrapping or horizontal scrolling. They report the current selection after every enabled choice tap, including a tap rejected by the minimum or required rule. `AppMultiChoice` also supports option tooltips and long-press callbacks without firing a tap. `AppSelectField` is a caller-controlled read-only anchor with a height-capped scrolling dropdown; selected rows carry a localized content description. Option payloads and the external source of truth remain caller-owned.
 
+`DoubleLabelSwitch` keeps its two-state value caller-owned and animates between the corresponding labels and supporting text; disabled switches do not publish changes. `TimePickerField` is an Android-only read-only `HH:mm` field backed by the shared `ContentDialog` and Material3 24-hour picker. Saving publishes a zero-padded time, cancelling publishes nothing, and the clear action publishes an empty string.
+
 ## Lists and scrolling
 
 `WindowedList` has a `LazyListScope` overload with a caller-supplied `LazyListState`, reverse layout and scroll policy, and a typed overload with mandatory stable keys, content types and an optional centered empty placeholder. Keys must follow item identity through reorder; choosing positional keys can lose remembered row state. Give lists bounded layout space rather than nesting unconstrained vertical scroll containers.

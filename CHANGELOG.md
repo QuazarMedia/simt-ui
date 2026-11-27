@@ -32,6 +32,8 @@
 - Robolectric host behavior tests for the basic form controls (`BasicFormsTest`: debounce timing and callback replacement, radio row/button selection, permission-to-switch transition, touch-target size and disabled state).
 - Choice and select controls extracted from simt-app `core:ui` in commonMain — `AppMultiChoice` / `AppSingleChoice` with remembered selection state, wrapping/scrolling layouts, icons and tooltips, plus `AppSelectField` with a height-capped dropdown and localized selected description.
 - Robolectric host behavior tests for the choice controls (`ChoiceControlsTest`: minimum and optional selection, disabled controls, long-press suppression, and select-field choice propagation).
+- Simple form controls extracted from simt-app `core:ui` — `DoubleLabelSwitch` in commonMain with caller-owned state and active supporting text, plus Android-only `TimePickerField` with the shared dialog, 24-hour selection, save/cancel and clear behavior.
+- Robolectric host behavior tests for the simple form controls (`BasicFormsTest`: switch toggling and disabled state, active supporting text, time-picker open/save/cancel and clear propagation).
 
 ### Notes
 

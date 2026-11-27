@@ -3,21 +3,30 @@ package app.simt.ui.components.forms
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.test.ExperimentalTestApi
+import androidx.compose.ui.test.assert
 import androidx.compose.ui.test.assertHeightIsAtLeast
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.assertIsNotEnabled
 import androidx.compose.ui.test.assertIsNotSelected
 import androidx.compose.ui.test.assertIsOff
 import androidx.compose.ui.test.assertWidthIsAtLeast
+import androidx.compose.ui.test.click
+import androidx.compose.ui.test.hasClickAction
+import androidx.compose.ui.test.hasText
 import androidx.compose.ui.test.isSelectable
 import androidx.compose.ui.test.isToggleable
 import androidx.compose.ui.test.junit4.v2.createComposeRule
+import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
+import androidx.compose.ui.test.performScrollTo
 import androidx.compose.ui.test.performTextInput
+import androidx.compose.ui.test.performTouchInput
 import androidx.compose.ui.unit.dp
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
@@ -195,5 +204,121 @@ class BasicFormsTest {
 
         compose.onNode(isToggleable()).assertIsNotEnabled().performClick()
         compose.runOnIdle { assertEquals(0, checkedChanges) }
+    }
+
+    @Test
+    fun doubleLabelSwitchTogglesAndShowsTheActiveSupportingText() {
+        val currentState = mutableStateOf(1)
+        val changes = mutableListOf<Int>()
+        compose.setContent {
+            MaterialTheme {
+                DoubleLabelSwitch(
+                    state1Label = "First mode",
+                    state2Label = "Second mode",
+                    currentState = currentState.value,
+                    onStateChange = {
+                        changes.add(it)
+                        currentState.value = it
+                    },
+                    state1SupportingText = "First mode details",
+                    state2SupportingText = "Second mode details",
+                )
+            }
+        }
+
+        compose.onNodeWithText("First mode details").assertIsDisplayed()
+        compose.onNodeWithText("Second mode details").assertDoesNotExist()
+        compose.onNode(hasClickAction()).performClick()
+        compose.onNodeWithText("Second mode details").assertIsDisplayed()
+        compose.onNodeWithText("First mode details").assertDoesNotExist()
+        compose.onNode(hasClickAction()).performClick()
+        compose.onNodeWithText("First mode details").assertIsDisplayed()
+        compose.runOnIdle {
+            assertEquals(1, currentState.value)
+            assertEquals(listOf(2, 1), changes)
+        }
+    }
+
+    @Test
+    fun disabledDoubleLabelSwitchDoesNotInvokeItsCallback() {
+        var changes = 0
+        compose.setContent {
+            MaterialTheme {
+                DoubleLabelSwitch(
+                    state1Label = "First mode",
+                    state2Label = "Second mode",
+                    currentState = 1,
+                    onStateChange = { changes++ },
+                    modifier = Modifier.testTag("switch"),
+                    enabled = false,
+                )
+            }
+        }
+
+        compose.onNodeWithTag("switch").performTouchInput { click() }
+        compose.runOnIdle { assertEquals(0, changes) }
+    }
+
+    @Test
+    fun timePickerFieldOpensAndSavesTheSelectedTime() {
+        val value = mutableStateOf("07:05")
+        val changes = mutableListOf<String>()
+        compose.setContent {
+            MaterialTheme {
+                TimePickerField(
+                    value = value.value,
+                    onValueChange = {
+                        changes.add(it)
+                        value.value = it
+                    },
+                    label = "Synthetic time",
+                    testTag = "time-field",
+                )
+            }
+        }
+
+        compose.onNodeWithTag("modal_button_save").assertDoesNotExist()
+        compose.onNodeWithTag("time-field").performTouchInput {
+            click(Offset(width * 0.25f, height * 0.5f))
+        }
+        compose.mainClock.advanceTimeBy(500)
+        compose.onNodeWithTag("modal_button_save").assertExists().performScrollTo().assertIsDisplayed().performClick()
+        compose.onNodeWithTag("time-field").assert(hasText("07:05"))
+        compose.runOnIdle { assertEquals(listOf("07:05"), changes) }
+    }
+
+    @Test
+    fun timePickerFieldCancelsWithoutPublishingAndClearsTheValue() {
+        val value = mutableStateOf("18:42")
+        val changes = mutableListOf<String>()
+        compose.setContent {
+            MaterialTheme {
+                TimePickerField(
+                    value = value.value,
+                    onValueChange = {
+                        changes.add(it)
+                        value.value = it
+                    },
+                    label = "Synthetic time",
+                    testTag = "time-field",
+                )
+            }
+        }
+
+        compose.onNodeWithTag("time-field").performTouchInput {
+            click(Offset(width * 0.25f, height * 0.5f))
+        }
+        compose.mainClock.advanceTimeBy(500)
+        compose.onNodeWithTag("modal_button_cancel").assertExists().performScrollTo().assertIsDisplayed().performClick()
+        compose.onNodeWithTag("modal_button_save").assertDoesNotExist()
+        compose.onNodeWithTag("time-field").assert(hasText("18:42"))
+        compose.runOnIdle { assertTrue(changes.isEmpty()) }
+
+        compose.onNodeWithContentDescription("Clear text").performClick()
+        compose.onNodeWithTag("time-field").assert(hasText(""))
+        compose.runOnIdle {
+            assertEquals("", value.value)
+            assertEquals(listOf(""), changes)
+        }
     }
 }
