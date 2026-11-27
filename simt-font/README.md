@@ -21,7 +21,10 @@ derivation, ship the license, do not sell the fonts by themselves).
 - `simt-specimen.html` — open it in a browser to type and test the font
 - `previews/` — character-set overviews for both weights, and the hah/kaf design comparison sheets
 - `source/` — the Python build scripts that generate the fonts, plus the OpenType feature files
+- `requirements.txt` — pinned fontTools build dependency
 - `scripts/check-integrity.py` — offline verification script (checksums, name table, license)
+- `scripts/package_google_fonts.py` — builds the exact `ofl/simtfont` contribution package
+- `google-fonts/` — Google Fonts metadata and article templates
 - `checksums.sha256` — SHA-256 manifest of the font binaries
 - `OFL.txt`, `NOTICE` — license and provenance notices
 
@@ -62,14 +65,6 @@ derivation, ship the license, do not sell the fonts by themselves).
 - `gasp` set for smooth rendering (the font is unhinted); `meta` table declares Latin and Arabic
 - Tested with HarfBuzz shaping (the engine used by Chrome, Firefox, Android and LibreOffice)
 
-## Provenance
-
-Base binaries and build source come from the `SimtFont-v0.200` distribution archive.
-The committed binaries differ from the archive in one respect: the name table now
-declares the license (typographic family ID 12, license ID 13, license URL ID 14),
-and the head table's `checkSumAdjustment`/`modified` fields were updated by
-fontTools 4.69.1. Every other table is byte-identical to the archive. See `NOTICE`.
-
 ## Using it on the web
 
 ```css
@@ -81,15 +76,17 @@ body { font-family: "Simt Font", system-ui, sans-serif; line-height: 1.6; }
 
 ## Rebuilding
 
-Requires Python 3 and fontTools (`pip install fonttools`). From `source/`:
+Requires Python 3.10+ and the pinned fontTools dependency. From `simt-font/`:
 
-```
+```bash
+python3 -m pip install -r requirements.txt
+cd source
 python3 build.py
 ```
 
 All proportions live in `latin.py` and `arabic.py`; stroke weights are in `WEIGHTS` in `build.py`.
 The build writes TTF and WOFF files to `fonts/`; the committed binaries are the archive
-binaries (see Provenance), not a rebuild of this tree with a specific fontTools version.
+binaries (see `NOTICE`), not a rebuild of this tree with a specific fontTools version.
 
 ## Verification
 
@@ -103,6 +100,34 @@ It checks the SHA-256 manifest of every font binary, parses each font's name
 table (family, style, PS name, license and license URL entries), and verifies the
 license files are present and intact. `./gradlew :simt-font:check` runs the same
 script through the `checkFontIntegrity` task.
+
+## Google Fonts contribution CI
+
+The `google-fonts` GitHub Actions workflow builds the sources, verifies the released binaries,
+packages `ofl/simtfont`, and runs Fontspector's `googlefonts` profile. A normal manual run
+uploads the package and QA reports without credentials. Setting `submit=true` additionally
+opens or updates a pull request in `google/fonts`, but only after every QA check passes.
+
+Before the first submission:
+
+1. [Open an Add Font issue](https://github.com/google/fonts/issues/new?assignees=&labels=I+New+Font%2C+II+Submission&template=1_add-font.md&title=Add+%5BFont+Name%5D)
+   in `google/fonts`; Google Fonts requires an issue before a font PR.
+2. [Sign the Google Contributor License Agreement](https://cla.developers.google.com/about)
+   with the GitHub account and email used for the contribution.
+3. Fork `google/fonts`. The workflow defaults to `<github-login>/fonts`; a differently named
+   fork can be supplied in the `fork` input.
+4. Register a
+   [designer profile](https://docs.google.com/forms/d/e/1FAIpQLSeMwHN8J213ZaxHrr5lHCrX56HY_NjGrWB8o604g98YxuMrdA/viewform)
+   for the exact credit `The Simt Project Authors`, or update `google-fonts/METADATA.pb`
+   and the font metadata to the preferred credit before submitting.
+5. Create a `google-fonts` GitHub environment, preferably with a required reviewer, and add
+   `GOOGLE_FONTS_TOKEN`. Use a fine-grained PAT with Contents read/write on your fork and
+   Pull requests read/write on `google/fonts`. Optionally add `GOOGLE_FONTS_EMAIL` with the
+   email registered with the CLA.
+
+Run the workflow from `main`, enter the issue number and fork, and enable `submit` only when
+ready. The workflow creates a reviewed PR; Google Fonts staff decide when to merge and publish
+the family. See the [official contribution guide](https://googlefonts.github.io/gf-guide/making-pr.html).
 
 ## Status and next steps
 
@@ -120,4 +145,5 @@ Before a commercial or public release, these steps are recommended:
 - **Wider coverage.** Persian digits ۴ ۵ ۶, Urdu letters, Latin Extended-A (Central European),
   ¡ ¿ ß Æ and more symbols.
 - **Variable font.** Add the planned axes: weight, slit opening (SLIT) and horizon length (HRZN).
-- **Quality check** with Fontbakery and test in Word, InDesign, macOS and Windows.
+- **Google Fonts QA.** Fix every failure reported by the `google-fonts` workflow and test in
+  Word, InDesign, macOS and Windows.

@@ -21,6 +21,17 @@
 - Kept source/history auditing fail-closed while narrowly exempting one reviewed historical generated hook blob from only the personal-path category by its exact SHA-256 digest. No credential, private-key or forbidden-file category is exempt.
 - Documented the remaining release blockers: protect the existing `release` environment, move repository-scoped Central/signing secrets into it, and enable the missing GitHub repository security controls.
 
+## simt-font Unreleased
+
+### Added
+
+- Google Fonts contribution workflow with a clean source build, exact `ofl/simtfont` packaging, pinned Fontspector QA reports, and opt-in pull-request submission through a protected environment.
+- Google Fonts metadata and article templates, a pinned fontTools requirement, and packaging/workflow regression tests.
+
+### Fixed
+
+- Corrected the FontTools license name-table keys so the parametric source build completes.
+
 ## app-ui Unreleased
 
 ### Added

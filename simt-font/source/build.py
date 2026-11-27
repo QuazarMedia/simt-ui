@@ -139,8 +139,8 @@ def build(style, out_dir, with_arabic=True, extra_cmap=None):
             "description": "Simt Font: a Latin and Arabic typeface on the theme of direction, compass and space.",
             "sampleText": "Simt \u0633\u0645\u062a",
             # SIL Open Font License 1.1 (OFL.txt): typographic family, license, license URL.
-            "license": "This font is licensed under the SIL Open Font License, Version 1.1.",
-            "licenseURL": "https://scripts.sil.org/OFL",
+            "licenseDescription": "This font is licensed under the SIL Open Font License, Version 1.1.",
+            "licenseInfoURL": "https://scripts.sil.org/OFL",
         }
     )
     fs_sel = 1 << 7  # USE_TYPO_METRICS

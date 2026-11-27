@@ -1,0 +1,223 @@
+name: google-fonts
+
+on:
+  workflow_dispatch:
+    inputs:
+      submit:
+        description: Open or update a google/fonts PR after QA passes
+        required: false
+        type: boolean
+        default: false
+      issue:
+        description: Google Fonts Add Font issue number (required when submit is true)
+        required: false
+        type: string
+        default: ''
+      fork:
+        description: Your google/fonts fork as owner/repository (defaults to your account's fonts fork)
+        required: false
+        type: string
+        default: ''
+
+permissions:
+  contents: read
+
+concurrency:
+  group: google-fonts-${{ github.ref }}
+  cancel-in-progress: false
+
+defaults:
+  run:
+    shell: bash
+
+env:
+  FONTSPECTOR_VERSION: '1.9.1'
+  FONTSPECTOR_SHA256: ff982bfbfb9edb60cb35512964fba2cc6560e94b492cf503f5dc9739c817a6b5
+
+jobs:
+  package:
+    name: build, package and validate
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      - name: Verify released font integrity
+        run: python3 simt-font/scripts/check-integrity.py
+
+      - name: Build font sources
+        run: |
+          set -euo pipefail
+          python3 -m venv "$RUNNER_TEMP/font-build-venv"
+          "$RUNNER_TEMP/font-build-venv/bin/pip" install --quiet -r simt-font/requirements.txt
+          cp -R simt-font/source "$RUNNER_TEMP/simt-font-source"
+          (
+            cd "$RUNNER_TEMP/simt-font-source"
+            "$RUNNER_TEMP/font-build-venv/bin/python" build.py
+          )
+
+      - name: Package for Google Fonts
+        id: package
+        run: |
+          set -euo pipefail
+          package_dir="$RUNNER_TEMP/google-fonts-package"
+          python3 simt-font/scripts/package_google_fonts.py "$package_dir" \
+            --commit "$GITHUB_SHA" \
+            --date-added "$(date -u +%F)" \
+            --github-output "$GITHUB_OUTPUT"
+
+      - name: Install pinned Fontspector
+        run: |
+          set -euo pipefail
+          asset="$RUNNER_TEMP/fontspector-$FONTSPECTOR_VERSION-x86_64-unknown-linux-gnu.tar.gz"
+          gh release download "fontspector-v$FONTSPECTOR_VERSION" \
+            --repo fonttools/fontspector \
+            --pattern "fontspector-$FONTSPECTOR_VERSION-x86_64-unknown-linux-gnu.tar.gz" \
+            --dir "$RUNNER_TEMP"
+          printf '%s  %s\n' "$FONTSPECTOR_SHA256" "$asset" | shasum -a 256 --check
+          mkdir -p "$RUNNER_TEMP/fontspector"
+          tar -xzf "$asset" -C "$RUNNER_TEMP/fontspector" --strip-components=1
+
+      - name: Run Google Fonts QA
+        id: qa
+        continue-on-error: true
+        run: |
+          set -euo pipefail
+          package_dir="$RUNNER_TEMP/google-fonts-package"
+          "$RUNNER_TEMP/fontspector/fontspector" \
+            --profile googlefonts \
+            --loglevel warn \
+            --ghmarkdown "$RUNNER_TEMP/fontspector-report.md" \
+            --html "$RUNNER_TEMP/fontspector-report.html" \
+            "$package_dir"/ofl/simtfont/SimtFont-*.ttf \
+            "$package_dir"/ofl/simtfont/OFL.txt \
+            "$package_dir"/ofl/simtfont/METADATA.pb
+
+      - name: Upload package and QA report
+        if: always()
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: simt-font-google-fonts-${{ github.sha }}
+          path: |
+            ${{ runner.temp }}/google-fonts-package/
+            ${{ runner.temp }}/fontspector-report.md
+            ${{ runner.temp }}/fontspector-report.html
+          if-no-files-found: error
+          retention-days: 14
+
+      - name: Enforce Google Fonts QA
+        if: steps.qa.outcome == 'failure'
+        run: |
+          echo "::error::Simt Font does not pass the Google Fonts QA profile. Download the package and QA report artifact, fix every FAIL, then rerun."
+          exit 1
+
+  submit:
+    name: open Google Fonts pull request
+    needs: package
+    if: ${{ inputs.submit && github.ref == 'refs/heads/main' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    environment: google-fonts
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      - name: Verify released font integrity
+        run: python3 simt-font/scripts/check-integrity.py
+
+      - name: Package for Google Fonts
+        id: package
+        run: |
+          set -euo pipefail
+          package_dir="$RUNNER_TEMP/google-fonts-package"
+          python3 simt-font/scripts/package_google_fonts.py "$package_dir" \
+            --commit "$GITHUB_SHA" \
+            --date-added "$(date -u +%F)" \
+            --github-output "$GITHUB_OUTPUT"
+
+      - name: Open or update Google Fonts pull request
+        env:
+          GH_TOKEN: ${{ secrets.GOOGLE_FONTS_TOKEN }}
+          GOOGLE_FONTS_EMAIL: ${{ secrets.GOOGLE_FONTS_EMAIL }}
+          ISSUE_NUMBER: ${{ inputs.issue }}
+          FORK: ${{ inputs.fork }}
+          FONT_VERSION: ${{ steps.package.outputs.version }}
+        run: |
+          set -euo pipefail
+          if [[ -z "${GH_TOKEN:-}" ]]; then
+            echo "::error::Add GOOGLE_FONTS_TOKEN to the google-fonts environment."
+            exit 1
+          fi
+          if [[ ! "$ISSUE_NUMBER" =~ ^[1-9][0-9]*$ ]]; then
+            echo "::error::submit=true requires the numeric Google Fonts Add Font issue number."
+            exit 1
+          fi
+
+          login="$(gh api user --jq '.login')"
+          fork="${FORK:-$login/fonts}"
+          if [[ ! "$fork" =~ ^[A-Za-z0-9][A-Za-z0-9-]*/[A-Za-z0-9_.-]+$ ]]; then
+            echo "::error::fork must look like owner/repository."
+            exit 1
+          fi
+          issue_url="$(gh issue view "$ISSUE_NUMBER" --repo google/fonts --json url --jq '.url')"
+          name="$(gh api user --jq '.name // .login')"
+          email="${GOOGLE_FONTS_EMAIL:-$(gh api user --jq '.email // empty')}"
+          if [[ -z "$email" ]]; then
+            email="$login@users.noreply.github.com"
+            echo "::warning::Using a GitHub noreply commit email. Set GOOGLE_FONTS_EMAIL to the email registered with the Google CLA if required."
+          fi
+
+          worktree="$RUNNER_TEMP/google-fonts"
+          git clone --depth 1 --filter=blob:none --no-checkout https://github.com/google/fonts.git "$worktree"
+          git -C "$worktree" sparse-checkout init --cone
+          git -C "$worktree" sparse-checkout set ofl/simtfont
+          git -C "$worktree" checkout main
+          git -C "$worktree" config user.name "$name"
+          git -C "$worktree" config user.email "$email"
+          gh auth setup-git
+          git -C "$worktree" remote add fork "https://github.com/$fork.git"
+
+          if git -C "$worktree" ls-remote --exit-code --heads fork refs/heads/simtfont >/dev/null 2>&1; then
+            git -C "$worktree" fetch --depth 1 fork refs/heads/simtfont
+            git -C "$worktree" checkout -B simtfont FETCH_HEAD
+          else
+            git -C "$worktree" checkout -b simtfont
+          fi
+
+          package_dir="$RUNNER_TEMP/google-fonts-package"
+          target="$worktree/ofl/simtfont"
+          mkdir -p "$target/article"
+          cp "$package_dir"/ofl/simtfont/*.ttf "$target/"
+          cp "$package_dir/ofl/simtfont/OFL.txt" "$target/OFL.txt"
+          cp "$package_dir/ofl/simtfont/METADATA.pb" "$target/METADATA.pb"
+          cp "$package_dir/ofl/simtfont/article/ARTICLE.en_us.html" "$target/article/ARTICLE.en_us.html"
+          git -C "$worktree" add ofl/simtfont
+          if git -C "$worktree" diff --cached --quiet; then
+            echo "The Google Fonts package is unchanged."
+            exit 0
+          fi
+
+          title="Simt Font : $FONT_VERSION added"
+          git -C "$worktree" commit -m "$title"
+          git -C "$worktree" push fork simtfont
+
+          body="$RUNNER_TEMP/google-fonts-pr.md"
+          {
+            printf 'Taken from the upstream repo %s at commit %s.\n\n' \
+              "$GITHUB_SERVER_URL/$GITHUB_REPOSITORY" \
+              "$GITHUB_SERVER_URL/$GITHUB_REPOSITORY/commit/$GITHUB_SHA"
+            printf 'Adds Simt Font %s with Regular and Bold weights for Latin and Arabic.\n\n' "$FONT_VERSION"
+            printf 'Google Fonts issue: %s\n' "$issue_url"
+          } > "$body"
+
+          fork_owner="${fork%%/*}"
+          pr_url="$(gh pr list --repo google/fonts --head "$fork_owner:simtfont" --state open --json url --jq '.[0].url // empty')"
+          if [[ -n "$pr_url" ]]; then
+            gh pr edit "$pr_url" --title "$title" --body-file "$body"
+          else
+            pr_url="$(gh pr create --repo google/fonts --base main --head "$fork_owner:simtfont" --title "$title" --body-file "$body")"
+          fi
+          printf 'Google Fonts PR: %s\n' "$pr_url" | tee -a "$GITHUB_STEP_SUMMARY"
