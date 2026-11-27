@@ -23,6 +23,7 @@ fonts {
 }
 subsets: "arabic"
 subsets: "latin"
+subsets: "latin-ext"
 subsets: "menu"
 primary_script: "Latn"
 source {

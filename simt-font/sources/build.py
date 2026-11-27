@@ -5,6 +5,7 @@ Usage: python3 build.py  ->  writes fonts to ./fonts/
 
 import os
 import sys
+import unicodedata
 from fontTools.fontBuilder import FontBuilder
 from fontTools.pens.ttGlyphPen import TTGlyphPen
 from fontTools.ttLib import newTable
@@ -38,6 +39,7 @@ WEIGHTS = {
 }
 
 TYPO_ASC, TYPO_DESC, TYPO_GAP = 980, -400, 0
+WIN_ASC, WIN_DESC = 1100, 600
 
 
 def notdef(P):
@@ -126,10 +128,6 @@ def build(style, out_dir, with_arabic=True, extra_cmap=None):
 
     # vertical metrics: typo metrics drive line spacing (USE_TYPO_METRICS);
     # win metrics cover the real extremes so nothing clips on Windows.
-    ymax = max(getattr(glyf[n], "yMax", 0) for n in order)
-    ymin = min(getattr(glyf[n], "yMin", 0) for n in order)
-    win_asc = max(TYPO_ASC, ymax)
-    win_desc = max(-TYPO_DESC, -ymin)
     fb.setupHorizontalHeader(
         ascent=TYPO_ASC, descent=TYPO_DESC, lineGap=TYPO_GAP
     )  # hhea = typo: same line height on every platform
@@ -167,8 +165,8 @@ def build(style, out_dir, with_arabic=True, extra_cmap=None):
         sTypoAscender=TYPO_ASC,
         sTypoDescender=TYPO_DESC,
         sTypoLineGap=TYPO_GAP,
-        usWinAscent=win_asc,
-        usWinDescent=win_desc,
+        usWinAscent=WIN_ASC,
+        usWinDescent=WIN_DESC,
         sxHeight=X,
         sCapHeight=CAP,
         usDefaultChar=0,
@@ -206,6 +204,8 @@ def build(style, out_dir, with_arabic=True, extra_cmap=None):
 
     fea = features(glyphs, arabic_fea)
     addOpenTypeFeaturesFromString(fb.font, fea)
+    if "ltag" in fb.font:
+        del fb.font["ltag"]
     os.makedirs(out_dir, exist_ok=True)
     path = os.path.join(out_dir, f"{psname}.ttf")
     fb.save(path)
@@ -221,7 +221,46 @@ languagesystem arab dflt;
 languagesystem arab URD;
 languagesystem arab FAR;
 """
-    return head + kern + arabic_fea
+    return head + kern + latin_marks(glyphs) + arabic_fea
+
+
+LATIN_MARK_ANCHORS = {
+    "acutecomb": 150, "gravecomb": 150, "circumflexcomb": 140,
+    "tildecomb": 120, "macroncomb": 130, "brevecomb": 150,
+    "dotaccentcomb": 150, "dieresiscomb": 150, "ringcomb": 185,
+    "hungarumlautcomb": 155, "caroncomb": 170,
+}
+
+
+def latin_marks(glyphs):
+    lines = [
+        f"markClass {name} <anchor 0 0> @MC_top;"
+        for name in LATIN_MARK_ANCHORS
+    ]
+    lines += ["feature mark {", "  script latn;"]
+    for g in glyphs:
+        if not g.contours or not any(
+            unicodedata.name(chr(u), "").startswith("LATIN ") for u in g.uni
+        ):
+            continue
+        bb = bbox(g.contours)
+        width = bb[2] - bb[0]
+        x = (bb[0] + bb[2]) / 2
+        if g.name in ("I", "L", "l", "r", "f"):
+            x = bb[0] + width * 0.08
+        elif g.name in ("J", "j"):
+            x = bb[2] - width * 0.08
+        lines.append(
+            f"  pos base {g.name} <anchor {round(x)} {round(bb[3] + 35)}> "
+            "mark @MC_top;"
+        )
+    lines += ["} mark;", "feature mkmk {", "  script latn;"]
+    for name, top in LATIN_MARK_ANCHORS.items():
+        lines.append(
+            f"  pos mark {name} <anchor 0 {top}> mark @MC_top;"
+        )
+    lines += ["} mkmk;"]
+    return "\n".join(lines) + "\n"
 
 
 def latin_kerning(names):

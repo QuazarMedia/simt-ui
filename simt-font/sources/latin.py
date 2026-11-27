@@ -4,6 +4,32 @@ from geom import Path, stroke, ring, poly, rect, diag, disc, Contour, shift, mir
 
 X, CAP, ASC, DESC, OV = 500, 700, 730, -210, 12
 
+LATIN_CORE_CODEPOINTS = frozenset(range(0x20, 0x7F)) | frozenset((
+    0x00A2, 0x00A3, 0x00A5, 0x00A7, 0x00A9, 0x00AE, 0x00B0, 0x00B6, 0x00D7, 0x00F7,
+    0x20AC, 0x2122, 0x2212, 0x00A0, 0x00A1, 0x00AB, 0x00B7, 0x00BB, 0x00BF, 0x2013,
+    0x2014, 0x2018, 0x2019, 0x201A, 0x201C, 0x201D, 0x201E, 0x2022, 0x2026, 0x2039,
+    0x203A, 0x00A8, 0x00AF, 0x00B4, 0x00B8, 0x02C6, 0x02C7, 0x02D8, 0x02D9, 0x02DA,
+    0x02DB, 0x02DC, 0x02DD, 0x0300, 0x0301, 0x0302, 0x0303, 0x0304, 0x0306, 0x0307,
+    0x0308, 0x030A, 0x030B, 0x030C, 0x0326, 0x0327, 0x0328, 0x00AA, 0x00BA, 0x00C0,
+    0x00C1, 0x00C2, 0x00C3, 0x00C4, 0x00C5, 0x00C6, 0x00C7, 0x00C8, 0x00C9, 0x00CA,
+    0x00CB, 0x00CC, 0x00CD, 0x00CE, 0x00CF, 0x00D0, 0x00D1, 0x00D2, 0x00D3, 0x00D4,
+    0x00D5, 0x00D6, 0x00D8, 0x00D9, 0x00DA, 0x00DB, 0x00DC, 0x00DD, 0x00DE, 0x00DF,
+    0x00E0, 0x00E1, 0x00E2, 0x00E3, 0x00E4, 0x00E5, 0x00E6, 0x00E7, 0x00E8, 0x00E9,
+    0x00EA, 0x00EB, 0x00EC, 0x00ED, 0x00EE, 0x00EF, 0x00F0, 0x00F1, 0x00F2, 0x00F3,
+    0x00F4, 0x00F5, 0x00F6, 0x00F8, 0x00F9, 0x00FA, 0x00FB, 0x00FC, 0x00FD, 0x00FE,
+    0x00FF, 0x0100, 0x0101, 0x0102, 0x0103, 0x0104, 0x0105, 0x0106, 0x0107, 0x010A,
+    0x010B, 0x010C, 0x010D, 0x010E, 0x010F, 0x0110, 0x0111, 0x0112, 0x0113, 0x0116,
+    0x0117, 0x0118, 0x0119, 0x011A, 0x011B, 0x011E, 0x011F, 0x0120, 0x0121, 0x0122,
+    0x0123, 0x0126, 0x0127, 0x012A, 0x012B, 0x012E, 0x012F, 0x0130, 0x0131, 0x0136,
+    0x0137, 0x0139, 0x013A, 0x013B, 0x013C, 0x013D, 0x013E, 0x0141, 0x0142, 0x0143,
+    0x0144, 0x0145, 0x0146, 0x0147, 0x0148, 0x0150, 0x0151, 0x0152, 0x0153, 0x0154,
+    0x0155, 0x0158, 0x0159, 0x015A, 0x015B, 0x015E, 0x015F, 0x0160, 0x0161, 0x0164,
+    0x0165, 0x016A, 0x016B, 0x016E, 0x016F, 0x0170, 0x0171, 0x0172, 0x0173, 0x0174,
+    0x0175, 0x0176, 0x0177, 0x0178, 0x0179, 0x017A, 0x017B, 0x017C, 0x017D, 0x017E,
+    0x0218, 0x0219, 0x021A, 0x021B, 0x0237, 0x1E80, 0x1E81, 0x1E82, 0x1E83, 0x1E84,
+    0x1E85, 0x1E9E, 0x1EF2, 0x1EF3,
+))
+
 
 class Glyph:
     def __init__(self, name, uni=None, adv=0, contours=None, components=None,
@@ -120,6 +146,30 @@ class B:
 
     def glyph(self, name, uni, adv, **kw):
         return Glyph(name, uni, round(adv * self.sx), self.c, **kw)
+
+
+def _scaled_contours(contours, sx, sy, dx=0, dy=0):
+    return [
+        Contour([(x * sx + dx, y * sy + dy, on) for x, y, on in c.pts], c.hole)
+        for c in contours
+    ]
+
+
+def _centered_scaled(contours, cx, cy, width, height):
+    bb = bbox(contours)
+    scale = min(width / (bb[2] - bb[0]), height / (bb[3] - bb[1]))
+    dx = cx - (bb[0] + bb[2]) * scale / 2
+    dy = cy - (bb[1] + bb[3]) * scale / 2
+    return _scaled_contours(contours, scale, scale, dx, dy)
+
+
+def _flipped_y(contours):
+    bb = bbox(contours)
+    axis = (bb[1] + bb[3]) / 2
+    return [
+        Contour([(x, 2 * axis - y, on) for x, y, on in c.pts], c.hole)
+        for c in contours
+    ]
 
 
 # ---------------------------------------------------------------- lowercase
@@ -731,6 +781,32 @@ def g_N(P):
     return b.glyph("N", 0x4E, xr + W / 2 + 72)
 
 
+def g_Eng(P):
+    g = g_N(P)
+    b = B(P)
+    b.c = g.contours
+    bb = bbox(g.contours)
+    xr = (bb[2] - b.W / 2) / b.sx
+    yb = DESC + b.W / 2
+    p = b.path((xr, 180)).C((xr, 30), (xr - 60, yb), (xr - 140, yb))
+    b.stroke(p)
+    g.name, g.uni, g.contours = "Eng", [0x014B], b.c
+    return g
+
+
+def g_eng(P):
+    g = g_n(P)
+    b = B(P)
+    b.c = g.contours
+    bb = bbox(g.contours)
+    xr = (bb[2] - b.W / 2) / b.sx
+    yb = DESC + b.W / 2
+    p = b.path((xr, 160)).C((xr, 20), (xr - 60, yb), (xr - 140, yb))
+    b.stroke(p)
+    g.name, g.uni, g.contours = "eng", [0x014A], b.c
+    return g
+
+
 def g_M(P):
     b = B(P)
     W = b.W / b.sx
@@ -752,6 +828,159 @@ def g_K(P):
     b.diag((xe + 24 / b.sx, 220), (560, CAP))
     b.diag((xe + 150, 360), (580, 0))
     return b.glyph("K", 0x4B, 580 + b.W * 0.55 / b.sx + 30)
+
+
+def g_Eth(P):
+    g = g_O(P)
+    b = B(P)
+    b.c = g.contours
+    b.hbar(70, 430, CAP * 0.5)
+    g.name, g.uni, g.contours = "Eth", [0x00D0], b.c
+    return g
+
+
+def g_eth(P):
+    g = g_o(P)
+    b = B(P)
+    b.c = g.contours
+    b.hbar(55, 450, 300)
+    g.name, g.uni, g.contours = "eth", [0x00F0], b.c
+    return g
+
+
+def g_Oslash(P):
+    g = g_O(P)
+    b = B(P)
+    b.c = g.contours
+    b.diag((80, -20), (690, CAP + 20), b.W * 0.9)
+    g.name, g.uni, g.contours = "Oslash", [0x00D8], b.c
+    return g
+
+
+def g_oslash(P):
+    g = g_o(P)
+    b = B(P)
+    b.c = g.contours
+    b.diag((55, -20), (490, X + 20), b.W * 0.9)
+    g.name, g.uni, g.contours = "oslash", [0x00F8], b.c
+    return g
+
+
+def g_Thorn(P):
+    g = g_D(P)
+    b = B(P)
+    b.c = g.contours
+    b.stem(390, 0, CAP)
+    g.name, g.uni, g.contours = "Thorn", [0x00DE], b.c
+    return g
+
+
+def g_thorn(P):
+    g = g_b(P)
+    b = B(P)
+    b.c = g.contours
+    b.stem(360, DESC, X)
+    g.name, g.uni, g.contours = "thorn", [0x00FE], b.c
+    return g
+
+
+def g_Dcroat(P):
+    g = g_D(P)
+    b = B(P)
+    b.c = g.contours
+    b.hbar(80, 590, CAP - 45)
+    g.name, g.uni, g.contours = "Dcroat", [0x0110], b.c
+    return g
+
+
+def g_dcroat(P):
+    g = g_d(P)
+    b = B(P)
+    b.c = g.contours
+    b.hbar(60, 490, X - 45)
+    g.name, g.uni, g.contours = "dcroat", [0x0111], b.c
+    return g
+
+
+def g_Hbar(P):
+    g = g_H(P)
+    b = B(P)
+    b.c = g.contours
+    b.hbar(50, 210, CAP + 50)
+    b.hbar(510, 670, CAP + 50)
+    g.name, g.uni, g.contours = "Hbar", [0x0126], b.c
+    return g
+
+
+def g_hbar(P):
+    g = g_h(P)
+    b = B(P)
+    b.c = g.contours
+    b.hbar(40, 210, ASC + 40)
+    g.name, g.uni, g.contours = "hbar", [0x0127], b.c
+    return g
+
+
+def g_Lslash(P):
+    g = g_L(P)
+    b = B(P)
+    b.c = g.contours
+    b.diag((110, 230), (430, 0), b.W * 0.9)
+    g.name, g.uni, g.contours = "Lslash", [0x0141], b.c
+    return g
+
+
+def g_lslash(P):
+    g = g_l(P)
+    b = B(P)
+    b.c = g.contours
+    b.diag((80, 260), (260, 0), b.W * 0.9)
+    g.name, g.uni, g.contours = "lslash", [0x0142], b.c
+    return g
+
+
+def g_germandbls(P):
+    b = B(P)
+    b.stroke(s_path(b, 44, 490, 0, ASC))
+    b.stem(460, 0, 180)
+    return b.glyph("germandbls", 0x00DF, 550)
+
+
+def g_Germandbls(P):
+    b = B(P)
+    b.stroke(s_path(b, 44, 534, 0, CAP))
+    b.stem(480, 0, 170)
+    return b.glyph("Germandbls", 0x1E9E, 580)
+
+
+def g_jdotless(P):
+    g = g_j(P)
+    g.name, g.uni, g.contours = "jdotless", [0x0237], g.contours[:-1]
+    return g
+
+
+def g_ordfeminine(P):
+    a = g_a(P)
+    bb = bbox(a.contours)
+    scale = 0.64
+    dx = (a.adv - (bb[2] - bb[0]) * scale) / 2 - bb[0] * scale
+    dy = CAP * 0.36 - bb[1] * scale
+    return Glyph(
+        "ordfeminine", 0x00AA, a.adv,
+        _scaled_contours(a.contours, scale, scale, dx, dy),
+    )
+
+
+def g_ordmasculine(P):
+    o = g_o(P)
+    bb = bbox(o.contours)
+    scale = 0.58
+    dx = (o.adv - (bb[2] - bb[0]) * scale) / 2 - bb[0] * scale
+    dy = CAP * 0.34 - bb[1] * scale
+    return Glyph(
+        "ordmasculine", 0x00BA, o.adv,
+        _scaled_contours(o.contours, scale, scale, dx, dy),
+    )
 
 
 # ---------------------------------------------------------------- figures
@@ -861,7 +1090,7 @@ def g_space(P):
 
 
 def g_nbsp(P):
-    return Glyph("uni00A0", 0xA0, round(240 * P["sx"]))
+    return Glyph("nbspace", 0xA0, round(240 * P["sx"]))
 
 
 def g_period(P, name="period", uni=0x2E):
@@ -935,6 +1164,12 @@ def g_quotedbl(P):
 def g_quoteright(P):
     g = g_comma(P, "quoteright", 0x2019, y=CAP - P["dot"] * 1.6)
     return g
+
+
+def g_apostrophemod(P):
+    b = B(P)
+    b.diag((130, 430), (50, 600), b.W * 0.85)
+    return b.glyph("apostrophemod", 0x02BC, 200)
 
 
 def g_quoteleft(P):
@@ -1242,6 +1477,123 @@ def g_quotedblbase(P):
     return g1
 
 
+def g_cent(P):
+    g = g_c(P)
+    b = B(P)
+    b.c = g.contours
+    b.hbar(80, 450, 270)
+    b.stem(275, -80, CAP + 80)
+    g.name, g.uni, g.contours = "cent", [0x00A2], b.c
+    return g
+
+
+def g_sterling(P):
+    b = B(P)
+    b.stem(140, 0, CAP)
+    b.hbar(80, 470, CAP - b.H / 2)
+    p = b.path((450, 510)).C((410, 420), (250, 450), (230, 340))
+    p.C((210, 230), (420, 260), (430, 80))
+    b.stroke(p)
+    b.hbar(150, 450, 45)
+    return b.glyph("sterling", 0x00A3, 500)
+
+
+def g_yen(P):
+    b = B(P)
+    b.diag((70, CAP), (300, 300))
+    b.diag((530, CAP), (300, 300))
+    b.stem(300, 0, 330)
+    b.hbar(110, 490, 420)
+    b.hbar(140, 460, 260)
+    return b.glyph("yen", 0x00A5, 600)
+
+
+def g_section(P):
+    b = B(P)
+    b.stroke(s_path(b, 80, 470, 30, CAP - 30))
+    b.dot(410, 515, size=P["dot"] * 0.8)
+    b.dot(140, 45, size=P["dot"] * 0.8)
+    return b.glyph("section", 0x00A7, 580)
+
+
+def g_copyright(P):
+    b = B(P)
+    b.ring(300, 350, 270, 270, wx=b.W * 0.8, wy=b.H * 0.8)
+    b.c += _centered_scaled(g_C(P).contours, 300, 350, 340, 340)
+    return b.glyph("copyright", 0x00A9, 600)
+
+
+def g_registered(P):
+    b = B(P)
+    b.ring(300, 350, 270, 270, wx=b.W * 0.8, wy=b.H * 0.8)
+    b.c += _centered_scaled(g_R(P).contours, 300, 350, 340, 340)
+    return b.glyph("registered", 0x00AE, 600)
+
+
+def g_paragraph(P):
+    b = B(P)
+    b.stem(130, -20, CAP + 40)
+    for cy, radius in ((520, 155), (235, 145)):
+        p = b.path((170, cy + 100)).L((460, cy + 100))
+        p.C((460 + radius, cy + 100), (460 + radius, cy - 100), (460, cy - 100))
+        p.L((170, cy - 100))
+        b.stroke(p)
+    return b.glyph("paragraph", 0x00B6, 730)
+
+
+def g_divide(P):
+    g = g_minus(P)
+    b = B(P)
+    b.c = g.contours
+    b.dot(280, 445, size=P["dot"])
+    b.dot(280, 55, size=P["dot"])
+    g.name, g.uni, g.contours = "divide", [0x00F7], b.c
+    return g
+
+
+def g_trademark(P):
+    t, m = g_T(P), g_M(P)
+    tb, mb = bbox(t.contours), bbox(m.contours)
+    scale = 0.32
+    tw = (tb[2] - tb[0]) * scale
+    mw = (mb[2] - mb[0]) * scale
+    mdx = 40 + tw + 70
+    contours = _scaled_contours(t.contours, scale, scale, 40, 180)
+    contours += _scaled_contours(m.contours, scale, scale, mdx, 180)
+    adv = round(mdx + mw + 40)
+    return Glyph("trademark", 0x2122, adv, contours)
+
+
+def g_exclamdown(P):
+    g = g_exclam(P)
+    g.name, g.uni, g.contours = "exclamdown", [0x00A1], _flipped_y(g.contours)
+    return g
+
+
+def g_questiondown(P):
+    g = g_question(P)
+    g.name, g.uni, g.contours = "questiondown", [0x00BF], _flipped_y(g.contours)
+    return g
+
+
+def g_guilsingl(P, name, uni, flip=False):
+    b = B(P)
+    p = b.path((350, 430)).L((100, 260)).L((350, 90))
+    b.stroke(p, b.W * 0.9)
+    g = b.glyph(name, uni, 400)
+    if flip:
+        g.contours = mirror_x(g.contours, g.adv / 2)
+    return g
+
+
+def g_guilsinglleft(P):
+    return g_guilsingl(P, "guilsinglleft", 0x2039)
+
+
+def g_guilsinglright(P):
+    return g_guilsingl(P, "guilsinglright", 0x203A, True)
+
+
 # ---------------------------------------------------------------- accents
 # Accents are drawn centred on x=0 with their base at y=0.
 
@@ -1253,88 +1605,168 @@ def acc(P, name, uni, fn):
 
 
 def _acute(b):
-    b.c += diag((-60, 0), (60, 150), b.W * 0.9)
+    b.diag((-60, 0), (60, 150), b.W * 0.9)
 
 
 def _grave(b):
-    b.c += diag((60, 0), (-60, 150), b.W * 0.9)
+    b.diag((60, 0), (-60, 150), b.W * 0.9)
 
 
 def _circ(b):
-    w = b.W * 0.85
-    p = Path((-150, 0)).L((0, 140)).L((150, 0))
-    b.c += stroke(p, w)
+    p = b.path((-150, 0)).L((0, 140)).L((150, 0))
+    b.stroke(p, b.W * 0.85)
 
 
 def _dier(b):
     d = b.P["dot"]
     for x in (-105, 105):
-        b.c += poly((x - d / 2, 0), (x + d / 2, d * 0.62), (x + d / 2, d * 1.62), (x - d / 2, d))
+        b.poly((x - d / 2 / b.sx, 0), (x + d / 2 / b.sx, d * 0.62),
+               (x + d / 2 / b.sx, d * 1.62), (x - d / 2 / b.sx, d))
 
 
 def _ring(b):
-    b.c += ring(0, 90, 95, 95, 95 - b.W * 0.75, 95 - b.W * 0.75)
+    b.ring(0, 90, 95, 95, b.W * 0.75, b.W * 0.75)
 
 
 def _tilde(b):
-    p = Path((-160, 20)).C((-120, 120), (-60, 120), (0, 70)).C((60, 20), (120, 20), (160, 120))
-    b.c += stroke(p, b.W * 0.8)
+    p = b.path((-160, 20)).C((-120, 120), (-60, 120), (0, 70))
+    p.C((60, 20), (120, 20), (160, 120))
+    b.stroke(p, b.W * 0.8)
 
 
 def _cedilla(b):
-    p = Path((0, 0)).L((0, -60)).C((60, -60), (110, -90), (110, -140)).C((110, -200), (40, -220), (-70, -205))
-    b.c += stroke(p, b.W * 0.7)
+    p = b.path((0, 0)).L((0, -60)).C((60, -60), (110, -90), (110, -140))
+    p.C((110, -200), (40, -220), (-70, -205))
+    b.stroke(p, b.W * 0.7)
 
 
 def _dot(b):
     d = b.P["dot"]
-    b.c += poly((-d / 2, 0), (d / 2, d * 0.62), (d / 2, d * 1.62), (-d / 2, d))
+    b.poly((-d / 2 / b.sx, 0), (d / 2 / b.sx, d * 0.62),
+           (d / 2 / b.sx, d * 1.62), (-d / 2 / b.sx, d))
+
+
+def _macron(b):
+    b.hbar(-150, 150, 90, b.W * 0.75)
+
+
+def _macronbelow(b):
+    b.hbar(-150, 150, -90, b.W * 0.75)
+
+
+def _breve(b):
+    p = b.path((-140, 0)).C((-100, 130), (-45, 150), (0, 150))
+    p.C((45, 150), (100, 130), (140, 0))
+    b.stroke(p, b.W * 0.8)
+
+
+def _hungar(b):
+    b.diag((-190, 0), (-60, 155), b.W * 0.85)
+    b.diag((60, 0), (190, 155), b.W * 0.85)
+
+
+def _caron(b):
+    b.poly((-160, 0), (0, 170), (160, 0), (0, 90))
+
+
+def _comma(b):
+    b.poly((-60, 20), (50, 20), (50, -100), (-30, -170))
+
+
+def _ogonek(b):
+    p = b.path((100, 140)).C((110, 20), (50, -100), (-100, -170))
+    b.stroke(p, b.W * 0.8)
 
 
 ACCENTS = {
     "acutecomb": (0x301, _acute), "gravecomb": (0x300, _grave),
-    "circumflexcomb": (0x302, _circ), "dieresiscomb": (0x308, _dier),
-    "ringcomb": (0x30A, _ring), "tildecomb": (0x303, _tilde),
-    "cedillacomb": (0x327, _cedilla), "dotaccentcomb": (0x307, _dot),
+    "circumflexcomb": (0x302, _circ), "tildecomb": (0x303, _tilde),
+    "macroncomb": (0x304, _macron), "brevecomb": (0x306, _breve),
+    "dotaccentcomb": (0x307, _dot), "dieresiscomb": (0x308, _dier),
+    "ringcomb": (0x30A, _ring), "hungarumlautcomb": (0x30B, _hungar),
+    "caroncomb": (0x30C, _caron), "commaaccentcomb": (0x326, _comma),
+    "cedillacomb": (0x327, _cedilla), "ogonekcomb": (0x328, _ogonek),
+    "macronbelowcomb": (0x331, _macronbelow),
 }
 
-# composite table: name, unicode, base, accent, placement ('top'/'bottom')
-LC = {"a": "àáâãäå", "e": "èéêë", "dotlessi": "ìíîï", "o": "òóôõö", "u": "ùúûü",
-      "y": "ýÿ", "n": "ñ", "c": "ç"}
-UC = {"A": "ÀÁÂÃÄÅ", "E": "ÈÉÊË", "I": "ÌÍÎÏ", "O": "ÒÓÔÕÖ", "U": "ÙÚÛÜ",
-      "Y": "ÝŸ", "N": "Ñ", "C": "Ç"}
-ACC_OF = {"à": "gravecomb", "á": "acutecomb", "â": "circumflexcomb", "ã": "tildecomb",
-          "ä": "dieresiscomb", "å": "ringcomb", "ç": "cedillacomb"}
+COMBINING_ACCENTS = {
+    "\u0300": "gravecomb", "\u0301": "acutecomb", "\u0302": "circumflexcomb",
+    "\u0303": "tildecomb", "\u0304": "macroncomb", "\u0306": "brevecomb",
+    "\u0307": "dotaccentcomb", "\u0308": "dieresiscomb", "\u030A": "ringcomb",
+    "\u030B": "hungarumlautcomb", "\u030C": "caroncomb", "\u0326": "commaaccentcomb",
+    "\u0327": "cedillacomb", "\u0328": "ogonekcomb",
+}
+
+SPACING_ACCENTS = (
+    ("dieresis", 0x00A8, _dier), ("macron", 0x00AF, _macron),
+    ("acute", 0x00B4, _acute), ("cedilla", 0x00B8, _cedilla),
+    ("circumflex", 0x02C6, _circ), ("caron", 0x02C7, _caron),
+    ("breve", 0x02D8, _breve), ("dotaccent", 0x02D9, _dot),
+    ("ring", 0x02DA, _ring), ("ogonek", 0x02DB, _ogonek),
+    ("tilde", 0x02DC, _tilde), ("hungarumlaut", 0x02DD, _hungar),
+)
+
+
+def spacing_accent(P, name, uni, fn):
+    g = acc(P, name, uni, fn)
+    bb = bbox(g.contours)
+    g.contours = shift(
+        g.contours,
+        60 - bb[0],
+        430 - (bb[1] + bb[3]) / 2,
+    )
+    g.adv = round(bb[2] - bb[0] + 120)
+    g.kind = "base"
+    return g
 
 
 def accent_for(ch):
-    import unicodedata
-    d = unicodedata.normalize("NFD", ch)
-    mark = d[1]
-    return {"\u0300": "gravecomb", "\u0301": "acutecomb", "\u0302": "circumflexcomb",
-            "\u0303": "tildecomb", "\u0308": "dieresiscomb", "\u030A": "ringcomb",
-            "\u0327": "cedillacomb"}[mark]
+    d = _ud.normalize("NFD", ch)
+    mark = next((c for c in d[1:] if c in COMBINING_ACCENTS), None)
+    if mark is None:
+        raise ValueError(f"no supported accent in {ch!r}")
+    return COMBINING_ACCENTS[mark]
 
 
 import unicodedata as _ud
 
 
+_NAME_OVERRIDES = {
+    0x00A0: "nbspace", 0x00A2: "cent", 0x00A3: "sterling", 0x00A5: "yen",
+    0x00A7: "section", 0x00A9: "copyright", 0x00AE: "registered",
+    0x00B6: "paragraph", 0x00F7: "divide", 0x20AC: "Euro", 0x2122: "trademark",
+    0x00A1: "exclamdown", 0x00BF: "questiondown", 0x2039: "guilsinglleft",
+    0x203A: "guilsinglright", 0x00AA: "ordfeminine", 0x00BA: "ordmasculine",
+    0x00C6: "AE", 0x00D0: "Eth", 0x00D8: "Oslash", 0x00DE: "Thorn",
+    0x00DF: "germandbls", 0x00E6: "ae", 0x00F0: "eth", 0x00F8: "oslash",
+    0x00FE: "thorn", 0x0110: "Dcroat", 0x0111: "dcroat", 0x0126: "Hbar",
+    0x0127: "hbar", 0x0131: "dotlessi", 0x0141: "Lslash", 0x0142: "lslash",
+    0x0152: "OE", 0x0153: "oe", 0x0237: "jdotless", 0x1E9E: "Germandbls",
+}
+
+_MARK_SUFFIXES = {
+    "\u0300": "grave", "\u0301": "acute", "\u0302": "circumflex",
+    "\u0303": "tilde", "\u0304": "macron", "\u0306": "breve",
+    "\u0307": "dotaccent", "\u0308": "dieresis", "\u030A": "ring",
+    "\u030B": "hungarumlaut", "\u030C": "caron", "\u0326": "commaaccent",
+    "\u0327": "cedilla", "\u0328": "ogonek",
+}
+
+
 def _name_for(ch):
-    n = _ud.name(ch)
-    # AGL-ish production names
-    table = {
-        "à": "agrave", "á": "aacute", "â": "acircumflex", "ã": "atilde", "ä": "adieresis", "å": "aring",
-        "è": "egrave", "é": "eacute", "ê": "ecircumflex", "ë": "edieresis",
-        "ì": "igrave", "í": "iacute", "î": "icircumflex", "ï": "idieresis",
-        "ò": "ograve", "ó": "oacute", "ô": "ocircumflex", "õ": "otilde", "ö": "odieresis",
-        "ù": "ugrave", "ú": "uacute", "û": "ucircumflex", "ü": "udieresis",
-        "ý": "yacute", "ÿ": "ydieresis", "ñ": "ntilde", "ç": "ccedilla",
-    }
-    if ch in table:
-        return table[ch]
-    if ch.lower() in table:
-        t = table[ch.lower()]
-        return t[0].upper() + t[1:]
+    if ord(ch) in _NAME_OVERRIDES:
+        return _NAME_OVERRIDES[ord(ch)]
+    decomposed = _ud.normalize("NFD", ch)
+    if len(decomposed) == 2 and decomposed[1] in _MARK_SUFFIXES:
+        base = decomposed[0]
+        unicode_name = _ud.name(base)
+        if unicode_name.startswith("LATIN SMALL LETTER "):
+            base_name = unicode_name.removeprefix("LATIN SMALL LETTER ").lower()
+        else:
+            base_name = unicode_name.removeprefix("LATIN CAPITAL LETTER ")
+        if base_name == "dotless i":
+            base_name = "i"
+        return base_name + _MARK_SUFFIXES[decomposed[1]]
     return "uni%04X" % ord(ch)
 
 
@@ -1352,6 +1784,12 @@ LATIN_FUNCS = [
     g_less, g_greater, g_guil, g_guilright, g_asterisk, g_bullet, g_periodcentered,
     g_ellipsis, g_numbersign, g_percent, g_degree, g_at, g_ampersand, g_dollar, g_euro,
     g_asciitilde, g_asciicircum, g_grave, g_brace, g_braceright,
+    g_Eth, g_eth, g_Oslash, g_oslash, g_Thorn, g_thorn, g_Dcroat, g_dcroat,
+    g_Hbar, g_hbar, g_Lslash, g_lslash, g_germandbls, g_Germandbls, g_jdotless,
+    g_Eng, g_eng, g_apostrophemod,
+    g_ordfeminine, g_ordmasculine, g_cent, g_sterling, g_yen, g_section,
+    g_copyright, g_registered, g_paragraph, g_divide, g_trademark,
+    g_exclamdown, g_questiondown, g_guilsinglleft, g_guilsinglright,
 ]
 
 
@@ -1359,26 +1797,48 @@ def build_latin(P):
     glyphs = [f(P) for f in LATIN_FUNCS]
     for name, (u, fn) in ACCENTS.items():
         glyphs.append(acc(P, name, u, fn))
+    for name, u, fn in SPACING_ACCENTS:
+        glyphs.append(spacing_accent(P, name, u, fn))
+    glyphs.append(Glyph(
+        "caroncomb.alt", None, 0,
+        next(g.contours for g in glyphs if g.name == "caroncomb"),
+        kind="accent",
+    ))
     by = {g.name: g for g in glyphs}
     comps = []
-    for table, dy_top in ((LC, X + 70), (UC, CAP + 60)):
-        for base, chars in table.items():
-            for ch in chars:
-                a = accent_for(ch)
-                bg = by[base]
-                bx = bbox(bg.contours)
-                cx = (bx[0] + bx[2]) / 2
-                if base in ("a",):
-                    cx = bx[0] + (bx[2] - bx[0]) * 0.46
-                if a == "cedillacomb":
-                    dy = 0
-                    cx = (bx[0] + bx[2]) / 2 + (10 if base == "c" else 20)
-                else:
-                    dy = dy_top
-                g = Glyph(_name_for(ch), ord(ch), bg.adv,
-                          components=[(base, 0, 0), (a, round(cx), dy)])
-                comps.append(g)
-    # oe, OE, ae, AE
+    bottom_accents = {"cedillacomb", "commaaccentcomb", "ogonekcomb"}
+    for cp in sorted(LATIN_CORE_CODEPOINTS):
+        ch = chr(cp)
+        decomposed = _ud.normalize("NFD", ch)
+        if len(decomposed) != 2 or decomposed[1] not in COMBINING_ACCENTS:
+            continue
+        base_char, mark = decomposed
+        if base_char not in "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz":
+            continue
+        base = "dotlessi" if base_char == "i" else base_char
+        accent = COMBINING_ACCENTS[mark]
+        component_accent = accent
+        if accent == "caroncomb" and base_char in "DdLlTt":
+            component_accent = "caroncomb.alt"
+        bg, ag = by[base], by[accent]
+        bx, ax = bbox(bg.contours), bbox(ag.contours)
+        cx = (bx[0] + bx[2]) / 2
+        if base_char == "a":
+            cx = bx[0] + (bx[2] - bx[0]) * 0.46
+        elif base in ("I", "L", "l", "r", "f"):
+            cx = bx[0] + P["W"] / 2
+        cx = max(cx, 30 - ax[0])
+        if accent in bottom_accents:
+            dy = 10 if accent == "commaaccentcomb" else 0
+            adv = bg.adv
+        else:
+            dy = round(bx[3] + 35)
+            adv = max(bg.adv, round(cx + ax[2] + 30))
+        comps.append(Glyph(
+            _name_for(ch), cp, adv,
+            components=[(base, 0, 0), (component_accent, round(cx), dy)],
+        ))
+
     o, e, A, E, a_ = by["o"], by["e"], by["A"], by["E"], by["a"]
     W = P["W"]
     ob, eb, Ob, Eb, ab = (bbox(g.contours) for g in (o, e, by["O"], E, a_))
@@ -1386,6 +1846,17 @@ def build_latin(P):
     comps.append(Glyph("oe", 0x153, dx + e.adv, components=[("o", 0, 0), ("e", dx, 0)]))
     dx = round(Ob[2] - W - Eb[0] + 4)
     comps.append(Glyph("OE", 0x152, dx + E.adv, components=[("O", 0, 0), ("E", dx, 0)]))
+    Ab = bbox(by["A"].contours)
+    dx = round(Ab[2] - W - Eb[0] + 4)
+    comps.append(Glyph("AE", 0x00C6, dx + E.adv, components=[("A", 0, 0), ("E", dx, 0)]))
     dx = round(ab[2] - W - eb[0] + 6)
     comps.append(Glyph("ae", 0xE6, dx + e.adv, components=[("a", 0, 0), ("e", dx, 0)]))
-    return glyphs + comps
+    glyphs += comps
+    covered = {u for g in glyphs for u in g.uni}
+    missing = LATIN_CORE_CODEPOINTS - covered
+    if missing:
+        raise ValueError(
+            "GF_Latin_Core is missing: "
+            + ", ".join(f"U+{cp:04X}" for cp in sorted(missing))
+        )
+    return glyphs

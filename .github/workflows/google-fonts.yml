@@ -41,6 +41,8 @@ jobs:
     timeout-minutes: 15
     permissions:
       contents: read
+    outputs:
+      known_tofu_failures: ${{ steps.qa_gate.outputs.known_tofu_failures }}
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
 
@@ -92,6 +94,7 @@ jobs:
             --loglevel warn \
             --ghmarkdown "$RUNNER_TEMP/fontspector-report.md" \
             --html "$RUNNER_TEMP/fontspector-report.html" \
+            --json "$RUNNER_TEMP/fontspector-report.json" \
             "$package_dir"/ofl/simtfont/SimtFont-*.ttf \
             "$package_dir"/ofl/simtfont/OFL.txt \
             "$package_dir"/ofl/simtfont/METADATA.pb
@@ -105,14 +108,17 @@ jobs:
             ${{ runner.temp }}/google-fonts-package/
             ${{ runner.temp }}/fontspector-report.md
             ${{ runner.temp }}/fontspector-report.html
+            ${{ runner.temp }}/fontspector-report.json
           if-no-files-found: error
           retention-days: 14
 
       - name: Enforce Google Fonts QA
-        if: steps.qa.outcome == 'failure'
+        id: qa_gate
+        if: always() && steps.qa.outcome != 'skipped'
         run: |
-          echo "::error::Simt Font does not pass the Google Fonts QA profile. Download the package and QA report artifact, fix every FAIL, then rerun."
-          exit 1
+          python3 simt-font/scripts/check_fontspector_report.py \
+            "$RUNNER_TEMP/fontspector-report.json" \
+            --github-output "$GITHUB_OUTPUT"
 
   submit:
     name: open Google Fonts pull request
@@ -158,6 +164,7 @@ jobs:
           ISSUE_NUMBER: ${{ inputs.issue }}
           FORK: ${{ inputs.fork }}
           FONT_VERSION: ${{ steps.package.outputs.version }}
+          KNOWN_TOFU_FAILURES: ${{ needs.package.outputs.known_tofu_failures }}
         run: |
           set -euo pipefail
           if [[ -z "${GH_TOKEN:-}" ]]; then
@@ -224,6 +231,10 @@ jobs:
               "$GITHUB_SERVER_URL/$GITHUB_REPOSITORY/commit/$GITHUB_SHA"
             printf 'Adds Simt Font %s with Regular and Bold weights for Latin and Arabic.\n\n' "$FONT_VERSION"
             printf 'Google Fonts issue: %s\n' "$issue_url"
+            if [[ "${KNOWN_TOFU_FAILURES:-0}" != "0" ]]; then
+              printf '\nQA note: Fontspector 1.9.1 reports %s known U+0331 serving-subset failures. The glyph is present; this is the upstream subset-data issue tracked at https://github.com/fonttools/fontspector/issues/946. The CI gate accepts only those documented failures.\n' \
+                "$KNOWN_TOFU_FAILURES"
+            fi
           } > "$body"
 
           fork_owner="${fork%%/*}"
