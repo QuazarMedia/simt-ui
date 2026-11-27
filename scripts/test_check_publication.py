@@ -674,6 +674,45 @@ class SourceTests(unittest.TestCase):
         result = audit.check_source(self.root)
         self.assertTrue(result.ok, result.payload())
 
+    def test_historical_personal_path_allowance_requires_exact_blob(self):
+        relative = '.simt/hooks/agent-hook'
+        personal = '/' + 'Users/' + 'fixture/' + 'checkout'
+        self.put(relative, personal)
+        self.git('add', relative)
+        self.git('commit', '-qm', 'generated hook with local path')
+        original = (self.root / relative).read_bytes()
+        self.put(relative, 'portable hook')
+        self.git('add', relative)
+        self.git('commit', '-qm', 'portable hook')
+        result = audit.check_source(self.root)
+        self.assertIn(('history/' + relative, 'personal-path'), result.findings)
+        allowance = {relative: digest(original)}
+        with patch.dict(audit.HISTORICAL_PERSONAL_PATH_BLOBS, allowance, clear=True):
+            result = audit.check_source(self.root)
+            self.assertTrue(result.ok, result.payload())
+            self.put(relative, personal + '\nchanged')
+            self.git('add', relative)
+            self.git('commit', '-qm', 'different historical hook')
+            self.put(relative, 'portable hook')
+            self.git('add', relative)
+            self.git('commit', '-qm', 'restore portable hook')
+            result = audit.check_source(self.root)
+            self.assertIn(('history/' + relative, 'personal-path'), result.findings)
+
+    def test_historical_personal_path_allowance_does_not_hide_credentials(self):
+        relative = '.simt/hooks/agent-hook'
+        data = ('/' + 'Users/' + 'fixture/' + 'checkout\n' + secret()).encode()
+        self.put(relative, data.decode())
+        self.git('add', relative)
+        self.git('commit', '-qm', 'historical hook')
+        self.put(relative, 'portable hook')
+        self.git('add', relative)
+        self.git('commit', '-qm', 'portable hook')
+        with patch.dict(audit.HISTORICAL_PERSONAL_PATH_BLOBS, {relative: digest(data)}, clear=True):
+            result = audit.check_source(self.root)
+        self.assertIn(('history/' + relative, 'credential'), result.findings)
+        self.assertNotIn(('history/' + relative, 'personal-path'), result.findings)
+
     def test_only_standalone_design_wrangler_config_is_allowed(self):
         self.put('design-site/wrangler.jsonc', '{"name":"simt-design"}')
         self.put('wrangler.jsonc', '{"name":"root"}')

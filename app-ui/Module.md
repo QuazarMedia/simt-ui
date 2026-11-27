@@ -1,6 +1,6 @@
 # Module app-ui
 
-Generic, caller-state-owned Compose primitives in `app.simt.ui` for Android API 28+ and Kotlin consumers targeting `iosArm64` or `iosSimulatorArm64`. Said Elimam confirmed the required UI rights and granted Apache-2.0 licensing and public redistribution on 2026-11-17. Version `0.1.0` is approved for a tag-triggered public release.
+Generic, caller-state-owned Compose primitives in `app.simt.ui` for Android API 28+ and Kotlin consumers targeting `iosArm64` or `iosSimulatorArm64`. Said Elimam confirmed the required UI rights and granted Apache-2.0 licensing and public redistribution on 2026-11-17. Version `0.1.0` is published on Maven Central; newer additions remain under `app-ui Unreleased` until a later namespaced release.
 
 Use the caller's Material3 theme. Labels, callbacks, state, window policy, reduced motion, visibility and host lifecycle remain application-owned. Resources are private and automatically packaged; callers do not reconstruct Android resource IDs or copy assets. English, French, Spanish and Arabic strings are preserved, with default English fallback for unsupported locales.
 

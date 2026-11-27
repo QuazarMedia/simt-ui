@@ -11,17 +11,27 @@ concurrency:
   group: release-${{ github.ref }}
   cancel-in-progress: false
 
+defaults:
+  run:
+    shell: bash
+
 jobs:
   resolve:
     name: resolve library tag
     runs-on: ubuntu-latest
     timeout-minutes: 5
+    permissions:
+      contents: read
     outputs:
       library: ${{ steps.tag.outputs.library }}
       version: ${{ steps.tag.outputs.version }}
       target: ${{ steps.tag.outputs.target }}
       package: ${{ steps.tag.outputs.package }}
     steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 1
+
       - name: Parse <library>-v<version> tag
         id: tag
         env:
@@ -35,11 +45,14 @@ jobs:
             echo "::error::Release tags must look like <library>-vMAJOR.MINOR.PATCH (for example app-ui-v1.2.3)"
             exit 1
           fi
-          # Each release unit is registered here before it can be tagged.
           case "$library" in
             app-ui)
               target="Maven Central"
               package="app.simt:app-ui"
+              ;;
+            web-ui)
+              target="npm"
+              package="@simt-dev/web-ui"
               ;;
             *)
               echo "::error::Unknown release library '$library'; add its publish job before tagging."
@@ -53,6 +66,18 @@ jobs:
             echo "package=$package"
           } >> "$GITHUB_OUTPUT"
 
+      - name: Verify changelog release notes
+        env:
+          LIBRARY: ${{ steps.tag.outputs.library }}
+          VERSION: ${{ steps.tag.outputs.version }}
+        run: |
+          set -euo pipefail
+          notes="$(awk -v lib="$LIBRARY" -v v="$VERSION" -f scripts/release-notes.awk CHANGELOG.md)"
+          if [ -z "$notes" ]; then
+            echo "::error::Missing CHANGELOG.md section for $LIBRARY $VERSION"
+            exit 1
+          fi
+
   app_ui:
     name: app-ui to Maven Central
     needs: resolve
@@ -60,8 +85,10 @@ jobs:
     runs-on: macos-15
     timeout-minutes: 90
     environment: release
+    permissions:
+      contents: read
     steps:
-      - uses: actions/checkout@v7
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           fetch-depth: 0
 
@@ -76,31 +103,14 @@ jobs:
             exit 1
           fi
 
-      - name: Check release secrets
-        env:
-          CENTRAL_USERNAME: ${{ secrets.CENTRAL_PORTAL_USERNAME }}
-          CENTRAL_PASSWORD: ${{ secrets.CENTRAL_PORTAL_PASSWORD }}
-          SIGNING_KEY: ${{ secrets.SIGNING_KEY }}
-          SIGNING_PASSWORD: ${{ secrets.SIGNING_PASSWORD }}
-        run: |
-          missing=""
-          [ -n "$CENTRAL_USERNAME" ] || missing="$missing CENTRAL_PORTAL_USERNAME"
-          [ -n "$CENTRAL_PASSWORD" ] || missing="$missing CENTRAL_PORTAL_PASSWORD"
-          [ -n "$SIGNING_KEY" ] || missing="$missing SIGNING_KEY"
-          [ -n "$SIGNING_PASSWORD" ] || missing="$missing SIGNING_PASSWORD"
-          if [ -n "$missing" ]; then
-            echo "::error::Missing release environment secrets:$missing"
-            exit 1
-          fi
-
       - name: Set up JDK 21
-        uses: actions/setup-java@v6
+        uses: actions/setup-java@d1374f8ac74474200d16ef8ecee22c7ae7a51880 # v6.3.0
         with:
           distribution: temurin
           java-version: '21'
 
       - name: Set up Node 22
-        uses: actions/setup-node@v6
+        uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6.5.0
         with:
           node-version: '22'
           cache: npm
@@ -109,12 +119,12 @@ jobs:
             design-site/package-lock.json
 
       - name: Set up Android SDK
-        uses: android-actions/setup-android@v4
+        uses: android-actions/setup-android@be39fa834029ff78f1a44aa3bb0819b8fc2bd8fd # v4.0.4
         with:
           packages: 'platform-tools platforms;android-37.0 build-tools;36.1.0'
 
       - name: Set up Gradle
-        uses: gradle/actions/setup-gradle@v6
+        uses: gradle/actions/setup-gradle@8da46b539cd8fe6ab27ca75128919a18d757604c # v6.4.1
 
       - name: Install locked SIMT Design tooling
         run: |
@@ -126,7 +136,22 @@ jobs:
           ./gradlew --no-daemon --max-workers=2 releaseCheck
           -PVERSION_NAME="${{ needs.resolve.outputs.version }}"
 
+      - name: Check Maven Central publication
+        id: central
+        env:
+          VERSION: ${{ needs.resolve.outputs.version }}
+        run: |
+          set -euo pipefail
+          url="https://repo.maven.apache.org/maven2/app/simt/app-ui/$VERSION/app-ui-$VERSION.pom"
+          if curl --fail --silent --show-error --head "$url" >/dev/null; then
+            echo "published=true" >> "$GITHUB_OUTPUT"
+            echo "app.simt:app-ui:$VERSION is already published"
+          else
+            echo "published=false" >> "$GITHUB_OUTPUT"
+          fi
+
       - name: Publish to Maven Central
+        if: steps.central.outputs.published != 'true'
         env:
           CENTRAL_PORTAL_USERNAME: ${{ secrets.CENTRAL_PORTAL_USERNAME }}
           CENTRAL_PORTAL_PASSWORD: ${{ secrets.CENTRAL_PORTAL_PASSWORD }}
@@ -137,18 +162,85 @@ jobs:
           -PVERSION_NAME="${{ needs.resolve.outputs.version }}"
           --stacktrace
 
+  web_ui:
+    name: web-ui to npm
+    needs: resolve
+    if: needs.resolve.outputs.library == 'web-ui'
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    environment: release
+    permissions:
+      contents: read
+      id-token: write
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 0
+
+      - name: Set up Node 24
+        uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6.5.0
+        with:
+          node-version: '24'
+          registry-url: 'https://registry.npmjs.org'
+          package-manager-cache: false
+
+      - name: Verify package identity and version
+        env:
+          TAG_VERSION: ${{ needs.resolve.outputs.version }}
+        run: |
+          set -euo pipefail
+          node --input-type=module - "$TAG_VERSION" <<'NODE'
+          import { readFileSync } from 'node:fs';
+          const manifest = JSON.parse(readFileSync('web-ui/package.json', 'utf8'));
+          const version = process.argv[2];
+          if (manifest.name !== '@simt-dev/web-ui' || manifest.version !== version) {
+            console.error(`Expected @simt-dev/web-ui ${version}, got ${manifest.name} ${manifest.version}`);
+            process.exit(1);
+          }
+          NODE
+
+      - name: Audit source and history
+        run: python3 -B scripts/check_publication.py source --root .
+
+      - name: Test web-ui
+        run: npm --prefix web-ui run check
+
+      - name: Check npm publication
+        id: npm
+        env:
+          VERSION: ${{ needs.resolve.outputs.version }}
+        run: |
+          set -euo pipefail
+          published="$(npm view "@simt-dev/web-ui@$VERSION" version 2>/dev/null || true)"
+          if [ "$published" = "$VERSION" ]; then
+            echo "published=true" >> "$GITHUB_OUTPUT"
+            echo "@simt-dev/web-ui@$VERSION is already published"
+          else
+            echo "published=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Install pinned npm CLI
+        if: steps.npm.outputs.published != 'true'
+        run: npm install --global npm@11.21.3
+
+      - name: Publish to npm with trusted publishing
+        if: steps.npm.outputs.published != 'true'
+        working-directory: web-ui
+        run: npm publish --provenance --access public
+
   release:
     name: create GitHub release
-    needs: [resolve, app_ui]
-    if: always() && needs.app_ui.result == 'success'
+    needs: [resolve, app_ui, web_ui]
+    if: always() && needs.resolve.result == 'success' && (needs.app_ui.result == 'success' || needs.web_ui.result == 'success')
     runs-on: ubuntu-latest
     timeout-minutes: 10
+    environment: release
     permissions:
       contents: write
     steps:
-      - uses: actions/checkout@v7
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
 
-      - name: Create GitHub release
+      - name: Create or update GitHub release
         env:
           GH_TOKEN: ${{ github.token }}
           TAG: ${{ github.ref_name }}
@@ -159,14 +251,23 @@ jobs:
         run: |
           set -euo pipefail
           notes="$(awk -v lib="$LIBRARY" -v v="$VERSION" -f scripts/release-notes.awk CHANGELOG.md)"
+          if [ -z "$notes" ]; then
+            echo "::error::Missing CHANGELOG.md section for $LIBRARY $VERSION"
+            exit 1
+          fi
           {
-            if [ -n "$notes" ]; then
-              printf '%s\n\n' "$notes"
-            fi
+            printf '%s\n\n' "$notes"
             printf 'Published to %s as %s %s.\n' "$TARGET" "$PACKAGE" "$VERSION"
           } > release-notes.md
-          gh release create "$TAG" \
-            --repo "$GITHUB_REPOSITORY" \
-            --title "$TAG" \
-            --verify-tag \
-            --notes-file release-notes.md
+          if gh release view "$TAG" --repo "$GITHUB_REPOSITORY" >/dev/null 2>&1; then
+            gh release edit "$TAG" \
+              --repo "$GITHUB_REPOSITORY" \
+              --title "$TAG" \
+              --notes-file release-notes.md
+          else
+            gh release create "$TAG" \
+              --repo "$GITHUB_REPOSITORY" \
+              --title "$TAG" \
+              --verify-tag \
+              --notes-file release-notes.md
+          fi

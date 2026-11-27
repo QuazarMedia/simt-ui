@@ -19,3 +19,15 @@ updates:
     directory: "/"
     schedule:
       interval: "weekly"
+  - package-ecosystem: "npm"
+    directory: "/web-ui"
+    schedule:
+      interval: "weekly"
+  - package-ecosystem: "npm"
+    directory: "/design-spec"
+    schedule:
+      interval: "weekly"
+  - package-ecosystem: "npm"
+    directory: "/design-site"
+    schedule:
+      interval: "weekly"

@@ -2,33 +2,65 @@
 
 Shared Compose primitives for Android and Kotlin Multiplatform iOS consumers, framework-agnostic web UI primitives, an independently versioned SIMT Design specification with frozen Cosmos provenance, and the standalone SIMT Design site.
 
-Version `0.1.0` is approved for a tag-triggered public release. Said Elimam has confirmed the rights and licensed UI/Design code under Apache-2.0 and Design specifications/documentation under CC BY 4.0; retain [LICENSE](LICENSE), [LICENSE-DOCS](LICENSE-DOCS) and [NOTICE](NOTICE), including the frozen Cosmos attribution. See [the extraction plan](docs/plans/0001-shared-ui-extraction.md) and the separate provenance ledgers in [app-ui](app-ui/source-provenance.json) and [design-spec](design-spec/provenance.json).
+## Published artifacts
+
+| Module | Artifact | Current public version | Boundary |
+| --- | --- | --- | --- |
+| `app-ui` | `app.simt:app-ui` on Maven Central | `0.1.0` | Android API 28+, `iosArm64`, `iosSimulatorArm64` |
+| `web-ui` | `@simt-dev/web-ui` on npm | `0.1.0` | Dependency-free ESM and CSS for static sites |
+| `design-spec` | Source-controlled specification and frozen provenance | SIMT Design `2.4.0` / Cosmos `2.3.0` | Not a runtime dependency or registry release unit |
+| `design-site` | Static publication at `https://design.simt.app` | SIMT Design `2.4.0` | Generated site and Cloudflare Worker configuration; deployed separately |
+
+`app-ui 0.1.0` was published to Maven Central and released on GitHub on 2026-11-18. `@simt-dev/web-ui 0.1.0` was published to npm on 2026-11-27. Changes under `app-ui Unreleased` are not included in the Maven Central `0.1.0` artifact.
+
+Said Elimam confirmed the UI and Design redistribution rights. Code is licensed under Apache-2.0; Design specifications and documentation are licensed under CC BY 4.0. Retain [LICENSE](LICENSE), [LICENSE-DOCS](LICENSE-DOCS) and [NOTICE](NOTICE), including the frozen Cosmos attribution. See [the extraction plan](docs/plans/0001-shared-ui-extraction.md), [app-ui provenance](app-ui/source-provenance.json) and [Design provenance](design-spec/provenance.json).
+
+## Install
+
+Add `mavenCentral()` to the consumer's repositories, then declare the Android or common Kotlin dependency:
+
+```kotlin
+implementation("app.simt:app-ui:0.1.0")
+```
+
+For web projects using Node 22.20+:
+
+```sh
+npm install @simt-dev/web-ui@0.1.0
+```
+
+```js
+import { initMotion, initTheme, observeReveals, trackSections } from "@simt-dev/web-ui";
+import "@simt-dev/web-ui/styles.css";
+```
+
+The optional prepaint script is exported from `@simt-dev/web-ui/bootstrap`. Social-style preference persistence is separate at `@simt-dev/web-ui/storage`; import it only in products that allow storage.
 
 ## Modules and boundaries
 
-- `app-ui`: eight generic UI primitives in `app.simt.ui`, private Compose resources, and narrow Android/iOS inset, width, dispatcher and haptic implementations. Targets: Android API 28+, `iosArm64`, `iosSimulatorArm64`. No application framework, service configuration, analytics, persistence, requested permission or runtime network client.
-- `design-spec`: inert, byte-pinned Cosmos 2.3.0 upstream sources and exports from simt-space, plus the authored SIMT Design 2.4.0 specification. No dependency from the runtime library. The pin includes upstream licensing and the canonical union/platform scope fix; all declared schemas must pass.
-- `design-site`: independently generated SIMT Design 2.4.0 static publication for `https://design.simt.app`. It owns the canonical site authority, root routes, discovery documents, static assets and Cloudflare Worker configuration; it does not replace or rewrite the frozen upstream provenance snapshot.
-- `web-ui`: dependency-free ESM and CSS primitives for static sites, including reveal/stagger motion, ambient pausing, header/section observers, performance tiering, pointer spotlight/tilt, theme/motion controls, buttons and marquees. Preference persistence and prepaint bootstrap are opt-in so privacy-only consumers ship no storage API.
-- `examples/android-consumer`: separate ordinary Android Compose build, with no CMP plugin, using published filesystem Maven artifacts.
-- `examples/multiplatform-consumer`: separate CMP build using the same published root coordinate and linking both Apple frameworks.
+- `app-ui`: caller-state-owned Compose primitives and feature kits in `app.simt.ui`, private Compose resources, and narrow Android/iOS inset, width, dispatcher and haptic implementations. It includes no application framework, service configuration, analytics, persistence, requested permission or runtime network client.
+- `design-spec`: inert, byte-pinned Cosmos 2.3.0 upstream sources and exports plus the authored SIMT Design 2.4.0 specification. The runtime library does not depend on it.
+- `design-site`: independently generated SIMT Design 2.4.0 static publication. It owns canonical HTML, scoped and union exports, schemas, Markdown, discovery files, static assets and the static-assets-only Worker configuration.
+- `web-ui`: reveal/stagger motion, ambient pausing, header/section observers, performance tiering, pointer spotlight/tilt, theme/motion controls, buttons and marquees. It has no framework or runtime package dependency.
+- `examples/android-consumer`: an ordinary Android Compose build with no CMP plugin, consuming filesystem-published Maven artifacts by default.
+- `examples/multiplatform-consumer`: a separate CMP build using the same root coordinate and linking both Apple frameworks.
 
-No theme, navigation, route, branding, host build convention or application configuration was extracted. Future modules can be added independently; no empty placeholder module is necessary. API contracts are in [the module documentation](app-ui/Module.md).
+No theme, navigation, route, branding, host build convention or application configuration was extracted. API contracts are in [the app-ui module documentation](app-ui/Module.md).
 
 ## Shared web UI
 
-`web-ui` is consumed as source ESM/CSS, so Vite and custom static generators use the same implementation without a transpilation step. Import runtime helpers from `@simt/web-ui` and the portable component styles from `@simt/web-ui/styles.css`; `@simt/web-ui/bootstrap` generates the optional prepaint preference script. Social-style persistence is provided separately by `@simt/web-ui/storage` and must only be imported by products that allow it.
+`web-ui` is consumed as source ESM/CSS, so Vite and custom static generators use the same implementation without a transpilation step. The runtime uses `data-motion="full|reduced"`, `data-perf="lite"`, `data-reveal`, `data-ambient`, `.is-revealed`, `.is-offscreen` and `.is-scrolled`.
 
-```js
-import { initMotion, initTheme, observeReveals, trackSections } from "@simt/web-ui";
-import "@simt/web-ui/styles.css";
+```sh
+npm --prefix web-ui run check
+./gradlew --no-daemon --max-workers=2 :web-ui:check
 ```
 
-The runtime uses `data-motion="full|reduced"`, `data-perf="lite"`, `data-reveal`, `data-ambient`, `.is-revealed`, `.is-offscreen` and `.is-scrolled`. Run `npm --prefix web-ui run check` or `./gradlew --no-daemon --max-workers=2 :web-ui:check`; the Gradle root `check` includes it.
+The Gradle root `check` includes the web-ui tests.
 
 ## Build locally
 
-Use JDK 21, Android SDK 37 and the checked-in wrapper. Set `ANDROID_HOME` to the local SDK instead of committing `local.properties`. Native compilation/linking requires a supported Xcode installation; select it per command through `DEVELOPER_DIR`, not a global settings change. Node 22.20+ and Python 3 are required for the specification, static site and audit tools.
+Use JDK 21, Android SDK 37 and the checked-in wrapper. Set `ANDROID_HOME` locally instead of committing `local.properties`. Native compilation/linking requires a supported Xcode installation; select it per command with `DEVELOPER_DIR` rather than changing global settings. Node 22.20+ and Python 3 are required for the specification, static site and audit tools.
 
 ```sh
 npm --prefix design-spec ci --ignore-scripts --no-audit --no-fund
@@ -38,9 +70,9 @@ npm --prefix design-site ci --ignore-scripts --no-audit --no-fund
 ./gradlew --no-daemon --max-workers=2 :app-ui:publishAllPublicationsToLocalValidationRepository
 ```
 
-The npm bootstrap is explicit and may download locked dependencies. Subsequent specification and site checks never install dependencies; the frozen snapshot resolves schemas offline, while the site deterministically regenerates its ignored `dist` tree before verification. Gradle/dependency bootstrap may use the configured public repositories; this is separate from offline library runtime behavior.
+The npm bootstrap is explicit and may download locked dependencies. Later specification and site checks do not install dependencies; the frozen snapshot resolves schemas offline, while the site deterministically regenerates its ignored `dist` tree before verification. Gradle/dependency bootstrap may use the configured public repositories; this is separate from offline library runtime behavior.
 
-Local Maven publications live in ignored `build/maven-repository`. All four publications carry metadata, sources and generated HTML documentation; native targets also carry resource ZIPs. Local tasks do not upload unless `publishAggregationToCentralPortal` is explicitly invoked with release credentials. ABI dumps in `app-ui/api` are reviewed source-controlled baselines: `:app-ui:checkKotlinAbi` checks them, while `:app-ui:updateKotlinAbi` is an explicit maintainer action, never an automatic repair during verification.
+Local Maven publications live in ignored `build/maven-repository`. All four publications carry metadata, sources, generated HTML documentation and legal notices; native targets also carry resource ZIPs. Local tasks do not upload unless `publishAggregationToCentralPortal` is explicitly invoked with release credentials. ABI dumps in `app-ui/api` are reviewed source-controlled baselines: `:app-ui:checkKotlinAbi` checks them, while `:app-ui:updateKotlinAbi` is an explicit maintainer action.
 
 ## Independent consumption rehearsal
 
@@ -53,30 +85,26 @@ examples/multiplatform-consumer/gradlew -p examples/multiplatform-consumer --no-
 examples/multiplatform-consumer/gradlew -p examples/multiplatform-consumer --no-daemon --max-workers=2 connectedAndroidDeviceTest
 ```
 
-Both examples exclusively resolve group `app.simt` from `../../build/maven-repository` by default. Override with `-PuiRepository=/absolute/path/to/repository` and `-PuiVersion=<actually-staged-version>`. They do not use `includeBuild`, Maven Local, project substitution, producer sources or manually copied library assets.
-
-An Android consumer declares `implementation("app.simt:app-ui:<available-version>")`; a KMP consumer puts the same dependency in `commonMain.dependencies`. Keep a host's existing Compose/BOM and plugin policy unless real resolution proves a change necessary. The examples reproduce Android host pins without upgrading either production application. Version `0.1.0` is a locally audited stable candidate, not a remotely published dependency.
-
-The compatible private producer stage remains `simt-ui-0.1.0-SNAPSHOT-43c285c-integration.zip`, SHA-256 `9583a2bc51a6889edca328facd7a73f6930ddaf2e45edffd87633c29e9270b6c`, with all 72 manifest entries independently rehashed. The reconciled simt-app adoption is locally landed on main at `2fe9aa5cb`, after prerequisite `3d41e6964`; ECHO is locally landed on main at `5443527`. Both staged-artifact and sibling-composite validation pass. No consumer or release commit is pushed by this work without separate authorization.
+Both examples resolve group `app.simt` from `../../build/maven-repository` by default. Override with `-PuiRepository=/absolute/path/to/repository` and `-PuiVersion=<actually-staged-version>`. They do not use `includeBuild`, Maven Local, project substitution, producer sources or manually copied library assets. Keep the host's existing Compose/BOM and plugin policy unless real resolution proves a change necessary.
 
 ## Android IDE previews
 
-Open `examples/android-consumer` as an **independent project** in Android Studio with JDK 21 and SDK 37. Set `uiRepository=/absolute/path/to/extracted/maven` and `uiVersion=0.1.0` in your local Gradle properties (or pass the equivalent `-P` options), using an actually staged artifact repository; do not substitute producer sources. Sync, select the debug variant, and open `src/debug/kotlin/app/simt/ui/preview/SharedUiPreviews.kt` in Design/Split. The Compose-enabled Android fixture hosts previews for all eight primitives and header tools; preview sources and tooling dependencies are debug-only, not producer library or release APK inputs.
+Open `examples/android-consumer` as an independent project in Android Studio with JDK 21 and SDK 37. Set `uiRepository=/absolute/path/to/extracted/maven` and `uiVersion=0.1.0` in local Gradle properties, or pass equivalent `-P` options. Sync, select the debug variant and open `src/debug/kotlin/app/simt/ui/preview/SharedUiPreviews.kt` in Design/Split. The Compose-enabled Android fixture hosts debug-only previews for the released shared primitives and header tools; preview sources and tooling dependencies are not producer library or release APK inputs.
 
-Samples use synthetic values, a small Material theme, bounded viewports and disabled motion/haptics. Light/dark, French/RTL and large-text variants supplement the component samples. The tooltip's static image shows only its labeled anchor: use interactive preview and long press to reveal the popup. The countdown intentionally stays at 1. Insets use `showSystemUi=true`, but layoutlib may report zero insets; this is not proof of hidden-system-bar behavior. Host composition tests do not establish that the Android IDE Preview panel rendered, nor native/device runtime or haptic correctness.
+Samples use synthetic values, a small Material theme, bounded viewports and disabled motion/haptics. Light/dark, French/RTL and large-text variants supplement the component samples. Host composition tests do not establish that the Android IDE Preview panel rendered, nor native/device runtime or haptic correctness.
 
-## Private specification checks
+## Specification checks
 
 ```sh
 ./gradlew --offline --no-daemon --max-workers=2 :design-spec:check :design-spec:privateSnapshotZip
 npm --prefix design-spec run check:canonical-schema
 ```
 
-The first command validates the exact licensed pin and 52 offline tests, and creates a deterministic local ZIP retaining the three upstream license/notice files. The strict second command passes: the committed upstream schema requires exactly 36 union sections and the correct 17/16 common-plus-platform sets, rejecting missing, duplicate, extra and foreign sections. All 33 reviewed files are byte-identical to the historical source commit `86b36f9e9b13e2426d54207b60beb7323fbcd5d6`; no pinned bytes are weakened or repaired. This snapshot preserves provenance but is not the current publication authority and does not introduce a normative iOS adapter.
+The first command validates the exact licensed pin and 52 offline tests, then creates a deterministic local ZIP retaining the three upstream license/notice files. The strict second command requires exactly 36 union sections and the correct 17/16 common-plus-platform sets. The 33 reviewed files remain byte-identical to historical source commit `86b36f9e9b13e2426d54207b60beb7323fbcd5d6`; no pinned bytes are weakened or repaired. This snapshot preserves provenance but is not the current publication authority and does not introduce a normative iOS adapter.
 
 ## Standalone SIMT Design site
 
-`design-site` publishes the latest authored SIMT Design version `2.4.0` at the root of `https://design.simt.app`, with the frozen Cosmos 2.3.0 specification available under `/v/2.3.0`. Its generator owns canonical HTML, scoped and union exports, schemas, Markdown, discovery files, a true 404 page and self-hosted assets. `wrangler.jsonc` configures a static-assets-only Worker with explicit clean-route rewrites, `html_handling: "none"`, and no `workers.dev` route.
+`design-site` publishes SIMT Design `2.4.0` at the root of `https://design.simt.app`, with frozen Cosmos `2.3.0` under `/v/2.3.0`. Its generator owns canonical HTML, scoped and union exports, schemas, Markdown, discovery files, a true 404 page and self-hosted assets. `wrangler.jsonc` configures a static-assets-only Worker with explicit clean-route rewrites, `html_handling: "none"` and no `workers.dev` route.
 
 ```sh
 npm --prefix design-site run build
@@ -84,20 +112,33 @@ npm --prefix design-site run check
 ./gradlew --no-daemon --max-workers=2 :design-site:check
 ```
 
-The Gradle task uses already installed locked npm dependencies and never installs them. `dist` is generated and ignored. Deployment remains a separate, explicitly authorized operation; verification does not upload or alter either Cloudflare or `simt-space`.
+The Gradle task uses already installed locked npm dependencies and never installs them. `dist` is generated and ignored. Deployment remains a separate, explicitly authorized operation; verification does not upload or alter Cloudflare or `simt-space`.
 
 ## Release automation
 
-Tags are namespaced per library: `<library>-vMAJOR.MINOR.PATCH`, for example `app-ui-v0.1.0`, with release notes under a matching `<library> <version>` heading in `CHANGELOG.md`. Pushing a tag runs `.github/workflows/publish.yml`; the resolve job rejects unknown library slugs, and only that library's publish job runs. `app-ui` publishes to Maven Central on macOS: the workflow requires the tag version to match `VERSION_NAME`, installs the locked SIMT Design tooling, passes `releaseCheck`, signs every publication in memory, uploads the aggregate to the Maven Central Portal with automatic release, and creates the GitHub Release only after Central accepts the deployment. Adding a library means registering its slug in the resolve job, adding its publish job, and including that job in the release job's `needs`.
+Tags are namespaced per library: `<library>-vMAJOR.MINOR.PATCH`, for example `app-ui-v0.1.0` or `web-ui-v0.2.0`. Release notes must have a matching `<library> <version>` heading in [CHANGELOG.md](CHANGELOG.md). Pushing a tag runs [`.github/workflows/publish.yml`](.github/workflows/publish.yml); unknown or unstable tags are rejected before any publication.
 
-Configure a protected GitHub `release` environment with `CENTRAL_PORTAL_USERNAME`, `CENTRAL_PORTAL_PASSWORD`, `SIGNING_KEY`, and `SIGNING_PASSWORD`. The Central credentials are the generated Sonatype user token; the signing key is an ASCII-armored private PGP key. No credential belongs in the repository.
+- `app-ui` verifies the tag against `VERSION_NAME`, runs `releaseCheck`, signs all publications in memory and uploads the aggregate to the Maven Central Portal with automatic release.
+- `web-ui` verifies the exact package name and version, audits source/history, runs the web-ui tests and publishes through npm trusted publishing with OIDC and provenance. The job uses Node 24 and pinned npm 11.21.3, which satisfies npm's trusted-publishing CLI requirement. No npm token is used.
+- The GitHub Release job runs only after the selected registry publication succeeds. Existing registry versions are treated as already published, and an existing GitHub Release is updated rather than recreated, so reruns can finish after a partial release.
 
-Protect the `release` environment with a required reviewer. Approving that environment is the final publication decision; the workflow still refuses unstable or mismatched tags, dirty source, unconfirmed redistribution rights, canonical Design defects, incomplete release documents, unsafe source/history, or malformed publication artifacts.
+Before tagging, maintainers must configure a protected GitHub `release` environment with required reviewers and these Central Portal secrets:
+
+- `CENTRAL_PORTAL_USERNAME`
+- `CENTRAL_PORTAL_PASSWORD`
+- `SIGNING_KEY` — ASCII-armored private PGP key
+- `SIGNING_PASSWORD`
+
+These secrets currently exist only at repository scope. Move them into the protected `release` environment and remove the repository-level copies before tagging. The Central credentials are generated Sonatype user tokens. NMCP currently authenticates with username/password; no Maven Central OIDC path is configured. No credential belongs in the repository.
+
+For `@simt-dev/web-ui`, configure an npm trusted publisher with organization/user `QuazarMedia`, repository `simt-ui`, workflow filename `publish.yml`, environment `release`, and permission for direct `npm publish`. After a successful OIDC publication is verified, disallow traditional npm tokens and revoke obsolete automation tokens. See [npm trusted publishing](https://docs.npmjs.com/trusted-publishers/).
+
+Workflow files cannot enable GitHub protections. Maintainers must also protect `main`, require pull-request reviews and status checks, restrict release-tag creation, enable secret scanning with push protection, Dependabot security updates and private vulnerability reporting, and restrict Actions to trusted, SHA-pinned sources.
 
 ## Source, publication and release audits
 
 ```sh
-python3 -B -m unittest discover -s scripts -p test_check_publication.py
+python3 -B -m unittest discover -s scripts -p 'test_*.py'
 python3 -B scripts/check_publication.py source --root .
 python3 -B scripts/check_publication.py publication --repo build/maven-repository --version 0.1.0
 ./gradlew --no-daemon --max-workers=2 localQuality
@@ -106,15 +147,17 @@ python3 -B scripts/check_publication.py publication --repo build/maven-repositor
 ./gradlew --no-daemon --max-workers=2 stageRelease
 ```
 
-`check` includes the audit regression tests and current/all-ref history scan. `localQuality` adds formatting, generated documentation and fresh filesystem publication auditing. Publication selection uses exact GAVs and snapshot metadata, including compound native resource extensions and the root Kotlin tooling-metadata attachment. Artifact hashes/sizes, SHA-256 sidecars, target redirects, public dependencies, generated HTML, sources, nested archive bounds/paths and permission-free AAR manifests are checked. Stale unselected snapshots and ignored debug frameworks are not release inputs.
+`check` includes the audit regression tests, publishing-workflow invariants and the current/all-ref history scan. `localQuality` adds formatting, generated documentation and fresh filesystem publication auditing. Publication selection uses exact GAVs and snapshot metadata, including compound native resource extensions and the root Kotlin tooling-metadata attachment. Artifact hashes/sizes, SHA-256 sidecars, target redirects, public dependencies, generated HTML, sources, nested archive bounds/paths and permission-free AAR manifests are checked. Stale unselected snapshots and ignored debug frameworks are not release inputs.
 
-`stageIntegration` is the pre-integration private gate: it runs `localQuality`, then creates `build/simt-ui-VERSION-private-integration.zip` from only the exact audited Maven inventory, retained license/notice texts and UI provenance/module/setup documentation. Each Maven publication also carries a deterministic legal-notices ZIP. Extract the archive's `maven/` directory into a new local directory and point consumers' `uiRepository` at it. No sibling producer or mutable publication directory is needed for this rehearsal. The manifest records HEAD, the current source-content fingerprint and whether the source tree is dirty; dirty private development is not release approval. Source/history scans, metadata, checksums and safe exclusive output remain mandatory. The source fingerprint and artifact bytes are rechecked before writing. The manifest explicitly denies public redistribution and runtime approval; the specification is not bundled; its independent schema validation does not establish runtime or release approval. Existing ZIPs are never overwritten: reuse the staged archive, or choose a new output path with the standalone `stage-integration --root . --repo build/maven-repository --version VERSION --output build/NEW.zip` command.
+The current generated agent hook is portable. One exact historical generated hook blob remains in public Git history and is exempted only from the personal-path category by its SHA-256 digest; credential, private-key, forbidden-file and every other audit category still apply. History was not rewritten.
 
-`releaseCheck` and `stageRelease` are the final local public-release gates. They require stable SemVer, a matching `<library>-vVERSION` tag at clean HEAD, independently confirmed UI and Design redistribution rights, strict canonical Design validation, complete release documents, ABI baselines, a clean source/history audit, and exact fresh publication validation. Neither task uploads or signs anything. `stageRelease` creates a deterministic unsigned ZIP under `build`; the tag workflow separately signs and uploads the Gradle publication aggregate.
+`stageIntegration` is the pre-integration staging gate: it runs `localQuality`, then creates `build/simt-ui-VERSION-private-integration.zip` from only the exact audited Maven inventory, retained license/notice texts and UI provenance/module/setup documentation. Each Maven publication also carries a deterministic legal-notices ZIP. Extract the archive's `maven/` directory into a new local directory and point consumers' `uiRepository` at it. The manifest records HEAD, the current source-content fingerprint and whether the source tree is dirty; a dirty tree is not release approval. Source/history scans, metadata, checksums and safe exclusive output remain mandatory. Existing ZIPs are never overwritten.
 
-The standalone `release` and `stage` subcommands require `--root`, `--repo`, `--version`, and `--library`; `stage` additionally requires a new workspace-contained `--output` ZIP path. There is no force flag or environment bypass. The release audit inventories all selected Maven artifacts and sidecars plus license/NOTICE/README/changelog/module docs, plan documentation, ABI baselines, both provenance ledgers and every specification inventory file.
+`releaseCheck` and `stageRelease` are the final local app-ui public-release gates. They require stable SemVer, a matching `<library>-vVERSION>` tag at clean HEAD, independently confirmed UI and Design redistribution rights, strict canonical Design validation, complete release documents, ABI baselines, a clean source/history audit and exact fresh publication validation. Neither task uploads or signs anything. `stageRelease` creates a deterministic unsigned ZIP under `build`; the tag workflow separately signs and uploads the Gradle publication aggregate.
 
-Version `0.1.0` deliberately does not require iOS runtime, physical Android API 28, Android Studio Preview-panel, or cloud security evidence. These remain documented validation limits rather than publication gates. This policy was explicitly selected for the first release; the workflow does not claim those checks occurred.
+The standalone `release` and `stage` subcommands require `--root`, `--repo`, `--version` and `--library`; `stage` additionally requires a new workspace-contained `--output` ZIP path. There is no force flag or environment bypass. The release audit inventories all selected Maven artifacts and sidecars plus license, notice, README, changelog, security, contribution and module documents, plan documentation, ABI baselines, both provenance ledgers and every specification inventory file.
+
+Version `0.1.0` deliberately does not require iOS runtime, physical Android API 28, Android Studio Preview-panel or cloud security evidence. These remain documented validation limits rather than publication gates; the workflow does not claim those checks occurred.
 
 ## Validation limits and release obligations
 
@@ -123,3 +166,7 @@ Producer and independent-consumer Android host/emulator tests, R8 packaging, loc
 Local redacted audits are bounded pattern/content checks, not a guarantee that all secrets or redistribution restrictions are absent. They cover the current tree, all committed history and exact metadata-selected artifacts, including nested sources, resources, AARs, klibs and generated documentation. Public release additionally requires owner-confirmed source/spec rights, a stable matching tag at clean HEAD, strict Design conformance, complete audited artifacts, valid PGP signing and approval of the protected GitHub release environment.
 
 Never commit publishing or signing credentials. Do not retire the old app-ui submodule or alter Wakt as cleanup. A safe production migration still needs an actually available producer artifact and separately validated host changes.
+
+## Security and contributing
+
+Report vulnerabilities privately as described in [SECURITY.md](SECURITY.md); do not open a public issue for an undisclosed vulnerability. Development setup, validation expectations and release ownership are in [CONTRIBUTING.md](CONTRIBUTING.md).

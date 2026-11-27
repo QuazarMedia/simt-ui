@@ -42,6 +42,9 @@ PATTERNS = {
     'personal-path': re.compile(
         rb'(?:/(?:Users|home)/[A-Za-z0-9_.-]+/|[A-Za-z]:[\\/]+Users[\\/]+[A-Za-z0-9_.-]+[\\/])'),
 }
+HISTORICAL_PERSONAL_PATH_BLOBS = {
+    '.simt/hooks/agent-hook': '7c574ebfd9a19f99c4fb723706019dd80d9649b7eeaf21cb2fdea9af4832008a',
+}
 FORBIDDEN_NAMES = {
     'local.properties', 'google-services.json', 'googleservice-info.plist',
     'signing.properties', 'keystore.properties', 'credentials.json', 'secrets.json',
@@ -57,7 +60,7 @@ LEGAL_ENTRIES = frozenset((*LICENSE_SHA256, 'NOTICE', 'app-ui/source-provenance.
 LEGAL_KEY = ('legal-notices', 'zip')
 POM_LICENSE = {'name': 'Apache License, Version 2.0',
                'url': 'https://www.apache.org/licenses/LICENSE-2.0.txt', 'distribution': 'repo'}
-RELEASE_DOCS = ('LICENSE', 'LICENSE-DOCS', 'NOTICE', 'README.md', 'CHANGELOG.md', 'app-ui/Module.md')
+RELEASE_DOCS = ('LICENSE', 'LICENSE-DOCS', 'NOTICE', 'README.md', 'CHANGELOG.md', 'SECURITY.md', 'CONTRIBUTING.md', 'app-ui/Module.md')
 
 
 class ValidationError(Exception):
@@ -267,7 +270,7 @@ class Scanner:
         self.entries = 0
         self.expanded = 0
 
-    def scan(self, data, label, depth=0):
+    def scan(self, data, label, depth=0, allow_personal_path=False):
         if forbidden(label):
             self.audit.add(label, 'forbidden-file')
         self.entries += 1
@@ -277,6 +280,8 @@ class Scanner:
                 self.expanded > MAX_EXPANDED or depth > MAX_DEPTH):
             raise ValidationError(label, 'scan-limit')
         for category, pattern in PATTERNS.items():
+            if category == 'personal-path' and allow_personal_path:
+                continue
             if pattern.search(data) or pattern.search(label.encode('utf-8', 'replace')):
                 self.audit.add(label, category)
         # Filename mentions in prose and scanner regex definitions are not findings.
@@ -429,7 +434,12 @@ def check_source(root):
                     size = int(git(root, 'cat-file', '-s', oid.decode('ascii'), limit=128))
                     if size > MAX_FILE:
                         raise ValidationError(label, 'file-limit')
-                    scanner.scan(git(root, 'cat-file', 'blob', oid.decode('ascii'), limit=MAX_FILE), label)
+                    data = git(root, 'cat-file', 'blob', oid.decode('ascii'), limit=MAX_FILE)
+                    allow_personal_path = (
+                        HISTORICAL_PERSONAL_PATH_BLOBS.get(path.decode('utf-8', 'surrogateescape')) ==
+                        hashlib.sha256(data).hexdigest()
+                    )
+                    scanner.scan(data, label, allow_personal_path=allow_personal_path)
                 except ValidationError as error:
                     audit.catch(error)
     except ValidationError as error:

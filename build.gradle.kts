@@ -39,7 +39,7 @@ val auditTests =
     tasks.register<Exec>("auditTests") {
         group = "verification"
         workingDir(rootDir)
-        commandLine("python3", "-B", "-m", "unittest", "discover", "-s", "scripts", "-p", "test_check_publication.py")
+        commandLine("python3", "-B", "-m", "unittest", "discover", "-s", "scripts", "-p", "test_*.py")
     }
 
 val sourceAudit =

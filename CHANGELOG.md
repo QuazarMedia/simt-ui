@@ -1,5 +1,26 @@
 # Changelog
 
+## Repository Unreleased
+
+### Added
+
+- Root [security policy](SECURITY.md) and [contribution guide](CONTRIBUTING.md), linked from the README with private reporting, release ownership and repository-hardening requirements.
+- Static publishing-workflow tests for immutable Action pins, exact package/version guards, pre-publication changelog validation, OIDC-only npm publication, step-scoped Maven credentials, retry behavior and npm Dependabot coverage.
+- npm Dependabot entries for `web-ui`, `design-spec` and `design-site`.
+
+### Changed
+
+- Extended the namespaced tag workflow to publish both `app.simt:app-ui` and `@simt-dev/web-ui`, with exact registry/version checks and retry-safe GitHub Release creation or updates.
+- Corrected public installation instructions, artifact names, module boundaries and actual `0.1.0` publication status in the README and app-ui module documentation.
+- Regenerated the SIMT agent hook without a machine-specific fallback path.
+
+### Security
+
+- Pinned every publishing Action to a full commit SHA, kept workflow permissions least-privilege, removed the broad release-secret preflight and scoped Central credentials/signing material to the Maven publish step.
+- Added npm trusted publishing through GitHub OIDC with provenance, a pinned supported npm CLI and no long-lived npm token; documented the required npm-side publisher configuration and token retirement.
+- Kept source/history auditing fail-closed while narrowly exempting one reviewed historical generated hook blob from only the personal-path category by its exact SHA-256 digest. No credential, private-key or forbidden-file category is exempt.
+- Documented the remaining release blockers: protect the existing `release` environment, move repository-scoped Central/signing secrets into it, and enable the missing GitHub repository security controls.
+
 ## app-ui Unreleased
 
 ### Added
@@ -34,9 +55,9 @@
 - Robolectric host behavior tests for the choice controls (`ChoiceControlsTest`: minimum and optional selection, disabled controls, long-press suppression, and select-field choice propagation).
 - Simple form controls extracted from simt-app `core:ui` — `DoubleLabelSwitch` in commonMain with caller-owned state and active supporting text, plus Android-only `TimePickerField` with the shared dialog, 24-hour selection, save/cancel and clear behavior.
 - Robolectric host behavior tests for the simple form controls (`BasicFormsTest`: switch toggling and disabled state, active supporting text, time-picker open/save/cancel and clear propagation).
-- Icon and color form controls extracted from simt-app `core:ui` in commonMain — `IconPickerChip`, generic `IconPickerPalette` and `IconColorNameRow<T>` with caller-owned glyphs, colors, dark-theme policy and optional option descriptions.
-- Android-only `TLEField` with clipboard paste/clear, blur sanitization, stable resource-independent validation errors and epoch freshness; its label, hints, status and error strings are available in English, French, Spanish and Arabic.
-- Robolectric host behavior tests for icon-palette auto-scroll, icon/color/name selection propagation, name truncation, TLE sanitization, checksum and epoch validation, malformed epoch handling, and clipboard paste/clear.
+- Icon and color form controls extracted from simt-app `core:ui` — generic `IconPickerChip`, `IconPickerPalette` and `IconColorNameRow<T>` in commonMain, with caller-supplied glyphs, colors and dark-theme policy.
+- Android-only `TLEField` with clipboard paste/clear, blur sanitization, checksum validation, epoch freshness and a resource-independent `TleValidationError`; `simt_ui_tle_*` and `simt_ui_cd_paste` strings ship in English, French, Spanish and Arabic.
+- Robolectric host behavior tests for palette auto-scroll, icon/color/name selection and name capping, plus TLE sanitization, validation errors, freshness boundaries, invalid epochs and clipboard actions.
 - Reusable `InfoRow`, `MetricBadge` and `CustomToolbar` layout primitives in `app.simt.ui.components.layout` (commonMain), with caller-owned content, theme, modifiers and callbacks.
 - `AccordionGroup` in `app.simt.ui.components.layout` (commonMain), with caller-owned expansion, labels, optional subtitle/count, tri-state and long-press actions, 48 dp action targets and reduced-motion-aware transitions.
 - `EditableItemCard` and `EditableItemViewAction` in `app.simt.ui.components.layout` (commonMain), with caller-owned icons, accessibility labels, warning content, title/view/edit/delete actions, replacement edit content and 48 dp disabled-safe action targets.
@@ -51,7 +72,7 @@
 
 ### Notes
 
-- The `dialogs`, `sheets`, `loader`, `permissions` and `toasts` packages are androidMain because they depend on Android/JVM-only APIs (`java.time`, `LocalConfiguration`, `decorFitsSystemWindows`, haptics, `DialogWindowProvider` window flags), the `GlobalBlockingLoaderHost` effect is androidMain for the same dialog-window reason, `features.onboarding` is androidMain because its scrim cutout composites through the native canvas layer (`saveLayer` / `BlendMode.Clear`), `features.notifications` is androidMain because it is pure Android platform work (`NotificationCompat`, channels, vibrator), `features.auth` is androidMain because it builds on Android Credential Manager and Google ID, and `features.qr` is androidMain because its full-screen presentation builds on the androidMain modal foundation (`ModalDefaults.FullScreenDialogProperties`) and Android's `LocalConfiguration`; `components.forms.TLEField` is androidMain because it uses Android clipboard access and `java.time`; the extraction batch's consumers are Android-only. `GlobalToastHost` collects its state with `collectAsStateWithLifecycle`; the `lifecycle-runtime-compose` artifact is an implementation-scoped dependency, never part of the public API. Source `@Preview` functions were dropped (no preview-tooling dependency in simt-ui). The permissions kit's animated header background is a caller slot: the library resolves the accent color and renders a flat tinted wash by default; applications with an ambient background (simt-app's Cosmos gate background) supply their own renderer.
+- The `dialogs`, `sheets`, `loader`, `permissions` and `toasts` packages are androidMain because they depend on Android/JVM-only APIs (`java.time`, `LocalConfiguration`, `decorFitsSystemWindows`, haptics, `DialogWindowProvider` window flags), the `GlobalBlockingLoaderHost` effect is androidMain for the same dialog-window reason, `features.onboarding` is androidMain because its scrim cutout composites through the native canvas layer (`saveLayer` / `BlendMode.Clear`), `features.notifications` is androidMain because it is pure Android platform work (`NotificationCompat`, channels, vibrator), `features.auth` is androidMain because it builds on Android Credential Manager and Google ID, and `features.qr` is androidMain because its full-screen presentation builds on the androidMain modal foundation (`ModalDefaults.FullScreenDialogProperties`) and Android's `LocalConfiguration`; the extraction batch's consumers are Android-only. `GlobalToastHost` collects its state with `collectAsStateWithLifecycle`; the `lifecycle-runtime-compose` artifact is an implementation-scoped dependency, never part of the public API. Source `@Preview` functions were dropped (no preview-tooling dependency in simt-ui). The permissions kit's animated header background is a caller slot: the library resolves the accent color and renders a flat tinted wash by default; applications with an ambient background (simt-app's Cosmos gate background) supply their own renderer.
 
 - `app.simt.ui.features.update`: the in-app update feature as a self-contained package — `UpdateAvailableDialog` (animated header banner, dynamic `appName` input, cancel/update actions, English/French/Spanish/Arabic strings) plus the `UpdateChecker` / `UpdateCheckResult` contract and `PlayCoreUpdateChecker`, the Google Play in-app updates implementation that owns all play-core wiring.
 - `app.simt.ui.features.onboarding`: the onboarding spotlight as a self-contained feature — `OnboardingOverlay` takes the highlighted region, copy and callbacks; the `enabled` flag replaces the app's settings-local gate so no host types leak into the library.
@@ -77,3 +98,21 @@
 
 - Excluded application configuration, credentials, permissions, network clients, analytics, persistence, and private host data from the library boundary.
 - Added bounded source/history and nested publication audits; tagged publication additionally requires confirmed redistribution rights, strict Cosmos validation, protected-environment approval, and PGP signing.
+
+### Notes
+
+- Maven Central publication and the GitHub Release completed on 2026-11-18. Later additions are tracked under `app-ui Unreleased` and are not part of the published `0.1.0` bytes.
+
+## web-ui 0.1.0 — 2026-11-27
+
+### Added
+
+- Published `@simt-dev/web-ui` to npm as dependency-free ESM and CSS for static sites.
+- Reveal/stagger motion, ambient pausing, header/section observers, performance tiering, pointer spotlight/tilt, theme/motion controls, buttons and marquees.
+- Optional prepaint bootstrap and a separate opt-in preference-storage module.
+- Node-based behavior tests and package exports for runtime helpers, styles, bootstrap, storage and package metadata.
+
+### Security
+
+- Kept runtime code free of third-party package dependencies and made persistence an explicit opt-in boundary for privacy-only consumers.
+- Published the package under Apache-2.0 with public repository metadata.
