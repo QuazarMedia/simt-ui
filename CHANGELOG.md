@@ -71,6 +71,8 @@
 - Coordinator and Robolectric Activity-composition tests for orientation restoration, overlapping owners, independent Activities, ignored extra releases and nested `ContextWrapper` lookup (`OrientationLockCoordinatorTest`, `LockCurrentOrientationEffectHostTest`).
 - `FullScreenExperienceEffect` in `app.simt.ui.effects` (androidMain), with caller-owned keep-screen-on and system-bar policy for Activity or Dialog windows, reference-counted overlapping ownership, exact restoration of prior flags/behavior and independent status/navigation-bar visibility, plus the explicit `alwaysShowSystemBarsOnDispose` override.
 - Robolectric host tests for fullscreen keep-screen-on restoration, per-bar visibility, system-bar behavior, disabled options, overlapping owners, the always-show override and Dialog-window isolation (`FullScreenExperienceEffectHostTest`).
+- `DoubleBackToExitHandler` in `app.simt.ui.effects` (androidMain), with caller-owned hint text and exit callback, a configurable confirmation window, monotonic timing and fresh confirmation state when disabled or re-enabled. `androidx.activity:activity-compose` remains implementation-scoped and absent from the public ABI.
+- Tracker unit tests and Robolectric host coverage for first-press hints, silent operation, custom/default exit, disabled-handler fallback and re-enable reset (`DoubleBackToExitTrackerTest`, `DoubleBackToExitHandlerHostTest`).
 
 ### Changed
 

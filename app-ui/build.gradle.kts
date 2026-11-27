@@ -81,6 +81,7 @@ kotlin {
         }
         named("androidMain") {
             dependencies {
+                implementation(libs.androidx.activity.compose)
                 // NotificationCompat, ContextCompat and the annotation types used by the
                 // notifications kit; part of the public API (NotificationCompat.Action in
                 // NotificationSpec / NotificationActionBuilder), hence api scope.

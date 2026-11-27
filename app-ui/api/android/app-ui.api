@@ -869,6 +869,10 @@ public final class app/simt/ui/effects/CountdownEffectKt {
 	public static final fun CountdownEffect-Pe2sBwQ (JLandroidx/compose/ui/Modifier;IJLkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function0;Ljava/lang/String;JJFIILandroidx/compose/runtime/Composer;III)V
 }
 
+public final class app/simt/ui/effects/DoubleBackToExitHandlerKt {
+	public static final fun DoubleBackToExitHandler (Ljava/lang/String;ZJLkotlin/jvm/functions/Function0;Landroidx/compose/runtime/Composer;II)V
+}
+
 public final class app/simt/ui/effects/FullScreenExperienceEffectKt {
 	public static final fun FullScreenExperienceEffect (ZZIZLandroidx/compose/runtime/Composer;II)V
 }
