@@ -37,6 +37,8 @@
 - Icon and color form controls extracted from simt-app `core:ui` in commonMain — `IconPickerChip`, generic `IconPickerPalette` and `IconColorNameRow<T>` with caller-owned glyphs, colors, dark-theme policy and optional option descriptions.
 - Android-only `TLEField` with clipboard paste/clear, blur sanitization, stable resource-independent validation errors and epoch freshness; its label, hints, status and error strings are available in English, French, Spanish and Arabic.
 - Robolectric host behavior tests for icon-palette auto-scroll, icon/color/name selection propagation, name truncation, TLE sanitization, checksum and epoch validation, malformed epoch handling, and clipboard paste/clear.
+- Reusable `InfoRow`, `MetricBadge` and `CustomToolbar` layout primitives in `app.simt.ui.components.layout` (commonMain), with caller-owned content, theme, modifiers and callbacks.
+- Robolectric host behavior tests for layout rows, metric labels, callback replacement and horizontally scrolling toolbar actions (`LayoutPrimitivesTest`).
 
 ### Notes
 

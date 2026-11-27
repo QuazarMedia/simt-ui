@@ -26,6 +26,10 @@ Use the caller's Material3 theme. Labels, callbacks, state, window policy, reduc
 
 `ScrollEdgeEffectDefaults` exposes fade distances, arrow shift/duration, and a theme-derived tint. `LocalUiMotionEnabled = false` renders fades and visibility immediately and removes infinite arrow motion; it does not disable scrolling or independently control haptics.
 
+## Layout primitives
+
+`InfoRow` renders a caller-owned label/value pair with a decorative leading icon, optional trailing slot and optional click callback. `MetricBadge` renders a caller-owned value and uppercase label with an accent icon. `CustomToolbar` arranges caller-owned composable items in a horizontally scrolling Material3 card with shared scroll-edge effects. All three use the caller's Material3 theme, expose an external modifier and keep labels, icons, colors and actions caller-owned.
+
 ## Tooltip and header
 
 `LongPressTooltipEffect` owns one combined click/long-click handler. A tap invokes the click callback; a long press displays the tooltip instead. Do not add a competing click handler to the child for the same action. The outer modifier positions the tooltip host; `contentModifier` customizes the anchor. `fillMaxHeight` defaults true, so pass false for an anchor inside a horizontally scrolling row or another unbounded-height context. The public tooltip-position type comes from Material3 and requires the matching Compose dependencies.
