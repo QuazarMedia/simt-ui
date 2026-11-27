@@ -1,6 +1,6 @@
 # SIMT UI
 
-Shared Compose primitives for Android and Kotlin Multiplatform iOS consumers, an independently versioned SIMT Design specification with frozen Cosmos provenance, and the standalone SIMT Design site.
+Shared Compose primitives for Android and Kotlin Multiplatform iOS consumers, framework-agnostic web UI primitives, an independently versioned SIMT Design specification with frozen Cosmos provenance, and the standalone SIMT Design site.
 
 Version `0.1.0` is approved for a tag-triggered public release. Said Elimam has confirmed the rights and licensed UI/Design code under Apache-2.0 and Design specifications/documentation under CC BY 4.0; retain [LICENSE](LICENSE), [LICENSE-DOCS](LICENSE-DOCS) and [NOTICE](NOTICE), including the frozen Cosmos attribution. See [the extraction plan](docs/plans/0001-shared-ui-extraction.md) and the separate provenance ledgers in [app-ui](app-ui/source-provenance.json) and [design-spec](design-spec/provenance.json).
 
@@ -9,10 +9,22 @@ Version `0.1.0` is approved for a tag-triggered public release. Said Elimam has 
 - `app-ui`: eight generic UI primitives in `app.simt.ui`, private Compose resources, and narrow Android/iOS inset, width, dispatcher and haptic implementations. Targets: Android API 28+, `iosArm64`, `iosSimulatorArm64`. No application framework, service configuration, analytics, persistence, requested permission or runtime network client.
 - `design-spec`: inert, byte-pinned Cosmos 2.3.0 upstream sources and exports from simt-space, plus the authored SIMT Design 2.4.0 specification. No dependency from the runtime library. The pin includes upstream licensing and the canonical union/platform scope fix; all declared schemas must pass.
 - `design-site`: independently generated SIMT Design 2.4.0 static publication for `https://design.simt.app`. It owns the canonical site authority, root routes, discovery documents, static assets and Cloudflare Worker configuration; it does not replace or rewrite the frozen upstream provenance snapshot.
+- `web-ui`: dependency-free ESM and CSS primitives for static sites, including reveal/stagger motion, ambient pausing, header/section observers, performance tiering, pointer spotlight/tilt, theme/motion controls, buttons and marquees. Preference persistence and prepaint bootstrap are opt-in so privacy-only consumers ship no storage API.
 - `examples/android-consumer`: separate ordinary Android Compose build, with no CMP plugin, using published filesystem Maven artifacts.
 - `examples/multiplatform-consumer`: separate CMP build using the same published root coordinate and linking both Apple frameworks.
 
 No theme, navigation, route, branding, host build convention or application configuration was extracted. Future modules can be added independently; no empty placeholder module is necessary. API contracts are in [the module documentation](app-ui/Module.md).
+
+## Shared web UI
+
+`web-ui` is consumed as source ESM/CSS, so Vite and custom static generators use the same implementation without a transpilation step. Import runtime helpers from `@simt/web-ui` and the portable component styles from `@simt/web-ui/styles.css`; `@simt/web-ui/bootstrap` generates the optional prepaint preference script. Social-style persistence is provided separately by `@simt/web-ui/storage` and must only be imported by products that allow it.
+
+```js
+import { initMotion, initTheme, observeReveals, trackSections } from "@simt/web-ui";
+import "@simt/web-ui/styles.css";
+```
+
+The runtime uses `data-motion="full|reduced"`, `data-perf="lite"`, `data-reveal`, `data-ambient`, `.is-revealed`, `.is-offscreen` and `.is-scrolled`. Run `npm --prefix web-ui run check` or `./gradlew --no-daemon --max-workers=2 :web-ui:check`; the Gradle root `check` includes it.
 
 ## Build locally
 

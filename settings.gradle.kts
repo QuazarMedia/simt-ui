@@ -32,4 +32,4 @@ dependencyResolutionManagement {
 }
 
 rootProject.name = "simt-ui"
-include(":app-ui", ":design-spec", ":design-site")
+include(":app-ui", ":design-spec", ":design-site", ":web-ui")

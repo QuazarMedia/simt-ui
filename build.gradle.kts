@@ -22,7 +22,7 @@ spotless {
         endWithNewline()
     }
     kotlinGradle {
-        target("*.gradle.kts", "app-ui/*.gradle.kts", "design-spec/*.gradle.kts", "design-site/*.gradle.kts", "examples/**/*.gradle.kts")
+        target("*.gradle.kts", "app-ui/*.gradle.kts", "design-spec/*.gradle.kts", "design-site/*.gradle.kts", "web-ui/*.gradle.kts", "examples/**/*.gradle.kts")
         targetExclude("**/build/**")
         ktlint(libs.versions.ktlint.get())
         trimTrailingWhitespace()
@@ -71,7 +71,7 @@ tasks.named("assemble") {
 }
 
 tasks.named("check") {
-    dependsOn(":app-ui:check", ":design-spec:check", ":design-site:check", auditTests, sourceAudit)
+    dependsOn(":app-ui:check", ":design-spec:check", ":design-site:check", ":web-ui:check", auditTests, sourceAudit)
 }
 
 tasks.named("clean") {
