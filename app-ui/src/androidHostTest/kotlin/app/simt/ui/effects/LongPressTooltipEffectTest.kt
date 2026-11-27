@@ -11,15 +11,21 @@ import androidx.compose.ui.input.InputModeManager
 import androidx.compose.ui.input.key.Key
 import androidx.compose.ui.platform.LocalInputModeManager
 import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.SemanticsActions
+import androidx.compose.ui.semantics.SemanticsProperties
 import androidx.compose.ui.test.ExperimentalTestApi
+import androidx.compose.ui.test.SemanticsMatcher
+import androidx.compose.ui.test.assert
 import androidx.compose.ui.test.assertCountEquals
+import androidx.compose.ui.test.assertIsNotEnabled
 import androidx.compose.ui.test.click
 import androidx.compose.ui.test.hasClickAction
 import androidx.compose.ui.test.junit4.v2.createComposeRule
 import androidx.compose.ui.test.longClick
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
+import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performKeyInput
 import androidx.compose.ui.test.performSemanticsAction
 import androidx.compose.ui.test.performTouchInput
@@ -80,6 +86,33 @@ class LongPressTooltipEffectTest {
             assertEquals(1, original)
             assertEquals(1, replacement)
         }
+    }
+
+    @Test
+    fun disabledAnchorSuppressesCallbacksAndTooltip() {
+        var clicks = 0
+        compose.setContent {
+            MaterialTheme {
+                LongPressTooltipEffect(
+                    tooltipText = "Unavailable detail",
+                    onClick = { clicks++ },
+                    modifier = Modifier.size(96.dp),
+                    contentModifier = Modifier.testTag("target"),
+                    fillMaxHeight = false,
+                    enabled = false,
+                    role = Role.Button,
+                ) { Text("Anchor", Modifier.size(96.dp)) }
+            }
+        }
+
+        val target = compose.onNodeWithTag("target")
+        target.assertIsNotEnabled().assert(
+            SemanticsMatcher.expectValue(SemanticsProperties.Role, Role.Button),
+        )
+        target.performClick()
+        target.performTouchInput { longClick() }
+        compose.onNodeWithText("Unavailable detail").assertDoesNotExist()
+        compose.runOnIdle { assertEquals(0, clicks) }
     }
 
     @Test

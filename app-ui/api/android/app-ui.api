@@ -223,6 +223,22 @@ public final class app/simt/ui/components/chips/BetaChipKt {
 	public static final fun BetaChip-FNF3uiM (Landroidx/compose/ui/Modifier;Ljava/lang/String;JLandroidx/compose/runtime/Composer;II)V
 }
 
+public final class app/simt/ui/components/controls/ComposableSingletons$MapControlPanelKt {
+	public static final field INSTANCE Lapp/simt/ui/components/controls/ComposableSingletons$MapControlPanelKt;
+	public fun <init> ()V
+	public final fun getLambda$-1775165151$app_simt_app_ui ()Lkotlin/jvm/functions/Function3;
+}
+
+public final class app/simt/ui/components/controls/MapControlPanelKt {
+	public static final fun MapControlButton-FHprtrg (Landroidx/compose/ui/graphics/vector/ImageVector;Lkotlin/jvm/functions/Function0;Ljava/lang/String;Landroidx/compose/ui/Modifier;JZLandroidx/compose/runtime/Composer;II)V
+	public static final fun MapControlLabel-jxWH9Kg (Ljava/lang/String;Landroidx/compose/ui/Modifier;JJLandroidx/compose/ui/text/font/FontWeight;Landroidx/compose/runtime/Composer;II)V
+	public static final fun MapControlPanel (Lkotlin/jvm/functions/Function0;Lkotlin/jvm/functions/Function0;Lkotlin/jvm/functions/Function0;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Landroidx/compose/ui/Modifier;Landroidx/compose/ui/graphics/vector/ImageVector;Lkotlin/jvm/functions/Function2;Lkotlin/jvm/functions/Function3;Landroidx/compose/runtime/Composer;II)V
+}
+
+public final class app/simt/ui/components/controls/VerticalTwinControlKt {
+	public static final fun VerticalTwinControl-6RhP_wg (Landroidx/compose/ui/graphics/vector/ImageVector;Landroidx/compose/ui/graphics/vector/ImageVector;Ljava/lang/String;Ljava/lang/String;Lkotlin/jvm/functions/Function0;Lkotlin/jvm/functions/Function0;Landroidx/compose/ui/Modifier;ZZJLandroidx/compose/runtime/Composer;II)V
+}
+
 public final class app/simt/ui/components/dialogs/ActionListDialogKt {
 	public static final fun ActionListDialog (Ljava/lang/String;Ljava/util/List;Lkotlin/jvm/functions/Function0;Landroidx/compose/runtime/Composer;I)V
 }
@@ -853,7 +869,7 @@ public final class app/simt/ui/effects/GlobalBlockingLoaderKt {
 }
 
 public final class app/simt/ui/effects/LongPressTooltipEffectKt {
-	public static final fun LongPressTooltipEffect-3XjQ-Vc (Ljava/lang/String;Lkotlin/jvm/functions/Function0;Landroidx/compose/ui/Modifier;Landroidx/compose/ui/Modifier;ZLandroidx/compose/ui/Alignment;ILkotlin/jvm/functions/Function3;Landroidx/compose/runtime/Composer;II)V
+	public static final fun LongPressTooltipEffect-wVcLqfE (Ljava/lang/String;Lkotlin/jvm/functions/Function0;Landroidx/compose/ui/Modifier;Landroidx/compose/ui/Modifier;ZLandroidx/compose/ui/Alignment;IZLandroidx/compose/ui/semantics/Role;Lkotlin/jvm/functions/Function3;Landroidx/compose/runtime/Composer;II)V
 }
 
 public final class app/simt/ui/effects/MotionKt {

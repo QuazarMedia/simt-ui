@@ -16,6 +16,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.launch
 
@@ -29,6 +30,8 @@ public fun LongPressTooltipEffect(
     fillMaxHeight: Boolean = true,
     contentAlignment: Alignment = Alignment.TopStart,
     position: TooltipAnchorPosition = TooltipAnchorPosition.Above,
+    enabled: Boolean = true,
+    role: Role? = null,
     content: @Composable BoxScope.() -> Unit,
 ) {
     val tooltipState = rememberTooltipState()
@@ -45,6 +48,8 @@ public fun LongPressTooltipEffect(
                 Modifier
                     .then(if (fillMaxHeight) Modifier.fillMaxHeight() else Modifier)
                     .combinedClickable(
+                        enabled = enabled,
+                        role = role,
                         onClick = onClick,
                         onLongClick = { scope.launch { tooltipState.show() } },
                     )

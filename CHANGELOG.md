@@ -42,6 +42,12 @@
 - `EditableItemCard` and `EditableItemViewAction` in `app.simt.ui.components.layout` (commonMain), with caller-owned icons, accessibility labels, warning content, title/view/edit/delete actions, replacement edit content and 48 dp disabled-safe action targets.
 - `AppScreen` in `app.simt.ui.components.layout` (commonMain), a string-based full-screen layout with caller-owned background, header, action and content slots, horizontal/bottom safe-drawing insets, optional scrolling and shared dialog-action defaults.
 - Robolectric host behavior tests for layout rows, metric labels, callback replacement, horizontally scrolling toolbar actions, accordion disclosure, tri-state isolation, long press, touch targets, motion policy, editable-item action isolation, disabled semantics and edit save/cancel forwarding, plus AppScreen composition, single root-modifier application, action routing, disabled save and fixed/scrollable content (`LayoutPrimitivesTest`, `AccordionGroupTest`, `EditableItemCardTest`, `AppScreenTest`).
+- `VerticalTwinControl`, `MapControlPanel`, `MapControlButton` and `MapControlLabel` in `app.simt.ui.components.controls` (commonMain), with caller-owned icons, labels, tints, enabled state, callbacks and additional content.
+- Robolectric host behavior tests for independent twin actions, disabled map actions and tooltip suppression, panel slot ordering, 48 dp touch targets and large-font zoom labels (`VerticalTwinControlTest`, `MapControlPanelTest`, `LongPressTooltipEffectTest`).
+
+### Changed
+
+- `LongPressTooltipEffect` accepts caller-owned `enabled` state and an optional semantic `role`; disabled anchors suppress click, long-click and tooltip input.
 
 ### Notes
 
