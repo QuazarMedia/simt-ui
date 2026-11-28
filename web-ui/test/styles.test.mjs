@@ -30,6 +30,23 @@ test("FAQ section owns a responsive sticky heading and native card rows", () => 
   assert.match(css, /\.faq-item__a\s*\{[^}]*padding:\s*0 var\(--space-6, 24px\) var\(--space-6, 24px\);/s);
 });
 
+test("header owns the fixed glass shell, shared navigation and native locale control", () => {
+  assert.match(css, /\.site-header\s*\{[^}]*position:\s*fixed;[^}]*height:\s*var\(--header-height, 68px\);/s);
+  assert.match(css, /\.site-header\.is-scrolled\s*\{[^}]*background:\s*var\(--surface-glass, var\(--glass,[^}]*backdrop-filter:\s*blur/s);
+  assert.match(css, /:root\[data-perf="lite"\] \.site-header\.is-scrolled\s*\{[^}]*backdrop-filter:\s*none;/s);
+  assert.match(css, /\.site-nav\s*\{[^}]*margin-inline:\s*auto;/s);
+  assert.match(css, /\.site-nav a\[aria-current="true"\]\s*\{[^}]*box-shadow:\s*inset/s);
+  assert.match(css, /\.locale-switch__select\s*\{[^}]*min-height:\s*40px;[^}]*border-radius:\s*var\(--radius-pill, 999px\);/s);
+  assert.match(css, /@media \(width < 1000px\)\s*\{\s*\.site-nav\s*\{\s*display:\s*none;/s);
+});
+
+test("header preserves no-JavaScript locale links and gates decorative brand motion", () => {
+  assert.match(css, /:root:not\(\.js\) \.locale-switch__select\s*\{\s*display:\s*none;/s);
+  assert.match(css, /:root:not\(\.js\) \.locale-switch__links\s*\{\s*display:\s*flex;/s);
+  assert.match(css, /:root\[data-motion="full"\]:not\(\[data-perf="lite"\]\) \.brand:hover \.brand__mark\s*\{\s*transform:\s*rotate\(45deg\);/s);
+  assert.match(css, /@media \(width < 360px\)\s*\{\s*\.site-header \[data-motion-toggle\]\s*\{\s*display:\s*none;/s);
+});
+
 test("FAQ disclosure and icon motion require full motion outside lite mode", () => {
   const gate = /:root\[data-motion="full"\]:not\(\[data-perf="lite"\]\)/;
   assert.match(css, /:root\[data-motion="full"\]:not\(\[data-perf="lite"\]\)\s*\{\s*interpolate-size:\s*allow-keywords;/s);

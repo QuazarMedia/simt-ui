@@ -8,6 +8,7 @@ export default {
   detectPerformance,
   initMotion,
   initPointerScene,
+  initLocaleSelect,
   initTheme,
   observeReveals,
   pauseOffscreen,
@@ -19,6 +20,7 @@ import '@simt/web-ui/styles.css';
 detectPerformance();
 initTheme(document.querySelector('[data-theme-toggle]'));
 initMotion(document.querySelector('[data-motion-toggle]'));
+initLocaleSelect(document.querySelector('[data-locale-select]'));
 observeReveals(document.querySelectorAll('[data-reveal]'));
 pauseOffscreen(document.querySelectorAll('[data-ambient]'));
 trackHeader(document.querySelector('[data-header]'));
@@ -208,11 +210,12 @@ initPointerScene({ area: document.querySelector('[data-pointer-area]') });`,
       title: 'Preference and performance state',
       description:
         'The runtime reports the active theme, motion and performance tier. Save-data, low-memory, low-core and slow-frame probes can select Lite automatically.',
-      source: ['src/preferences.mjs', 'src/performance.mjs', 'src/observers.mjs'],
-      contracts: ['[data-theme-toggle]', '[data-motion-toggle]', '[data-perf="lite"]', '[data-header]', '[data-nav-link]'],
+      source: ['src/preferences.mjs', 'src/navigation.mjs', 'src/performance.mjs', 'src/observers.mjs'],
+      contracts: ['[data-theme-toggle]', '[data-motion-toggle]', '[data-locale-select]', '[data-perf="lite"]', '[data-header]', '[data-nav-link]'],
       usage: `detectPerformance();
 initTheme(document.querySelector('[data-theme-toggle]'));
 initMotion(document.querySelector('[data-motion-toggle]'));
+initLocaleSelect(document.querySelector('[data-locale-select]'));
 trackHeader(document.querySelector('[data-header]'));
 trackSections(document.querySelectorAll('[data-nav-link]'));`,
       markup: `<section class="preview-section" id="runtime" data-preview-component="runtime" aria-labelledby="runtime-title">

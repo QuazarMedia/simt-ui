@@ -134,6 +134,13 @@
 
 - Maven Central publication and the GitHub Release completed on 2026-11-18. Later additions are tracked under `app-ui Unreleased` and are not part of the published `0.1.0` bytes.
 
+## web-ui Unreleased
+
+### Added
+
+- Reusable landing header styles for fixed glass chrome, brand lockups, section navigation, native language selectors, responsive tool layouts and no-JavaScript locale links.
+- Shared native locale-select navigation with an injectable location boundary and cleanup behavior.
+
 ## web-ui 0.1.1 — 2026-11-27
 
 ### Added
