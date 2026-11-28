@@ -60,6 +60,11 @@ jobs:
             "$RUNNER_TEMP/font-build-venv/bin/python" build.py
           )
 
+      - name: Verify editable UFO sources
+        run: |
+          "$RUNNER_TEMP/font-build-venv/bin/python" simt-font/scripts/check_ufo_sources.py \
+            --font-dir "$RUNNER_TEMP/simt-font-sources/fonts/ttf"
+
       - name: Package for Google Fonts
         id: package
         run: |
@@ -145,6 +150,11 @@ jobs:
             cd "$RUNNER_TEMP/simt-font-sources"
             "$RUNNER_TEMP/font-build-venv/bin/python" build.py
           )
+
+      - name: Verify editable UFO sources
+        run: |
+          "$RUNNER_TEMP/font-build-venv/bin/python" simt-font/scripts/check_ufo_sources.py \
+            --font-dir "$RUNNER_TEMP/simt-font-sources/fonts/ttf"
 
       - name: Package for Google Fonts
         id: package

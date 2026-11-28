@@ -21,3 +21,5 @@ python_bin="${python_bin:-python3}"
 "$python_bin" -m venv .venv
 .venv/bin/pip install --quiet -r requirements.txt
 .venv/bin/python sources/build.py
+.venv/bin/python sources/export_ufo.py
+.venv/bin/python scripts/check_ufo_sources.py

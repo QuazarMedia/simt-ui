@@ -31,9 +31,12 @@ derivation, ship the license, do not sell the fonts by themselves).
 - `simt-specimen.html` — open it in a browser to type and test the font
 - `documentation/previews/` — character-set overviews and design comparison sheets
 - `sources/` — the Python build scripts and OpenType feature files
-- `sources/build.sh` — one-command reproducible build
+- `sources/ufo/` — editable UFO 3 masters and `SimtFont.designspace` for Regular and Bold
+- `sources/export_ufo.py` — regenerates the editable sources from the built TTFs
+- `sources/build.sh` — one-command reproducible build and source verification
 - `requirements.txt` — pinned fontTools build dependency
 - `scripts/check-integrity.py` — offline verification script (checksums, name table, cmap, license)
+- `scripts/check_ufo_sources.py` — verifies UFO outlines, metrics, Unicode mappings, metadata and features against the TTFs
 - `scripts/check_fontspector_report.py` — narrow QA gate for the documented U+0331 subset-data issue
 - `scripts/package_google_fonts.py` — builds the exact `ofl/simtfont` contribution package
 - `google-fonts/` — Google Fonts metadata and article templates
@@ -50,6 +53,8 @@ derivation, ship the license, do not sell the fonts by themselves).
   reviewed pull-request submission.
 - Align the upstream project with `sources/`, `documentation/`, author and
   contributor records, and a one-command build script.
+- Include editable UFO 3 masters and a two-weight designspace for Google Fonts
+  design review, with an automated parity check against the released TTFs.
 - Correct the SIL Open Font License name-table declarations and regenerate the
   committed TTF/WOFF binaries from the parametric sources.
 - Cover all 319 official Google Fonts Latin Core codepoints, add Latin mark
@@ -98,9 +103,16 @@ Requires Python 3.10+. From `simt-font/`:
 ./sources/build.sh
 ```
 
-The script creates a local virtual environment, installs the pinned requirements, and writes
-TTF and WOFF files to `fonts/`. All proportions live in `sources/latin.py` and
-`sources/arabic.py`; stroke weights are in `WEIGHTS` in `sources/build.py`.
+The script creates a local virtual environment, installs the pinned requirements, writes
+TTF and WOFF files to `fonts/`, regenerates the UFO sources, and verifies source parity.
+All proportions live in `sources/latin.py` and `sources/arabic.py`; stroke weights are in
+`WEIGHTS` in `sources/build.py`.
+
+For Google Fonts design review, open `sources/ufo/SimtFont.designspace` in a UFO-compatible
+editor. Each master contains editable cubic outlines, components, advances, Unicode
+mappings, font metadata and `features.fea`. The parametric Python sources remain the
+reproducible build authority; port direct UFO edits back into the generator before
+rebuilding, because `sources/export_ufo.py` refreshes the UFO files from the TTFs.
 
 ## Verification
 
@@ -115,6 +127,16 @@ table (family, style, PS name, license and license URL entries), verifies all
 319 Latin Core codepoints and U+0331 in each cmap, and verifies the license files
 are present and intact. `./gradlew :simt-font:check` runs the same script through
 the `checkFontIntegrity` task.
+
+After a build, verify the editable sources with:
+
+```bash
+.venv/bin/python scripts/check_ufo_sources.py
+```
+
+This checks both UFO 3 masters and the designspace, including every glyph's cubic
+outline, components, advance, Unicode mapping, font metadata and OpenType feature
+source. The Google Fonts workflow runs the same check against freshly built TTFs.
 
 ## Google Fonts contribution CI
 
@@ -151,8 +173,9 @@ the family. See the [official contribution guide](https://googlefonts.github.io/
 This is a complete, working first release, generated parametrically from the design rules.
 Before a commercial or public release, these steps are recommended:
 
-- **Refine outlines by hand** in Glyphs or FontLab: optical corrections, curve tension, and
-  shapes that still read as schematic (ain, the Arabic digits 2, 3 and 4, quotation marks).
+- **Refine outlines by hand** in the included UFO sources: optical corrections, curve tension,
+  and shapes that still read as schematic (ain, the Arabic digits 2, 3 and 4, quotation marks).
+  Port approved changes back into the parametric generator before rebuilding.
 - **Native-reader testing** of the redesigned hah and kaf families with Arabic and Persian readers.
 - **Remove overlaps.** Strokes overlap by design (valid TrueType, flagged correctly), but merging
   them gives cleaner outlines and smaller files.
